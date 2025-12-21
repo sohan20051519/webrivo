@@ -29,7 +29,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="relative min-h-screen flex flex-col justify-center items-center pt-24 md:pt-20 overflow-hidden perspective-container">
+    <section className="relative min-h-screen flex flex-col justify-center items-center pt-16 md:pt-20 overflow-hidden perspective-container">
       {/* Background Elements */}
       <div className="absolute inset-0 grid-bg z-0 pointer-events-none"></div>
       <div className="absolute top-1/4 -left-20 w-96 h-96 bg-emerald-600/20 rounded-full blur-[120px] animate-pulse-glow"></div>
