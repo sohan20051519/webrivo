@@ -25,8 +25,8 @@ export default function Header() {
           className={`
             relative flex items-center justify-between transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]
             ${scrolled
-              ? 'w-[92%] md:w-auto md:min-w-[750px] bg-neutral-900/80 backdrop-blur-xl border border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-full py-2 px-6'
-              : 'w-full max-w-7xl px-6 py-6 bg-transparent border-transparent'
+              ? 'w-[95%] md:w-auto md:min-w-[750px] bg-neutral-900/80 backdrop-blur-xl border border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-full py-2 px-4 md:px-6'
+              : 'w-full max-w-7xl px-4 py-4 md:px-6 md:py-6 bg-transparent border-transparent'
             }
           `}
         >
@@ -37,7 +37,7 @@ export default function Header() {
               alt="Webrivo Logo"
               className={`
                 object-contain transition-all duration-500
-                ${scrolled ? 'h-16 w-auto' : 'h-24 w-auto'}
+                ${scrolled ? 'h-10 md:h-16 w-auto' : 'h-12 md:h-24 w-auto'}
               `}
             />
           </a>
