@@ -29,7 +29,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="relative min-h-screen flex flex-col justify-center items-center pt-20 overflow-hidden perspective-container">
+    <section className="relative min-h-screen flex flex-col justify-center items-center pt-32 md:pt-20 overflow-hidden perspective-container">
       {/* Background Elements */}
       <div className="absolute inset-0 grid-bg z-0 pointer-events-none"></div>
       <div className="absolute top-1/4 -left-20 w-96 h-96 bg-emerald-600/20 rounded-full blur-[120px] animate-pulse-glow"></div>
@@ -96,7 +96,7 @@ export default function Hero() {
         </div>
 
         {/* Main Title */}
-        <h1 ref={titleRef} className="text-5xl md:text-7xl lg:text-8xl font-display font-bold tracking-tighter leading-[1.1] mb-6 transition-transform duration-100 ease-out">
+        <h1 ref={titleRef} className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-display font-bold tracking-tighter leading-[1.1] mb-6 transition-transform duration-100 ease-out">
           <span className="block text-white">Empowering Local</span>
           <span className="block text-gradient-accent">Vendors Globally.</span>
         </h1>
