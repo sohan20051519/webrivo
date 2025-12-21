@@ -13,13 +13,13 @@ export default function Services() {
         <div className="text-center mb-20 reveal-on-scroll">
           <h2 className="text-3xl md:text-5xl font-display font-bold text-white mb-6">
             We Build More Than Websites. <br />
-            <span className="text-neutral-500">We Build Legacies.</span>
+            <span className="text-neutral-500">We Architect Digital Growth.</span>
           </h2>
         </div>
 
         {/* Bento Grid Layout */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[300px]">
-          
+
           {/* Large Card */}
           <div className="md:col-span-2 row-span-1 rounded-3xl glass-panel p-8 relative overflow-hidden group reveal-on-scroll">
             <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -46,23 +46,23 @@ export default function Services() {
 
           {/* Tall Card */}
           <div className="md:col-span-1 row-span-2 rounded-3xl glass-panel p-8 relative overflow-hidden group reveal-on-scroll reveal-delay-200">
-             <div className="absolute inset-0 bg-gradient-to-bl from-teal-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-             <div className="relative z-10 h-full flex flex-col">
-                <div className="w-12 h-12 rounded-xl bg-teal-500/20 flex items-center justify-center mb-6 text-teal-300">
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
-                </div>
-                <h3 className="text-2xl font-bold text-white mb-2">Dedicated Tele-Support</h3>
-                <p className="text-neutral-400 mb-8">Our team doesn't just build; we connect. We handle the initial outreach, explaining the value of digital presence to local vendors in their language.</p>
-                
-                <div className="mt-auto space-y-3">
-                  {['Local Language Support', '24/7 Availability', 'Vendor Onboarding'].map(item => (
-                    <div key={item} className="flex items-center gap-2 text-sm text-neutral-300">
-                      <div className="w-1.5 h-1.5 rounded-full bg-teal-400"></div>
-                      {item}
-                    </div>
-                  ))}
-                </div>
-             </div>
+            <div className="absolute inset-0 bg-gradient-to-bl from-teal-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="relative z-10 h-full flex flex-col">
+              <div className="w-12 h-12 rounded-xl bg-teal-500/20 flex items-center justify-center mb-6 text-teal-300">
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-2">Dedicated Tele-Support</h3>
+              <p className="text-neutral-400 mb-8">Our team doesn't just build; we connect. We handle the initial outreach, explaining the value of digital presence to local vendors in their language.</p>
+
+              <div className="mt-auto space-y-3">
+                {['Local Language Support', '24/7 Availability', 'Vendor Onboarding'].map(item => (
+                  <div key={item} className="flex items-center gap-2 text-sm text-neutral-300">
+                    <div className="w-1.5 h-1.5 rounded-full bg-teal-400"></div>
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Small Card 1 */}
@@ -79,7 +79,7 @@ export default function Services() {
             <h3 className="text-xl font-bold text-white mb-2">Brand Identity</h3>
             <p className="text-sm text-neutral-400">Logo, colors, and voice that speak to your community.</p>
             <div className="mt-4 flex -space-x-2">
-              {[1,2,3].map(i => (
+              {[1, 2, 3].map(i => (
                 <div key={i} className="w-8 h-8 rounded-full border border-neutral-900 bg-neutral-800"></div>
               ))}
             </div>

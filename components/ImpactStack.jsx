@@ -55,10 +55,10 @@ export default function ImpactStack() {
         {/* Stack Container */}
         <div className="relative flex flex-col gap-8 md:gap-0">
           {cards.map((card, index) => (
-            <div 
+            <div
               key={card.id}
               className={`sticky top-24 md:top-32 lg:top-40 flex flex-col md:flex-row items-center gap-8 p-8 md:p-12 rounded-3xl border ${card.border} shadow-2xl transition-transform duration-500`}
-              style={{ 
+              style={{
                 backgroundColor: '#0a0a0a', // Solid background to hide cards behind
                 backgroundImage: 'radial-gradient(circle at top right, rgba(255,255,255,0.03), transparent)',
                 zIndex: index + 1,
@@ -83,9 +83,9 @@ export default function ImpactStack() {
                   {card.description}
                 </p>
                 <div className="pt-4">
-                  <button className="text-white text-sm font-semibold border-b border-white/20 pb-1 hover:border-white transition-colors">
+                  <a href="#contact" className="text-white text-sm font-semibold border-b border-white/20 pb-1 hover:border-white transition-colors">
                     Learn more about {card.title.split(' ')[0]} &rarr;
-                  </button>
+                  </a>
                 </div>
               </div>
 
@@ -93,20 +93,20 @@ export default function ImpactStack() {
               <div className="flex-1 w-full md:h-[400px] rounded-2xl overflow-hidden relative group">
                 {/* Gradient Background */}
                 <div className={`absolute inset-0 bg-gradient-to-br ${card.color} opacity-10 group-hover:opacity-20 transition-opacity duration-500`}></div>
-                
+
                 {/* Abstract Visuals based on index */}
                 <div className="absolute inset-0 flex items-center justify-center">
                   {index === 0 && (
-                     // Map / Location Visual
-                     <div className="relative w-48 h-48">
-                        <div className="absolute inset-0 border-2 border-emerald-500/30 rounded-full animate-[spin-slow_10s_linear_infinite]"></div>
-                        <div className="absolute inset-4 border border-emerald-500/20 rounded-full"></div>
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-4 h-4 bg-emerald-500 rounded-full shadow-[0_0_20px_rgba(16,185,129,0.5)] animate-pulse"></div>
-                        </div>
-                        {/* Radar Scan */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-500/10 to-transparent w-full h-full animate-[spin_3s_linear_infinite] rounded-full origin-center mask-image-radar"></div>
-                     </div>
+                    // Map / Location Visual
+                    <div className="relative w-48 h-48">
+                      <div className="absolute inset-0 border-2 border-emerald-500/30 rounded-full animate-[spin-slow_10s_linear_infinite]"></div>
+                      <div className="absolute inset-4 border border-emerald-500/20 rounded-full"></div>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-4 h-4 bg-emerald-500 rounded-full shadow-[0_0_20px_rgba(16,185,129,0.5)] animate-pulse"></div>
+                      </div>
+                      {/* Radar Scan */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-500/10 to-transparent w-full h-full animate-[spin_3s_linear_infinite] rounded-full origin-center mask-image-radar"></div>
+                    </div>
                   )}
                   {index === 1 && (
                     // Code / Speed Visual
@@ -129,8 +129,8 @@ export default function ImpactStack() {
                     // Growth / Chart Visual
                     <div className="flex items-end gap-3 h-48 w-64 px-4 pb-4 border-b border-l border-sky-500/20">
                       {[30, 45, 35, 60, 50, 80, 100].map((h, i) => (
-                        <div 
-                          key={i} 
+                        <div
+                          key={i}
                           className="flex-1 bg-gradient-to-t from-sky-900/50 to-sky-500 rounded-t-sm transition-all duration-700 hover:opacity-100 opacity-70"
                           style={{ height: `${h}%` }}
                         ></div>

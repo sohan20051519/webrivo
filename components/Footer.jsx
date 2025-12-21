@@ -14,22 +14,16 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           <div className="md:col-span-2">
             <div className="flex items-center gap-3 mb-6">
-              <img 
-                src="https://xnlmfbnwyqxownvhsqoz.supabase.co/storage/v1/object/public/files/ChatGPT_Image_Dec_21__2025__02_21_07_PM-removebg-preview.png" 
-                alt="Webrivo Logo" 
+              <img
+                src="https://xnlmfbnwyqxownvhsqoz.supabase.co/storage/v1/object/public/files/ChatGPT_Image_Dec_21__2025__02_21_07_PM-removebg-preview.png"
+                alt="Webrivo Logo"
                 className="h-24 w-auto object-contain"
               />
             </div>
             <p className="text-neutral-400 max-w-sm mb-6">
               Connecting local vendors to the digital future. We scout, we call, we build.
             </p>
-            <div className="flex gap-4">
-              {['Twitter', 'LinkedIn', 'Instagram'].map((social) => (
-                <a key={social} href="#" className="text-neutral-500 hover:text-white transition-colors text-sm uppercase tracking-wide">
-                  {social}
-                </a>
-              ))}
-            </div>
+
           </div>
 
           <div>
@@ -52,9 +46,9 @@ export default function Footer() {
               <li className="flex items-start gap-2 pt-2">
                 <svg className="w-4 h-4 text-emerald-500 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
                 <div className="flex flex-col gap-1">
-                  <a href="tel:+918050130969" className="hover:text-white transition-colors">+91 8050130969</a>
-                  <a href="tel:+919113253754" className="hover:text-white transition-colors">+91 9113253754</a>
-                  <a href="tel:+916366610809" className="hover:text-white transition-colors">+91 6366610809</a>
+                  <a href="tel:+918050130969" className="hover:text-white transition-colors">+91 80501 30969</a>
+                  <a href="tel:+919113253754" className="hover:text-white transition-colors">+91 91132 53754</a>
+                  <a href="tel:+916366610809" className="hover:text-white transition-colors">+91 63666 10809</a>
                 </div>
               </li>
             </ul>

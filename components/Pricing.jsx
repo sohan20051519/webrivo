@@ -72,7 +72,7 @@ export default function Pricing() {
       <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none"></div>
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
-        
+
         {/* Section Header */}
         <div className="text-center mb-20 reveal-on-scroll">
           <h2 className="text-3xl md:text-5xl font-display font-bold text-white mb-6">
@@ -86,7 +86,7 @@ export default function Pricing() {
         {/* Pricing Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
           {plans.map((plan, index) => (
-            <div 
+            <div
               key={plan.id}
               className={`
                 relative flex flex-col p-8 rounded-3xl glass-panel border border-white/5 transition-all duration-500 group hover:-translate-y-2
@@ -126,15 +126,15 @@ export default function Pricing() {
               </ul>
 
               {/* CTA */}
-              <button className={`
-                w-full py-4 rounded-xl font-bold text-sm transition-all duration-300
-                ${index === 1 
-                  ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20' 
+              <a href="#contact" className={`
+                block text-center w-full py-4 rounded-xl font-bold text-sm transition-all duration-300
+                ${index === 1
+                  ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20'
                   : 'bg-white/5 hover:bg-white/10 text-white border border-white/10'
                 }
               `}>
                 Choose {plan.name.split(' ')[0]}
-              </button>
+              </a>
             </div>
           ))}
         </div>
@@ -145,7 +145,7 @@ export default function Pricing() {
             <h3 className="text-2xl font-bold text-white">🔥 Add-ons</h3>
             <div className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent"></div>
           </div>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             {addons.map((addon, idx) => (
               <div key={idx} className="group p-6 rounded-2xl bg-neutral-900/50 border border-white/5 hover:border-white/10 hover:bg-white/5 transition-all duration-300">

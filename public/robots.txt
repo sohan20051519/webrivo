@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://webrivo.vercel.app/sitemap.xml

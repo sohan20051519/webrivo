@@ -37,9 +37,9 @@ export default function Hero() {
 
       {/* 3D Floating Elements (Desktop Only) - Z-Index 10 (Background Layer) */}
       <div className="hidden md:block absolute inset-0 pointer-events-none z-10">
-        
+
         {/* Left Card: Vendor Scouted - Pushed further left */}
-        <div 
+        <div
           ref={cardLeftRef}
           className="absolute top-1/4 left-[5%] w-64 p-4 rounded-2xl glass-panel border-l-4 border-l-emerald-500 shadow-2xl animate-float-3d transition-transform duration-100 ease-out"
           style={{ transform: 'rotateY(12deg) rotateX(5deg)' }}
@@ -60,7 +60,7 @@ export default function Hero() {
         </div>
 
         {/* Right Card: Success/Launch - Pushed further right */}
-        <div 
+        <div
           ref={cardRightRef}
           className="absolute bottom-1/4 right-[5%] w-72 p-5 rounded-2xl glass-panel border-r-4 border-r-teal-500 shadow-2xl animate-float-3d-delayed transition-transform duration-100 ease-out"
           style={{ transform: 'rotateY(-12deg) rotateX(5deg)' }}
@@ -74,7 +74,7 @@ export default function Hero() {
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
             </div>
           </div>
-          
+
           {/* Mock Chart */}
           <div className="flex items-end gap-1 h-12 mb-2">
             {[40, 65, 45, 80, 60, 90, 100].map((h, i) => (
@@ -88,7 +88,7 @@ export default function Hero() {
 
       {/* Content Container - Z-Index 30 (Foreground Layer) */}
       <div className="relative z-30 max-w-7xl mx-auto px-6 text-center">
-        
+
         {/* Badge */}
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-8 animate-float">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -102,21 +102,21 @@ export default function Hero() {
         </h1>
 
         <p className="max-w-2xl mx-auto text-lg md:text-xl text-neutral-400 mb-10 leading-relaxed">
-          We bridge the gap between local businesses and the digital world. 
-          Our team scouts the best local vendors and transforms them into 
+          As a premier <strong>Digital Transformation Agency</strong>, we bridge the gap between local businesses and the global market.
+          Our <strong>Web Design</strong> & SEO experts scout the best local vendors and transform them into
           powerful online brands.
         </p>
 
         {/* CTA Buttons */}
         <div className="flex flex-col md:flex-row items-center justify-center gap-4">
-          <button className="group relative px-8 py-4 rounded-full bg-white text-neutral-950 font-bold text-lg overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-[0_0_40px_-10px_rgba(16,185,129,0.3)]">
+          <a href="#contact" className="group relative px-8 py-4 rounded-full bg-white text-neutral-950 font-bold text-lg overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-[0_0_40px_-10px_rgba(16,185,129,0.3)]">
             <span className="relative z-10 group-hover:text-emerald-600 transition-colors">Start Transformation</span>
             <div className="absolute inset-0 bg-emerald-50 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
-          </button>
-          
-          <button className="px-8 py-4 rounded-full border border-white/10 text-white font-medium hover:bg-white/5 transition-all hover:border-white/30">
+          </a>
+
+          <a href="#process" className="px-8 py-4 rounded-full border border-white/10 text-white font-medium hover:bg-white/5 transition-all hover:border-white/30">
             How We Work
-          </button>
+          </a>
         </div>
       </div>
 
