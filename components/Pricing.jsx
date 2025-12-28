@@ -59,10 +59,10 @@ export default function Pricing() {
   ];
 
   const addons = [
-    { name: "Website Maintenance", price: "₹999/mo", icon: "🛠️" },
-    { name: "Google Ranking Setup", price: "₹1,999", icon: "📈" },
-    { name: "WhatsApp Automation", price: "₹999", icon: "💬" },
-    { name: "Extra Language", price: "₹2,999", icon: "🌐" }
+    { name: "Website Maintenance", price: "₹499/mo", icon: "🛠️" },
+    { name: "Google Ranking Setup", price: "₹999", icon: "📈" },
+    { name: "WhatsApp Automation", price: "₹499", icon: "💬" },
+    { name: "Extra Language", price: "₹1,499", icon: "🌐" }
   ];
 
   return (
@@ -89,8 +89,8 @@ export default function Pricing() {
             <div
               key={plan.id}
               className={`
-                relative flex flex-col p-8 rounded-3xl glass-panel border border-white/5 transition-all duration-500 group hover:-translate-y-2
-                ${index === 1 ? 'bg-white/[0.03] border-blue-500/30 shadow-[0_0_50px_-10px_rgba(59,130,246,0.15)]' : 'hover:border-white/20'}
+                relative flex flex-col p-8 rounded-3xl bg-neutral-900/40 border border-white/5 transition-all duration-500 group hover:-translate-y-2
+                ${index === 1 ? 'bg-neutral-900/60 border-blue-500/30 shadow-[0_0_50px_-10px_rgba(59,130,246,0.1)]' : 'hover:border-white/20 hover:bg-neutral-900/60'}
                 reveal-on-scroll reveal-delay-${(index + 1) * 100}
               `}
             >
@@ -125,16 +125,33 @@ export default function Pricing() {
                 ))}
               </ul>
 
-              {/* CTA */}
-              <a href="#contact" className={`
-                block text-center w-full py-4 rounded-xl font-bold text-sm transition-all duration-300
-                ${index === 1
-                  ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20'
-                  : 'bg-white/5 hover:bg-white/10 text-white border border-white/10'
-                }
-              `}>
-                Choose {plan.name.split(' ')[0]}
-              </a>
+              {/* CTA Buttons - UPDATED: Added Customize Button with Event Dispatch */}
+              <div className="flex flex-col sm:flex-row gap-3">
+                <a href="#contact" className={`
+                  flex-1 block text-center py-4 rounded-xl font-bold text-sm transition-all duration-300
+                  ${index === 1
+                    ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20'
+                    : 'bg-white/5 hover:bg-white/10 text-white border border-white/10'
+                  }
+                `}>
+                  Choose {plan.name.split(' ')[0]}
+                </a>
+
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    // Map index to plan IDs: 0->basic, 1->business, 2->premium
+                    const targetId = ['basic', 'business', 'premium'][index];
+                    const section = document.getElementById('calculator');
+                    if (section) section.scrollIntoView({ behavior: 'smooth' });
+                    // Dispatch custom event for Calculator to pick up
+                    window.dispatchEvent(new CustomEvent('switchPlan', { detail: targetId }));
+                  }}
+                  className="flex-1 block text-center py-4 rounded-xl font-bold text-sm transition-all duration-300 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 hover:border-emerald-500/40"
+                >
+                  Customize
+                </button>
+              </div>
             </div>
           ))}
         </div>

@@ -5,6 +5,7 @@ import Process from './components/Process';
 import Services from './components/Services';
 import ImpactStack from './components/ImpactStack';
 import Pricing from './components/Pricing';
+import Calculator from './components/Calculator';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 
@@ -23,6 +24,7 @@ export default function App() {
         <ImpactStack />
         <Services />
         <Pricing />
+        <Calculator />
         <Contact />
 
 
