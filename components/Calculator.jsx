@@ -17,7 +17,7 @@ const PLANS = [
         name: 'Business',
         basePrice: 7999,
         description: 'Growth & SEO',
-        included: ['site_5_page', 'seo_core', 'mobile_design', 'whatsapp_link'],
+        included: ['site_5_page', 'seo_core', 'mobile_design', 'whatsapp_link', 'domain_in'],
         accent: 'blue',
         gradient: 'from-blue-400 to-indigo-500'
     },
@@ -27,7 +27,7 @@ const PLANS = [
         basePrice: 19999,
         popular: true,
         description: 'Full Suite',
-        included: ['site_5_page', 'booking_system', 'payment_gateway', 'admin_dashboard', 'seo_core', 'mobile_design', 'whatsapp_link', 'google_maps'],
+        included: ['site_5_page', 'booking_system', 'payment_gateway', 'admin_dashboard', 'seo_core', 'mobile_design', 'whatsapp_link', 'google_maps', 'free_domain'],
         accent: 'purple',
         gradient: 'from-purple-400 to-pink-500'
     },
@@ -59,6 +59,8 @@ const ALL_FEATURES = [
     { id: 'payment_gateway', label: 'Payment Gateway', price: 2999, icon: <Shield size={16} /> },
     { id: 'admin_dashboard', label: 'Admin Dashboard', price: 1999, icon: <BarChart size={16} /> },
     { id: 'priority_support', label: 'Priority Support', price: 999, icon: <Zap size={16} /> },
+    { id: 'domain_in', label: 'Free .in Domain', price: 0, icon: <Globe size={16} /> },
+    { id: 'free_domain', label: 'Free Domain', price: 0, icon: <Globe size={16} /> },
 ];
 
 const ADDONS = [
@@ -91,6 +93,15 @@ export default function Calculator() {
     // Reset upgrades when plan changes
     useEffect(() => {
         setSelectedUpgrades(new Set());
+
+        // Auto-select domain based on plan
+        if (selectedPlanId === 'business') {
+            setSelectedDomain('in');
+        } else if (selectedPlanId === 'premium') {
+            setSelectedDomain('com');
+        } else {
+            setSelectedDomain('none');
+        }
     }, [selectedPlanId]);
 
     // Listen for plan switch events from Pricing component
@@ -137,7 +148,16 @@ export default function Calculator() {
         if (a) addonsCost += a.price;
     });
 
-    const domainCost = DOMAINS.find(d => d.id === selectedDomain)?.price || 0;
+    let domainPrice = DOMAINS.find(d => d.id === selectedDomain)?.price || 0;
+
+    // Check for free domain logic
+    if (selectedPlanId === 'business' && selectedDomain === 'in') {
+        domainPrice = 0;
+    } else if (selectedPlanId === 'premium' && ['com', 'in', 'org', 'xyz'].includes(selectedDomain)) {
+        domainPrice = 0;
+    }
+
+    const domainCost = domainPrice;
     const totalCost = selectedPlan.basePrice + upgradesCost + addonsCost + domainCost;
 
     // Derive lists for display
@@ -366,6 +386,17 @@ export default function Calculator() {
                                 <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-3 gap-2">
                                     {DOMAINS.map((domain) => {
                                         const isSelected = selectedDomain === domain.id;
+
+                                        // Calculate effective price for display
+                                        let priceDisplay = domain.price === 0 ? '--' : `₹${domain.price}`;
+                                        let isFree = false;
+
+                                        if (selectedPlanId === 'business' && domain.id === 'in') {
+                                            isFree = true;
+                                        } else if (selectedPlanId === 'premium' && ['com', 'in', 'org', 'xyz'].includes(domain.id)) {
+                                            isFree = true;
+                                        }
+
                                         return (
                                             <button
                                                 key={domain.id}
@@ -382,7 +413,7 @@ export default function Calculator() {
                                                     {domain.label}
                                                 </span>
                                                 <span className="text-[10px] mt-1 font-bold text-emerald-400">
-                                                    {domain.price === 0 ? '--' : `₹${domain.price}`}
+                                                    {isFree ? 'FREE' : priceDisplay}
                                                 </span>
                                             </button>
                                         )

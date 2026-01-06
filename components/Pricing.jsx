@@ -36,7 +36,8 @@ export default function Pricing() {
         "Services & About pages",
         "Contact form integration",
         "SEO basics setup",
-        "Google Business Profile optimization"
+        "Google Business Profile optimization",
+        "Free .in Domain"
       ]
     },
     {
@@ -53,7 +54,8 @@ export default function Pricing() {
         "Payment gateway integration",
         "Custom Admin panel",
         "Priority 24/7 support",
-        "Advanced Analytics"
+        "Advanced Analytics",
+        "Free .com, .in, .org, or .xyz Domain"
       ]
     }
   ];
