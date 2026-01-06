@@ -93,6 +93,15 @@ export default function Calculator() {
     // Reset upgrades when plan changes
     useEffect(() => {
         setSelectedUpgrades(new Set());
+
+        // Auto-select domain based on plan
+        if (selectedPlanId === 'business') {
+            setSelectedDomain('in');
+        } else if (selectedPlanId === 'premium') {
+            setSelectedDomain('com');
+        } else {
+            setSelectedDomain('none');
+        }
     }, [selectedPlanId]);
 
     // Listen for plan switch events from Pricing component
