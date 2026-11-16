@@ -705,7 +705,7 @@ const CSS = `
 .ht-nav--mobile-open .ht-nav-burger span:nth-child(1){transform:translateY(7.5px) rotate(45deg)}
 .ht-nav--mobile-open .ht-nav-burger span:nth-child(2){opacity:0}
 .ht-nav--mobile-open .ht-nav-burger span:nth-child(3){transform:translateY(-7.5px) rotate(-45deg)}
-.ht-root{overflow-x:hidden}
+.ht-root{overflow-x:clip}
 
 .ht-run{position:relative}
 .ht-hero{position:relative;height:var(--h);min-height:600px;overflow:hidden;user-select:none;-webkit-user-select:none;background:radial-gradient(120% 90% at 50% 34%,var(--wb-white),var(--wb-off) 58%,var(--wb-off))}
