@@ -1,0 +1,88 @@
+1
+00:00:00,000 --> 00:00:01,390
+Your shop is hidden online.
+
+2
+00:00:01,766 --> 00:00:04,616
+A customer searches near you,
+and finds someone else.
+
+3
+00:00:05,504 --> 00:00:08,334
+WebRivo fixes the map,
+the page, and the forms.
+
+4
+00:00:08,700 --> 00:00:09,950
+Your site goes live.
+
+5
+00:00:10,904 --> 00:00:11,714
+Three plans.
+
+6
+00:00:12,015 --> 00:00:15,025
+Basic is 599 a month, one page.
+
+7
+00:00:15,311 --> 00:00:17,201
+Business is 1,199,
+
+8
+00:00:17,691 --> 00:00:19,381
+5 pages with SEO.
+
+9
+00:00:19,832 --> 00:00:23,942
+Premium is 2,199,
+with bookings and dashboards.
+
+10
+00:00:24,871 --> 00:00:26,501
+The estimator builds your mix.
+
+11
+00:00:26,797 --> 00:00:29,207
+It adds local SEO, maps, payments.
+
+12
+00:00:29,548 --> 00:00:30,898
+The total updates live.
+
+13
+00:00:31,904 --> 00:00:33,034
+Pick your domain too.
+
+14
+00:00:33,305 --> 00:00:35,295
+Business and Premium include one.
+
+15
+00:00:35,471 --> 00:00:37,261
+Basic gets a free subdomain.
+
+16
+00:00:38,138 --> 00:00:39,898
+Choose the Send request button.
+
+17
+00:00:40,074 --> 00:00:42,624
+The form lists your plan,
+extras, and the total.
+
+18
+00:00:42,895 --> 00:00:45,065
+Submit it, and WebRivo follows up.
+
+19
+00:00:45,904 --> 00:00:46,614
+Get found.
+
+20
+00:00:46,910 --> 00:00:47,720
+Get chosen.
+
+21
+00:00:47,976 --> 00:00:49,946
+No setup fee, and live in days.
+

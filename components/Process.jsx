@@ -1,82 +1,174 @@
-import React from 'react';
-import useScrollReveal from '../hooks/useScrollReveal';
+import React, { useEffect, useRef, useState } from 'react';
+
+const STEPS = [
+  {
+    id: '01',
+    title: 'Scout',
+    desc: 'We find the gap in your market.',
+  },
+  {
+    id: '02',
+    title: 'Shape',
+    desc: 'We design the brand around it.',
+  },
+  {
+    id: '03',
+    title: 'Ship',
+    desc: 'We launch it. Then we watch it work.',
+  },
+];
+
+function VisualScout() {
+  return (
+    <div className="pv-frame">
+      <div className="pv-frame__bar" aria-hidden="true">
+        <i />
+        <i />
+        <i />
+      </div>
+      <div className="pv-frame__body">
+        <span className="pv-tag">Mapped</span>
+        <div className="pv-line pv-line--accent" />
+        <div className="pv-line pv-line--short" />
+        <div className="pv-grid">
+          <span className="pv-block" />
+          <span className="pv-block" />
+        </div>
+        <div className="pv-line" />
+      </div>
+    </div>
+  );
+}
+
+function VisualShape() {
+  return (
+    <div className="pv-frame">
+      <div className="pv-frame__bar" aria-hidden="true">
+        <i />
+        <i />
+        <i />
+      </div>
+      <div className="pv-frame__body">
+        <span className="pv-tag pv-tag--coral">In design</span>
+        <span className="pv-block" />
+        <div className="pv-grid">
+          <div>
+            <div className="pv-line" />
+            <div className="pv-line pv-line--short" />
+          </div>
+          <div>
+            <div className="pv-line" />
+            <div className="pv-line pv-line--short" />
+          </div>
+        </div>
+        <div className="pv-line pv-line--accent" />
+      </div>
+    </div>
+  );
+}
+
+function VisualShip() {
+  return (
+    <div className="pv-frame">
+      <div className="pv-frame__bar" aria-hidden="true">
+        <i />
+        <i />
+        <i />
+      </div>
+      <div className="pv-frame__body">
+        <span className="pv-tag">Live</span>
+        <div className="pv-line pv-line--accent" />
+        <div className="pv-grid">
+          <span className="pv-block" />
+          <span className="pv-block" />
+        </div>
+        <div className="pv-line pv-line--short" />
+        <div className="pv-line" />
+      </div>
+    </div>
+  );
+}
+
+const VISUALS = [VisualScout, VisualShape, VisualShip];
 
 export default function Process() {
-  useScrollReveal();
+  const [active, setActive] = useState(0);
+  const stepRefs = useRef([]);
 
-  const steps = [
-    {
-      id: '01',
-      title: 'Scout & Identify',
-      description: 'Our data team uses advanced mapping to locate high-potential local vendors, hospitals, and shops near you.',
-      icon: (
-        <svg className="w-8 h-8 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-      )
-    },
-    {
-      id: '02',
-      title: 'Connect & Consult',
-      description: 'Our professional tele-callers reach out to understand your business needs and propose a digital strategy.',
-      icon: (
-        <svg className="w-8 h-8 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-        </svg>
-      )
-    },
-    {
-      id: '03',
-      title: 'Build & Launch',
-      description: 'Our dev team crafts a stunning, high-performance website tailored to your brand, launching you to the world.',
-      icon: (
-        <svg className="w-8 h-8 text-sky-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-        </svg>
-      )
-    }
-  ];
+  useEffect(() => {
+    const onScroll = () => {
+      const marker = window.innerHeight * 0.46;
+      let next = 0;
+      stepRefs.current.forEach((el, index) => {
+        if (!el) return;
+        if (el.getBoundingClientRect().top < marker) next = index;
+      });
+      setActive(next);
+    };
+
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
+  }, []);
 
   return (
-    <section id="process" className="py-24 relative bg-neutral-950">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="mb-16 reveal-on-scroll">
-          <h2 className="text-3xl md:text-5xl font-display font-bold text-white mb-4">
-            From Local Map to <span className="text-gradient-accent">Global App</span>.
-          </h2>
-          <p className="text-neutral-400 max-w-xl">
-            Our streamlined process ensures that no business is left behind in the digital age.
-          </p>
+    <section id="process" className="section section--line">
+      <div className="container">
+        <div className="section-head reveal">
+          <div>
+            <span className="eyebrow">Process</span>
+            <h2 className="display">Three moves. Live.</h2>
+          </div>
+          <p className="lead">Simple by design. Fast by default.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {steps.map((step, index) => (
-            <div 
-              key={step.id} 
-              className={`group relative p-8 rounded-3xl glass-panel hover:bg-white/5 transition-all duration-500 reveal-on-scroll reveal-delay-${(index + 1) * 100}`}
-            >
-              {/* Connector Line (Desktop) */}
-              {index !== steps.length - 1 && (
-                <div className="hidden md:block absolute top-1/2 -right-4 w-8 h-[1px] bg-white/10 z-0"></div>
-              )}
-              
-              <div className="relative z-10">
-                <div className="mb-6 inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-neutral-900 border border-white/10 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  {step.icon}
-                </div>
-                <div className="text-5xl font-display font-bold text-white/5 absolute top-4 right-4 group-hover:text-white/10 transition-colors">
-                  {step.id}
-                </div>
-                <h3 className="text-xl font-bold text-white mb-3 group-hover:text-emerald-300 transition-colors">
-                  {step.title}
-                </h3>
-                <p className="text-sm text-neutral-400 leading-relaxed">
-                  {step.description}
-                </p>
+        <div className="process">
+          <div className="process__sticky reveal reveal--left">
+            <div className="process__visual">
+              <div className="process__visual-inner" aria-hidden="true">
+                {VISUALS.map((Visual, index) => (
+                  <div
+                    className={`process__step-visual${active === index ? ' is-active' : ''}`}
+                    key={STEPS[index].id}
+                  >
+                    <Visual />
+                  </div>
+                ))}
               </div>
             </div>
-          ))}
+          </div>
+
+          <div className="process__list">
+            {STEPS.map((step, index) => (
+              <div
+                key={step.id}
+                ref={(el) => {
+                  stepRefs.current[index] = el;
+                }}
+                className={`process__step${active === index ? ' is-active' : ''}`}
+                onMouseEnter={() => setActive(index)}
+              >
+                <span className="process__step-num">{step.id}</span>
+                <div>
+                  <h3>{step.title}</h3>
+                  <p>{step.desc}</p>
+                  <svg
+                    className="progress-line"
+                    viewBox="0 0 100 2"
+                    preserveAspectRatio="none"
+                    aria-hidden="true"
+                  >
+                    <line className="progress-line__track" x1="0" y1="1" x2="100" y2="1" />
+                    <line className="progress-line__fill" x1="0" y1="1" x2="100" y2="1" />
+                  </svg>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
