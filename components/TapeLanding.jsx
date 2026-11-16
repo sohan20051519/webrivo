@@ -547,6 +547,7 @@ function TapeLanding({
           duration: 0.9,
           ease: "back.out(2.4)",
           stagger: 0.08,
+          immediateRender: false,
           scrollTrigger: { trigger: mask, start: "top 55%", toggleActions: "play none none reverse" }
         });
         gsap.from(qa(".ht-mask-h .ht-ml"), {
@@ -555,6 +556,7 @@ function TapeLanding({
           duration: 0.9,
           ease: "back.out(1.6)",
           stagger: 0.1,
+          immediateRender: false,
           scrollTrigger: { trigger: mask, start: "top 55%", toggleActions: "play none none reverse" }
         });
         for (const el of qa(".ht-daisy")) {
