@@ -550,15 +550,7 @@ function TapeLanding({
           immediateRender: false,
           scrollTrigger: { trigger: mask, start: "top 55%", toggleActions: "play none none reverse" }
         });
-        gsap.from(qa(".ht-mask-h .ht-ml"), {
-          yPercent: 110,
-          rotation: 6,
-          duration: 0.9,
-          ease: "back.out(1.6)",
-          stagger: 0.1,
-          immediateRender: false,
-          scrollTrigger: { trigger: mask, start: "top 55%", toggleActions: "play none none reverse" }
-        });
+        // Heading stays pinned; only tape/stamp/daisies animate
         for (const el of qa(".ht-daisy")) {
           gsap.to(el, { yPercent: -60 * Number(el.getAttribute("data-depth") || 1), ease: "none", scrollTrigger: { trigger: mask, start: "top bottom", end: "bottom top", scrub: true } });
         }
