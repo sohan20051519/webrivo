@@ -83,6 +83,11 @@ function TapeLanding({
   const uid = React.useId().replace(/[^a-zA-Z0-9]/g, "");
   const [added, setAdded] = React.useState(-1);
   const [joined, setJoined] = React.useState(false);
+  const [menuOpen, setMenuOpen] = React.useState(false);
+  React.useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [menuOpen]);
   const cycle = React.useMemo(() => {
     const out = [];
     for (const p of marquee) {
@@ -108,6 +113,31 @@ function TapeLanding({
     window.dispatchEvent(new CustomEvent("switchPlan", { detail: planName.toLowerCase() }));
     go("estimate")();
   };
+  React.useEffect(() => {
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const nav = rootRef.current?.querySelector(".ht-nav");
+      if (!nav) return;
+      const darks = rootRef.current.querySelectorAll(".ht-mask, .ht-banner");
+      const navH = nav.offsetHeight;
+      let isDark = false;
+      for (const el of darks) {
+        const r = el.getBoundingClientRect();
+        if (r.top <= navH && r.bottom > 0) { isDark = true; break; }
+      }
+      nav.classList.toggle("ht-nav--dark", isDark);
+    };
+    const onScroll = () => {
+      if (!ticking) { ticking = true; requestAnimationFrame(update); }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    update();
+    return () => {
+      cancelAnimationFrame(0);
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, []);
   useIso(() => {
     const root = rootRef.current;
     if (!root) return;
@@ -561,13 +591,13 @@ function TapeLanding({
       for (const fn of cleanups) fn();
     };
   }, [preloader, items.length, brand]);
-  return <div ref={rootRef} className={"ht-root" + (className ? " " + className : "")} style={v({ "--h": height })}>{fontHref && <link rel="stylesheet" href={fontHref} />}<style>{CSS}</style>{preloader && <div className="ht-pre" aria-hidden="true"><div className="ht-pre-label"><span className="ht-pre-word">Building</span><span className="ht-pre-num">0%</span></div>{[C.off, C.sage, C.muted, C.forest, C.ink].map((c) => <i key={c} className="ht-pre-band" style={{ background: c }} />)}</div>}<header className="ht-nav"><div className="ht-nav-in"><button type="button" className="ht-nav-brand" onClick={go("top")} aria-label={brand + ", back to top"}><BrandBadge brand={brand} /></button><nav className="ht-nav-links" aria-label="Sections"><button type="button" onClick={go("stories")}>
+  return <div ref={rootRef} className={"ht-root" + (className ? " " + className : "")} style={v({ "--h": height })}>{fontHref && <link rel="stylesheet" href={fontHref} />}<style>{CSS}</style>{preloader && <div className="ht-pre" aria-hidden="true"><div className="ht-pre-label"><span className="ht-pre-word">Building</span><span className="ht-pre-num">0%</span></div>{[C.off, C.sage, C.muted, C.forest, C.ink].map((c) => <i key={c} className="ht-pre-band" style={{ background: c }} />)}</div>}<header className={"ht-nav" + (menuOpen ? " ht-nav--mobile-open" : "")}><div className="ht-nav-in"><button type="button" className="ht-nav-brand" onClick={() => { setMenuOpen(false); go("top")(); }} aria-label={brand + ", back to top"}><BrandBadge brand={brand} /><span className="ht-brand-text">WebRivo</span></button><button type="button" className="ht-nav-burger" onClick={() => setMenuOpen(!menuOpen)} aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen}><span></span><span></span><span></span></button><nav className="ht-nav-links" aria-label="Sections"><button type="button" onClick={() => { setMenuOpen(false); go("stories")(); }} data-num="01" >
               Work
-            </button><button type="button" onClick={go("tricks")}>
+            </button><button type="button" onClick={() => { setMenuOpen(false); go("tricks")(); }} data-num="02" >
               Process
-            </button><button type="button" onClick={go("shop")}>
+            </button><button type="button" onClick={() => { setMenuOpen(false); go("shop")(); }} data-num="03" >
               Pricing
-            </button><button type="button" onClick={go("estimate")}>
+            </button><button type="button" onClick={() => { setMenuOpen(false); go("estimate")(); }} data-num="04" >
               Estimate
             </button></nav></div></header><div className="ht-run"><section className="ht-hero" data-sec="top"><svg className="ht-hill" viewBox="0 0 1600 300" preserveAspectRatio="none" aria-hidden="true"><path d="M0 150 Q800 -10 1600 150 L1600 300 L0 300Z" fill="rgba(221,227,213,.55)" /><path d="M0 176 Q800 16 1600 176 L1600 300 L0 300Z" fill={C.muted} /></svg><div className="ht-doodles" aria-hidden="true" /><div className="ht-hero-copy"><span className="ht-hero-mark" aria-hidden="true" /><h1 className="ht-h1" aria-label={headline.join(" ")}>{headline.map((line, li) => <span key={li} className="ht-h1-line" aria-hidden="true">{Array.from(line).map(
     (ch, i) => ch === " " ? <span key={i} className="ht-sp" /> : <span key={i} className="ht-l">{ch}</span>
@@ -619,7 +649,7 @@ function TapeLanding({
               Email address
             </label><input id={uid + "em"} type="email" required placeholder="you@example.com" className="ht-input" /><button type="submit" className="ht-btn">
               Send it over
-            </button><p className="ht-form-msg" aria-live="polite">{joined ? "You're on the list." : ""}</p></form></div><div className="ht-word" aria-label={brand}>{Array.from(brand).map((ch, i) => <span key={i} className="ht-word-l" aria-hidden="true">{ch}<Tape kind="duct" x="50%" y="46%" w="72%" r={i % 2 ? 34 : -36} /></span>)}</div><div className="ht-foot-bar"><span>&copy; 2026 WebRivo &middot; <a href="mailto:webrivo.official@gmail.com">webrivo.official@gmail.com</a> &middot; <a href="tel:+918050130969">+91 80501 30969</a></span><span>Websites for local businesses.</span></div></footer></div>;
+            </button><p className="ht-form-msg" aria-live="polite">{joined ? "You're on the list." : ""}</p></form></div><div className="ht-word" aria-label={brand}>{Array.from(brand).map((ch, i) => <span key={i} className="ht-word-l" aria-hidden="true">{ch}<Tape kind="duct" x="50%" y="46%" w="72%" r={i % 2 ? 34 : -36} /></span>)}</div><div className="ht-foot-bar"><div className="ht-foot-addr"><div><p className="ht-label">Slv complex</p><p>Muddinapalya, Bangalore</p></div><a href="tel:+919113253753">📞 +91 9113253753</a></div><div className="ht-foot-meta"><p>&copy; 2026 WebRivo &mdash; Websites for local businesses.</p><a href="mailto:webrivo.official@gmail.com">webrivo.official@gmail.com</a></div></div></footer></div>
 }
 const CSS = `
 .ht-root{
@@ -660,13 +690,28 @@ const CSS = `
 .ht-pre-word{font-weight:800;font-stretch:75%;text-transform:uppercase;font-size:clamp(28px,4cqw,56px);line-height:1}
 .ht-pre-num{font-weight:700;font-size:14px;letter-spacing:.2em;margin-top:8px}
 
-.ht-nav{position:sticky;top:0;z-index:30;height:0}
+.ht-nav{position:fixed;inset:0 0 auto 0;z-index:30;height:0}
 .ht-nav-in{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px clamp(14px,3cqw,40px)}
-.ht-nav-brand{display:block;width:clamp(48px,4.6cqw,66px);padding:0;border:0;background:none;filter:drop-shadow(0 2px 2px rgba(24,53,43,.14));transition:transform .3s var(--wb-ease)}
+.ht-nav-brand{display:inline-flex;align-items:center;gap:.6em;padding:0;border:0;background:none;filter:drop-shadow(0 2px 2px rgba(24,53,43,.14));transition:transform .3s var(--wb-ease)}
+.ht-nav-brand .ht-badge{width:clamp(48px,4.6cqw,66px);flex:none}
 .ht-nav-brand:hover{transform:rotate(-8deg) scale(1.04)}
-.ht-nav-links{display:flex;gap:2px;background:rgba(255,255,255,.9);border:1px solid var(--wb-line);border-radius:var(--wb-pill);padding:4px;box-shadow:var(--wb-shadow-sm);transition:background .25s var(--wb-ease)}
-.ht-nav-links button{border:0;background:transparent;color:var(--wb-forest);padding:9px 15px;border-radius:var(--wb-pill);font-weight:600;font-stretch:92%;text-transform:uppercase;letter-spacing:.09em;font-size:11px;transition:background .2s var(--wb-ease),color .2s var(--wb-ease)}
+.ht-brand-text{font-family:var(--ht-cond);font-weight:400;font-size:clamp(1.1rem,2cqw,1.8rem);letter-spacing:-.02em;color:var(--wb-forest);display:inline-block;transition:color .8s cubic-bezier(.4,0,.2,1)}
+.ht-nav--dark .ht-brand-text{color:var(--wb-off)}
+.ht-nav-links{display:flex;gap:2px;background:rgba(255,255,255,.9);border:1px solid var(--wb-line);border-radius:var(--wb-pill);padding:4px;box-shadow:var(--wb-shadow-sm);transition:background .8s cubic-bezier(.4,0,.2,1),border-color .8s cubic-bezier(.4,0,.2,1)}
+.ht-nav-links button{border:0;background:transparent;color:var(--wb-forest);padding:9px 15px;border-radius:var(--wb-pill);font-weight:600;font-stretch:92%;text-transform:uppercase;letter-spacing:.09em;font-size:11px;transition:background .2s var(--wb-ease),color .8s cubic-bezier(.4,0,.2,1)}
 .ht-nav-links button:hover{background:var(--wb-sage)}
+.ht-nav--dark .ht-nav-links{background:rgba(24,53,43,.88);border-color:rgba(244,245,239,.18)}
+.ht-nav--dark .ht-nav-links button{color:var(--wb-off)}
+.ht-nav--dark .ht-nav-links button:hover{background:rgba(221,227,213,.22)}
+.ht-nav-burger{display:none;flex-direction:column;gap:5px;padding:8px 6px;border:0;background:none;cursor:pointer;align-items:center;touch-action:manipulation;position:relative;z-index:101}
+.ht-nav-burger span{display:block;width:20px;height:2.5px;background:var(--wb-forest);border-radius:2px;transition:transform .35s var(--wb-ease),opacity .2s}
+.ht-nav--dark .ht-nav-burger span{background:var(--wb-off)}
+.ht-nav--mobile-open .ht-nav-burger{z-index:102}
+.ht-nav--mobile-open .ht-nav-burger span{background:var(--wb-off)}
+.ht-nav--mobile-open .ht-nav-burger span:nth-child(1){transform:translateY(7.5px) rotate(45deg)}
+.ht-nav--mobile-open .ht-nav-burger span:nth-child(2){opacity:0}
+.ht-nav--mobile-open .ht-nav-burger span:nth-child(3){transform:translateY(-7.5px) rotate(-45deg)}
+.ht-root{overflow-x:hidden}
 
 .ht-run{position:relative}
 .ht-hero{position:relative;height:var(--h);min-height:600px;overflow:hidden;user-select:none;-webkit-user-select:none;background:radial-gradient(120% 90% at 50% 34%,var(--wb-white),var(--wb-off) 58%,var(--wb-off))}
@@ -862,9 +907,16 @@ const CSS = `
 .ht-word{position:relative;display:flex;justify-content:center;margin:clamp(30px,4cqw,60px) auto 0;font-weight:800;font-stretch:75%;font-variation-settings:"opsz" 96;font-size:clamp(110px,29cqw,470px);line-height:.78;color:var(--wb-muted);letter-spacing:-.02em}
 .ht-word-l{position:relative;display:inline-block}
 .ht-word .ht-tp{height:.11em;z-index:2}
-.ht-foot-bar{position:relative;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;max-width:1300px;margin:clamp(24px,3cqw,40px) auto 0;padding-top:18px;border-top:1px solid var(--wb-hairline);font-size:12px;font-weight:500;font-stretch:94%}
-.ht-foot-bar a{color:inherit;text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:3px}
-.ht-foot-bar a:hover{color:var(--wb-forest);text-decoration-color:var(--wb-muted)}
+.ht-foot-bar{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:24px 64px;max-width:1300px;margin:clamp(24px,3cqw,40px) auto 0;padding-top:28px;border-top:1px solid var(--wb-hairline)}
+.ht-foot-addr{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex:1}
+.ht-foot-addr .ht-label{margin-bottom:.2em}
+.ht-foot-addr p{margin:2px 0;font-size:13px;font-weight:500;color:var(--wb-forest-70)}
+.ht-foot-addr a{font-size:13px;font-weight:600;color:var(--wb-forest);text-decoration:none;white-space:nowrap;transition:color .2s}
+.ht-foot-addr a:hover{color:var(--wb-muted)}
+.ht-foot-meta{font-size:12px;font-weight:500;font-stretch:94%;color:var(--wb-forest-70);white-space:nowrap}
+.ht-foot-meta p{margin:0 0 3px}
+.ht-foot-meta a{color:inherit;text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:3px;transition:color .2s}
+.ht-foot-meta a:hover{color:var(--wb-forest)}
 
 @container ht (max-width:900px){
 .ht-shop-grid{grid-template-columns:repeat(2,1fr)}
@@ -873,7 +925,23 @@ const CSS = `
 .ht-shop-head{grid-template-columns:1fr}
 }
 @container ht (max-width:720px){
+.ht-nav-burger{display:flex}
 .ht-nav-links{display:none}
+.ht-nav--mobile-open .ht-nav-in{position:relative;z-index:101}
+@keyframes ht-menu-slide{from{transform:translateX(100%)}to{transform:translateX(0)}}
+@keyframes ht-menu-item-in{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+.ht-nav--mobile-open .ht-nav-links{display:flex;flex-direction:column;position:fixed;inset:0;z-index:100;background:var(--wb-forest);padding:88px 32px 48px;justify-content:center;gap:0;border:0;border-radius:0;box-shadow:none;animation:ht-menu-slide .5s cubic-bezier(.32,0,0,1) both}
+.ht-nav--mobile-open .ht-nav-links::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:var(--wb-sage)}
+.ht-nav--mobile-open .ht-nav-links button{width:100%;padding:12px 0;border:0;background:transparent;color:var(--wb-off);font-family:var(--ht-cond);font-size:clamp(1.8rem,12cqw,3.6rem);font-weight:400;letter-spacing:.06em;text-transform:uppercase;text-align:left;line-height:1.1;cursor:pointer;opacity:0;animation:ht-menu-item-in .45s ease forwards;transition:color .25s}
+.ht-nav--mobile-open .ht-nav-links button::before{content:attr(data-num);display:block;font-size:.38em;font-weight:400;color:var(--wb-sage);opacity:.7;letter-spacing:.12em;margin-bottom:2px;transition:opacity .25s}
+.ht-nav--mobile-open .ht-nav-links button:hover{color:var(--wb-sage)}
+.ht-nav--mobile-open .ht-nav-links button:hover::before{opacity:1}
+.ht-nav--mobile-open .ht-nav-links button:nth-child(1){animation-delay:.12s}
+.ht-nav--mobile-open .ht-nav-links button:nth-child(2){animation-delay:.22s}
+.ht-nav--mobile-open .ht-nav-links button:nth-child(3){animation-delay:.32s}
+.ht-nav--mobile-open .ht-nav-links button:nth-child(4){animation-delay:.42s}
+.ht-nav--dark.ht-nav--mobile-open .ht-nav-links button{color:var(--wb-off)}
+.ht-nav--dark.ht-nav--mobile-open .ht-nav-links button::before{color:var(--wb-sage)}
 .ht-hero-copy{position:absolute;inset:0 0 24% 0;justify-content:center;padding-top:60px}
 .ht-hero-mark{width:64px;height:64px}
 .ht-h1{font-size:clamp(52px,25cqw,300px);line-height:.82}
