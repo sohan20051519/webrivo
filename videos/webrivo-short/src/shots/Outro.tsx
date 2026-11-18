@@ -9,13 +9,13 @@ import { C, FONT, EASE, Grain, Tape, Daisy, Badge, Fonts, ramp, bell } from '../
 export const DURATION = 176;
 
 const PLANS = [
-  { tier: 'BASIC', price: '₹599', x: 84, y: 1030, rot: -7, start: 34 },
-  { tier: 'BUSINESS', price: '₹1,199', x: 415, y: 1075, rot: 2, start: 44, best: true },
-  { tier: 'PREMIUM', price: '₹2,199', x: 746, y: 1030, rot: 7, start: 54 },
+  { tier: 'BASIC', price: '₹599', x: 84, y: 1030, rot: -7, start: 26 },
+  { tier: 'BUSINESS', price: '₹1,199', x: 415, y: 1075, rot: 2, start: 34, best: true },
+  { tier: 'PREMIUM', price: '₹2,199', x: 746, y: 1030, rot: 7, start: 42 },
 ];
 
 // pinned to "Webrivo." / "For the businesses…" / "Let's get you found."
-export const BEATS = { badge: 10, word: 8, sign: 118, contact: 132 };
+export const BEATS = { badge: 7, word: 5, sign: 118, contact: 132 };
 
 const MiniPlan: React.FC<{ tier: string; price: string; best?: boolean }> = ({ tier, price, best }) => (
   <div
@@ -48,11 +48,13 @@ export const Outro: React.FC = () => {
   const frame = useCurrentFrame();
   const inT = ramp(frame, 0, 12, EASE.out);
 
+  // a slow push keeps the lockup alive through the two-second hold
+  const push = 1 + 0.045 * (frame / DURATION);
   const signT = ramp(frame, BEATS.sign, 12, EASE.out);
   const contactT = ramp(frame, BEATS.contact, 14, EASE.out);
 
   return (
-    <AbsoluteFill style={{ backgroundColor: C.forest, overflow: 'hidden' }}>
+    <AbsoluteFill style={{ backgroundColor: C.forest, overflow: 'hidden', transform: `scale(${push})`, transformOrigin: '50% 45%' }}>
       <Fonts />
       {/* group photo: elements fly in and settle */}
       {PLANS.map((g) => {

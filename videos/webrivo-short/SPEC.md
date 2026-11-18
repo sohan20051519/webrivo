@@ -36,31 +36,35 @@ Tokens grown from `components/TapeLanding.jsx` — no new palette:
 
 ## Phase 2 — Story → shot mapping
 
-| # | Story beat | Shot card | Style |
-|---|------------|-----------|-------|
-| ① | "Every great shop on this street has a story." | brand-ink-open (tape press) | opening |
-| ② | "Someone nearby is searching for yours." | spotlight-hero-card + search result rows | hero |
-| ④ | "A slow page. A pin three streets off. A form nobody answers. They leave." | deck-deal-flyin (3 problem cards → turn card) | ui-entrance |
-| ⑤ | "So we keep it simple. Brief, build, ship." | vertical-word-roll-blur-cycle | typography |
-| ⑦ | "Three plans. 599 to 2,199. Everything handled." | the site's three real `.ht-prod` cards, in a row | ui-entrance |
-| ⑧ | "Hosting, maintenance, your domain — in every plan." | list-stack-press | ui-entrance |
-| ⑨ | "See the exact price up front — and save ten percent yearly." | estimator + DigitRoll (₹1,199/mo → ₹12,948/yr) | data |
-| ⑩ | "Webrivo. For the businesses that make a town feel like home." | outro-group-photo-launch → wordmark lockup | outro |
+The film opens on the **shops, not the brand** — no WebRivo mark or wordmark
+before the outro. The seven shot effects in the local video-shotcraft library
+are all used, each rebuilt in the site's palette:
 
-Transitions: whip cuts, print-texture tears; every cut lands 0.3–1.3s after the
-previous spoken word (no music-only scenes, no title cards).
+| # | Story beat | Shot card | Effect |
+|---|------------|-----------|--------|
+| ① | "Every great shop on this street has a story." | a printed town map: sage side streets converge on one forest trunk, shop names (BAKERY, TAILOR, FLORIST, SALON, CAFE) surface along it, camera flies low, hook lands in ink | `dataviz-landscape-open` |
+| ② | "Right now, someone nearby is searching for yours. We make sure they find it." | frosted sage-glass pill types "bakery near me", light drains as the words arrive; results land; a pen traces the YOUR SHOP row | `glass-pill-dictation-typing` → `draw-svg-trace` |
+| ④ | "A slow page. A pin three streets off. A form nobody answers. They leave." | physical problem cards dealt out of a stack onto the studio wall, light opening from the stack; the fourth card is the turn | `deck-deal-flyin` |
+| ⑤ | "So we keep it simple. Brief, build, ship." | vertical word roll (BRIEF → BUILD → SHIP) | typography |
+| ⑦ | "Three plans. 599 to 2,199. Everything handled." | the site's three real `.ht-prod` cards on a 3D ring; it whips 599 → 1,199 → 2,199, big price readout under it | `carousel-3d` |
+| ⑧ | "Hosting, maintenance, your domain — in every plan." | three inclusion cards lift off a tilted desk (contact shadow stays behind), the last one stays up | `element-body-moves` |
+| ⑨ | "See the exact price up front — and save ten percent yearly." | a 3D room of bill → toggle → yearly receipt; the camera is the inverse of the station it looks at, so the world turns between them | `basic-3d-scene` |
+| ⑩ | "Webrivo. For the businesses that make a town feel like home." | plan cards fly into a group photo, badge drops, WEBRIVO locks up, sign-off + real contact details | outro |
+
+Transitions: hard cuts with a soft paper whip, no whoosh SFX; every cut lands
+0.3–1.3s after the previous spoken word (no music-only scenes, no title cards).
 
 ## Phase 3 — Frame timeline (30fps, 1156f)
 
 | Shot | id | frames | dur |
 |------|----|--------|-----|
-| ① brand-open | Shot01BrandOpen | 0–95 | 96 |
+| ① the town map | Shot01BrandOpen | 0–95 | 96 |
 | ② hero / the search | Shot02Hero | 96–247 | 152 |
 | ④ collage / what loses them | Shot04Collage | 248–423 | 176 |
 | ⑤ BRIEF · BUILD · SHIP | Shot05Process | 424–523 | 100 |
-| ⑦ plan cards | Shot07Plans | 524–691 | 168 |
+| ⑦ plan carousel | Shot07Plans | 524–691 | 168 |
 | ⑧ inclusions stack | Shot08Inclusions | 692–811 | 120 |
-| ⑨ estimator | Shot09Estimator | 812–979 | 168 |
+| ⑨ estimator room | Shot09Estimator | 812–979 | 168 |
 | ⑩ outro | Shot10Outro | 980–1155 | 176 |
 
 Total **1156f ≈ 38.5s**, 1080×1920. The table lives in `src/timeline.tsx` and is

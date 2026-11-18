@@ -33,7 +33,6 @@ type Cue = { shot: string; at: number; file: string; vol: number };
 // peak time (s) per source, from audio-manifest.json analysis
 const PEAK: Record<string, number> = {
   'fs-879272.mp3': 0.01, // low thud
-  'fs-449645.mp3': 0.15, // soft whoosh
   'fs-131359.mp3': 0.0,  // rolled paper slap
   'fs-278205.mp3': 0.03, // switch flip
   'fs-872341.mp3': 0.0,  // digital click
@@ -43,50 +42,60 @@ const PEAK: Record<string, number> = {
 };
 
 const CUES: Cue[] = [
-  // S1 BrandOpen — film open, badge stamp, typewriter, exit lift
-  { shot: 'Shot01BrandOpen', at: 0, file: 'fs-879272.mp3', vol: 0.32 },
-  { shot: 'Shot01BrandOpen', at: B1.badge, file: 'fs-879272.mp3', vol: 0.55 },
-  { shot: 'Shot01BrandOpen', at: B1.type, file: 'fs-630019.mp3', vol: 1.4 },
-  { shot: 'Shot01BrandOpen', at: B1.out, file: 'fs-449645.mp3', vol: 0.6 },
-  // S2 Hero — typing, result rows, the FOUND moment, the promise, exit
-  { shot: 'Shot02Hero', at: 12, file: 'fs-872341.mp3', vol: 0.16 },
-  { shot: 'Shot02Hero', at: 30, file: 'fs-872341.mp3', vol: 0.16 },
-  { shot: 'Shot02Hero', at: 46, file: 'fs-872341.mp3', vol: 0.16 },
-  { shot: 'Shot02Hero', at: 44, file: 'fs-879272.mp3', vol: 0.24 },
-  { shot: 'Shot02Hero', at: 56, file: 'fs-879272.mp3', vol: 0.42 },
-  { shot: 'Shot02Hero', at: 64, file: 'fs-878247.mp3', vol: 0.38 },
-  { shot: 'Shot02Hero', at: B2.cardOut, file: 'fs-449645.mp3', vol: 0.5 },
-  { shot: 'Shot02Hero', at: B2.badge, file: 'fs-879272.mp3', vol: 0.5 },
-  { shot: 'Shot02Hero', at: B2.cta, file: 'fs-278205.mp3', vol: 0.28 },
-  { shot: 'Shot02Hero', at: B2.stamp, file: 'fs-131359.mp3', vol: 0.5 },
-  { shot: 'Shot02Hero', at: B2.out, file: 'fs-449645.mp3', vol: 0.7 },
-  // S4 Collage — board lands, then the three problems land on the VO beats
-  { shot: 'Shot04Collage', at: 4, file: 'fs-879272.mp3', vol: 0.4 },
-  { shot: 'Shot04Collage', at: 14, file: 'fs-131359.mp3', vol: 0.65 },
+  // S1 map — film open, streets draw, shop tags surface, the hook lands
+  { shot: 'Shot01BrandOpen', at: 0, file: 'fs-879272.mp3', vol: 0.3 },
+  { shot: 'Shot01BrandOpen', at: 8, file: 'fs-872341.mp3', vol: 0.12 },
+  { shot: 'Shot01BrandOpen', at: 40, file: 'fs-872341.mp3', vol: 0.13 },
+  { shot: 'Shot01BrandOpen', at: 48, file: 'fs-872341.mp3', vol: 0.13 },
+  { shot: 'Shot01BrandOpen', at: 56, file: 'fs-872341.mp3', vol: 0.13 },
+  { shot: 'Shot01BrandOpen', at: B1.head, file: 'fs-879272.mp3', vol: 0.45 },
+  // S2 Hero — the pill types, the rows land, the pen circles the shop, the promise
+  { shot: 'Shot02Hero', at: B2.pill, file: 'fs-872341.mp3', vol: 0.14 },
+  ...[12, 18, 24, 30, 36].map((at) => ({ shot: 'Shot02Hero', at, file: 'fs-872341.mp3', vol: 0.11 })),
+  { shot: 'Shot02Hero', at: B2.submit, file: 'fs-278205.mp3', vol: 0.22 },
+  { shot: 'Shot02Hero', at: B2.rows[0], file: 'fs-879272.mp3', vol: 0.22 },
+  { shot: 'Shot02Hero', at: B2.rows[1], file: 'fs-879272.mp3', vol: 0.4 },
+  { shot: 'Shot02Hero', at: B2.marks, file: 'fs-131359.mp3', vol: 0.3 },
+  { shot: 'Shot02Hero', at: B2.trace, file: 'fs-630019.mp3', vol: 0.35 },
+  { shot: 'Shot02Hero', at: B2.close, file: 'fs-878247.mp3', vol: 0.32 },
+  { shot: 'Shot02Hero', at: B2.found, file: 'fs-131359.mp3', vol: 0.45 },
+  { shot: 'Shot02Hero', at: B2.head, file: 'fs-879272.mp3', vol: 0.5 },
+  { shot: 'Shot02Hero', at: B2.sub, file: 'fs-879272.mp3', vol: 0.34 },
+  { shot: 'Shot02Hero', at: B2.note, file: 'fs-131359.mp3', vol: 0.4 },
+  // S4 Collage — the wall lights up, the stack pulls back, then the deals land
+  { shot: 'Shot04Collage', at: 0, file: 'fs-879272.mp3', vol: 0.35 },
+  { shot: 'Shot04Collage', at: 8, file: 'fs-879272.mp3', vol: 0.3 },
+  { shot: 'Shot04Collage', at: 18, file: 'fs-872341.mp3', vol: 0.18 },
   ...B4.land.map((at, k) => ({ shot: 'Shot04Collage', at, file: 'fs-131359.mp3', vol: 0.7 + 0.03 * k })),
   { shot: 'Shot04Collage', at: B4.land[3] + 6, file: 'fs-878247.mp3', vol: 0.35 },
+  { shot: 'Shot04Collage', at: 118, file: 'fs-131359.mp3', vol: 0.4 },
   // S5 Process — word impacts, rolls, stamp, riser into the plans
   { shot: 'Shot05Process', at: 3, file: 'fs-879272.mp3', vol: 0.4 },
   { shot: 'Shot05Process', at: 10, file: 'fs-879272.mp3', vol: 0.35 },
   ...B5.roll.map((at) => ({ shot: 'Shot05Process', at, file: 'fs-278205.mp3', vol: 0.45 })),
   { shot: 'Shot05Process', at: B5.roll[2] + 6, file: 'fs-879272.mp3', vol: 0.3 },
-  // riser starts under "SHIP" (abs 496) and peaks 2.28s later, exactly as the
-  // three plan cards stand up (S7 local 40 = abs 564)
+  // riser starts under "SHIP" (abs 496) and peaks 2.28s later, as the ring of
+  // real plan cards assembles and the first price lights (S7 local 40 = abs 564)
   { shot: 'Shot07Plans', at: 40, file: 'fs-859482.mp3', vol: 0.4 },
-  // S7 Plans — the three real cards stand up, the price spotlight travels
+  // S7 Plans — the ring assembles, whips between the three cards, prices light
   ...B7.pop.map((at) => ({ shot: 'Shot07Plans', at, file: 'fs-131359.mp3', vol: 0.7 })),
   ...B7.price.map(([a]) => ({ shot: 'Shot07Plans', at: a, file: 'fs-878247.mp3', vol: 0.4 })),
+  { shot: 'Shot07Plans', at: 70, file: 'fs-278205.mp3', vol: 0.3 },
+  { shot: 'Shot07Plans', at: 82, file: 'fs-278205.mp3', vol: 0.3 },
   { shot: 'Shot07Plans', at: B7.note, file: 'fs-278205.mp3', vol: 0.3 },
-  { shot: 'Shot07Plans', at: B7.out, file: 'fs-449645.mp3', vol: 0.55 },
-  // S8 Inclusions — three inclusion rows press in, then the note
-  ...[16, 40, 64].map((at) => ({ shot: 'Shot08Inclusions', at: at + 8, file: 'fs-278205.mp3', vol: 0.35 })),
+  // S8 Inclusions — each card lifts off the desk, then drops back
+  ...[16, 40, 64].map((at) => ({ shot: 'Shot08Inclusions', at, file: 'fs-872341.mp3', vol: 0.2 })),
+  ...[48, 72].map((at) => ({ shot: 'Shot08Inclusions', at, file: 'fs-131359.mp3', vol: 0.3 })),
   { shot: 'Shot08Inclusions', at: B8.note, file: 'fs-878247.mp3', vol: 0.25 },
-  // S9 Estimator — entry, digits settle, toggle flip, SAVE 10%, yearly settle
-  { shot: 'Shot09Estimator', at: 0, file: 'fs-449645.mp3', vol: 0.55 },
-  { shot: 'Shot09Estimator', at: B9.price, file: 'fs-872341.mp3', vol: 0.4 },
+  // S9 Estimator — the bill, the toggle flip, SAVE 10%, the yearly receipt
+  { shot: 'Shot09Estimator', at: 0, file: 'fs-879272.mp3', vol: 0.32 },
+  { shot: 'Shot09Estimator', at: 34, file: 'fs-872341.mp3', vol: 0.2 },
+  { shot: 'Shot09Estimator', at: 56, file: 'fs-872341.mp3', vol: 0.3 },
   { shot: 'Shot09Estimator', at: B9.flip, file: 'fs-278205.mp3', vol: 0.6 },
   { shot: 'Shot09Estimator', at: B9.save, file: 'fs-131359.mp3', vol: 0.55 },
-  { shot: 'Shot09Estimator', at: B9.flip + 26, file: 'fs-872341.mp3', vol: 0.4 },
+  { shot: 'Shot09Estimator', at: 118, file: 'fs-872341.mp3', vol: 0.2 },
+  { shot: 'Shot09Estimator', at: 138, file: 'fs-879272.mp3', vol: 0.4 },
+  { shot: 'Shot09Estimator', at: 142, file: 'fs-878247.mp3', vol: 0.22 },
   // S10 Outro — three plan prints, wordmark, contact, final hold
   { shot: 'Shot10Outro', at: B10.badge, file: 'fs-879272.mp3', vol: 0.4 },
   ...[34, 44, 54].map((at) => ({ shot: 'Shot10Outro', at, file: 'fs-131359.mp3', vol: 0.6 })),

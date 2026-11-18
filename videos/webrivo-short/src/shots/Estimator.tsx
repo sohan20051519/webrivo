@@ -1,7 +1,8 @@
-// Shot 09 — estimator (pill-slot-cycle + DigitRoll): Monthly/Yearly segmented
-// toggle (thumb slides on sage track), price rolls odometer-style
-// ₹1,199/mo → ₹12,948/yr (the calculator's own math: 12 × 0.9), SAVE 10%
-// stamp pops. Real numbers from components/Calculator.jsx.
+// Shot 09 — basic-3d-scene: the price lives in a small 3D room. The camera is
+// always the exact inverse of the card it is looking at, so flying between
+// stations turns the whole world with it. The bill → the toggle → the yearly
+// receipt (that card lies on its side, so the camera has to roll upright to
+// read it). Real numbers from the site's calculator.
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { C, FONT, EASE, Grain, Tape, Fonts, ramp, bell } from '../theme';
@@ -12,7 +13,61 @@ export const DURATION = 168;
 // on screen while "See the exact price up front" is spoken
 const FLIP = 104;
 export const BEATS = { price: 24, flip: FLIP, save: FLIP + 10, out: 156 };
+
 const DIGITS = '0123456789';
+
+// ── stations: each card's own pose in the room ─────────────────────────────
+type Pose = { x: number; y: number; z: number; rx: number; ry: number; rz: number; s: number };
+const ST: Pose[] = [
+  { x: 0, y: 0, z: 0, rx: 0, ry: 0, rz: 0, s: 1 },
+  { x: 1020, y: -170, z: -430, rx: 0, ry: -38, rz: 0, s: 1 },
+  { x: 1920, y: 560, z: -560, rx: 0, ry: 0, rz: 90, s: 1 },
+];
+
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+const mixPose = (a: Pose, b: Pose, t: number, hop: number): Pose => ({
+  x: lerp(a.x, b.x, t), y: lerp(a.y, b.y, t), z: lerp(a.z, b.z, t),
+  rx: lerp(a.rx, b.rx, t), ry: lerp(a.ry, b.ry, t), rz: lerp(a.rz, b.rz, t),
+  s: lerp(a.s, b.s, t) * hop,
+});
+
+// which station the camera is on, as a float (for focus falloff)
+const stationAt = (f: number) => {
+  if (f <= 34) return 0;
+  if (f < 56) return ramp(f, 34, 22, EASE.smooth);
+  if (f <= 118) return 1;
+  if (f < 138) return 1 + ramp(f, 118, 20, EASE.smooth);
+  return 2;
+};
+
+const poseAt = (f: number): Pose => {
+  if (f <= 34) return { ...ST[0], s: ST[0].s * (1 - 0.015 * ramp(f, 0, 34, EASE.smooth)) };
+  if (f < 56) {
+    const u = ramp(f, 34, 22, EASE.smooth);
+    return mixPose(ST[0], ST[1], u, 1 + 0.3 * Math.sin(u * Math.PI));
+  }
+  if (f <= 118) return { ...ST[1], s: ST[1].s * (1 - 0.02 * ramp(f, 56, 62, EASE.smooth)) };
+  if (f < 138) {
+    const u = ramp(f, 118, 20, EASE.smooth);
+    return mixPose(ST[1], ST[2], u, 1 + 0.3 * Math.sin(u * Math.PI));
+  }
+  return { ...ST[2], s: ST[2].s * (1 - 0.02 * ramp(f, 138, 20, EASE.smooth)) };
+};
+
+const poseTransform = (p: Pose) =>
+  `translate3d(${p.x}px, ${p.y}px, ${p.z}px) rotateZ(${p.rz}deg) rotateY(${p.ry}deg) rotateX(${p.rx}deg) scale(${p.s})`;
+
+const camTransform = (p: Pose) =>
+  `scale(${1 / p.s}) rotateZ(${-p.rz}deg) rotateY(${-p.ry}deg) rotateX(${-p.rx}deg) translate3d(${-p.x}px, ${-p.y}px, ${-p.z}px)`;
+
+// dust hanging in the room — parallax comes entirely from the camera
+const MOTES = Array.from({ length: 26 }).map((_, i) => ({
+  x: (((i * 37) % 17) - 8) * 190 + 900,
+  y: (((i * 53) % 13) - 6) * 120,
+  z: (((i * 29) % 11) - 5) * 170,
+  r: 2 + (i % 3),
+  o: 0.1 + (i % 4) * 0.06,
+}));
 
 const DigitColumn: React.FC<{ ch: string; delay: number; lineH: number; size: number; color: string }> = ({
   ch, delay, lineH, size, color,
@@ -24,10 +79,8 @@ const DigitColumn: React.FC<{ ch: string; delay: number; lineH: number; size: nu
   const target = DIGITS.indexOf(ch);
   const t = (() => {
     if (frame < delay) return 0;
-    // two-stage roll: settle at the value's true digit after passing a full cycle
-  const p = Math.min(1, (frame - delay) / 20);
-    const eased = 1 - Math.pow(1 - p, 2.2);
-    return eased;
+    const p = Math.min(1, (frame - delay) / 20);
+    return 1 - Math.pow(1 - p, 2.2);
   })();
   const offset = (10 + target) * t * lineH;
   return (
@@ -38,8 +91,7 @@ const DigitColumn: React.FC<{ ch: string; delay: number; lineH: number; size: nu
             key={j}
             style={{
               display: 'block', fontSize: size, lineHeight: `${lineH}px`, color,
-              fontFamily: FONT.display,
-              fontVariantNumeric: 'tabular-nums',
+              fontFamily: FONT.display, fontVariantNumeric: 'tabular-nums',
             }}
           >
             {d}
@@ -63,134 +115,233 @@ const DigitRoll: React.FC<{ value: string; delay: number; color: string; size: n
   );
 };
 
+const CardShell: React.FC<{ children: React.ReactNode; tone?: 'paper' | 'forest' }> = ({
+  children, tone = 'paper',
+}) => (
+  <div
+    style={{
+      width: 880, height: 520, boxSizing: 'border-box', borderRadius: 20, padding: '44px 54px',
+      display: 'flex', flexDirection: 'column', justifyContent: 'center',
+      background: tone === 'forest' ? C.forest : C.white,
+      border: tone === 'forest' ? 'none' : '1px solid rgba(137,153,130,.45)',
+      boxShadow: '0 40px 90px -30px rgba(24,53,43,.45), 0 0 0 1px rgba(255,255,255,.6)',
+      position: 'relative',
+    }}
+  >
+    {children}
+  </div>
+);
+
+const Kicker: React.FC<{ children: React.ReactNode; dark?: boolean }> = ({ children, dark }) => (
+  <div
+    style={{
+      fontFamily: FONT.sans, fontWeight: 700, fontSize: 20, letterSpacing: '0.24em',
+      color: dark ? 'rgba(221,227,213,.7)' : C.muted, textTransform: 'uppercase',
+    }}
+  >
+    {children}
+  </div>
+);
+
 export const Estimator: React.FC = () => {
   const frame = useCurrentFrame();
-  const inT = ramp(frame, 0, 12, EASE.out);
   const outT = ramp(frame, BEATS.out, 12, EASE.power4In);
-  const yearly = frame >= FLIP;
+  const cam = poseAt(frame);
+  const station = stationAt(frame);
 
+  const yearly = frame >= FLIP;
   const thumbT = ramp(frame, FLIP, 12, EASE.smooth);
   const saveT = ramp(frame, BEATS.save, 9, EASE.power4In);
   const saveBell = bell(frame, BEATS.save + 2, 5);
 
+  const focus = (k: number) => {
+    const d = Math.abs(station - k);
+    return { opacity: 0.28 + 0.72 * Math.max(0, 1 - d), blur: 6 * Math.min(1, d) };
+  };
+
   return (
     <AbsoluteFill style={{ backgroundColor: C.off, overflow: 'hidden' }}>
       <Fonts />
-      <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(1100px 900px at 50% 34%, ${C.white}, transparent 70%)`, opacity: inT }} />
+      <div
+        style={{
+          position: 'absolute', inset: 0,
+          background:
+            `radial-gradient(1100px 900px at 50% 34%, ${C.white}, transparent 72%),` +
+            `linear-gradient(180deg, transparent 60%, rgba(221,227,213,.55) 100%)`,
+        }}
+      />
 
-      <div style={{ position: 'absolute', inset: 0, transform: `translateY(${(1 - inT) * 140 - outT * 2000}px)` }}>
-        <div
-          style={{
-            position: 'absolute', left: 0, right: 0, top: 330, textAlign: 'center',
-            fontFamily: FONT.sans, fontWeight: 700, fontSize: 34, letterSpacing: '0.22em', color: C.muted,
-          }}
-        >
-          THE ESTIMATOR
-        </div>
-        <div
-          style={{
-            position: 'absolute', left: 0, right: 0, top: 396, textAlign: 'center',
-            fontFamily: FONT.display, fontSize: 118, color: C.forest, lineHeight: 1,
-          }}
-        >
-          SEE THE PRICE FIRST
-        </div>
-
-        {/* segmented toggle */}
-        <div
-          style={{
-            position: 'absolute', left: 90, right: 90, top: 640, height: 120, borderRadius: 999,
-            background: C.sage, boxShadow: 'inset 0 3px 10px rgba(24,53,43,.25)',
-          }}
-        >
-          {/* thumb */}
-          <div
-            style={{
-              position: 'absolute', top: 10, bottom: 10, left: 10, width: 'calc(50% - 10px)',
-              borderRadius: 999, background: C.forest, transform: `translateX(${thumbT * 100 * 1.02}%)`,
-              boxShadow: '0 8px 22px rgba(24,53,43,.4)',
-            }}
-          />
-          {['MONTHLY', 'YEARLY'].map((label, i) => (
-            <div
-              key={label}
-              style={{
-                position: 'absolute', top: 0, bottom: 0, left: `${i * 50}%`, width: '50%',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
-                fontFamily: FONT.sans, fontWeight: 800, fontSize: 40, letterSpacing: '0.12em',
-                color: (i === 0) !== yearly ? C.off : C.forest, opacity: (i === 0) !== yearly ? 1 : 0.65,
-              }}
-            >
-              {label}
-              {i === 1 && yearly ? (
-                <span
-                  style={{
-                    fontFamily: FONT.sans, fontWeight: 800, fontSize: 24, letterSpacing: '0.08em',
-                    background: C.off, color: C.forest, borderRadius: 999, padding: '6px 16px',
-                    transform: `scale(${1 + saveBell * 0.18}) rotate(${saveBell * -3}deg)`,
-                  }}
-                >
-                  SAVE 10%
-                </span>
-              ) : i === 1 ? (
-                <span
-                  style={{
-                    fontFamily: FONT.sans, fontWeight: 700, fontSize: 22, letterSpacing: '0.08em',
-                    color: C.forest, opacity: 0.6 + saveT * 0,
-                  }}
-                >
-                  −10%
-                </span>
-              ) : null}
-            </div>
-          ))}
-        </div>
-
-        {/* price */}
-        <div
-          style={{
-            position: 'absolute', left: 0, right: 0, top: 880, textAlign: 'center',
-            display: 'flex', alignItems: 'baseline', justifyContent: 'center',
-          }}
-        >
-          <span
-            key={yearly ? 'y' : 'm'}
-            style={{ display: 'inline-flex', alignItems: 'baseline' }}
-          >
-            <DigitRoll value={yearly ? '₹12,948' : '₹1,199'} delay={yearly ? FLIP + 12 : BEATS.price} color={C.forest} size={190} />
-            <span
-              style={{
-                fontFamily: FONT.display, fontSize: 84, color: C.muted, marginLeft: 18,
-              }}
-            >
-              /{yearly ? 'yr' : 'mo'}
-            </span>
-          </span>
-        </div>
-
-        <div
-          style={{
-            position: 'absolute', left: 0, right: 0, top: 1150, textAlign: 'center',
-            fontFamily: FONT.sans, fontWeight: 600, fontSize: 36, color: C.muted,
-            opacity: ramp(frame, yearly ? FLIP + 24 : 46, 12, EASE.out),
-          }}
-        >
-          {yearly ? 'that’s a year, paid once' : 'the full price, up front — nothing hidden'}
-        </div>
-
-        <div
-          style={{
-            position: 'absolute', left: 0, right: 0, top: 1330, textAlign: 'center',
-            fontFamily: FONT.hand, fontSize: 68, color: C.forest,
-            opacity: ramp(frame, 28, 12, EASE.out),
-          }}
-        >
-          no surprises. that’s the whole bill.
+      <div
+        style={{
+          position: 'absolute', left: 0, right: 0, top: 176, textAlign: 'center',
+          opacity: ramp(frame, 0, 12, EASE.out) * (1 - outT),
+        }}
+      >
+        <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 24, letterSpacing: '0.24em', color: 'rgba(24,53,43,.55)' }}>
+          05 — THE ESTIMATOR
         </div>
       </div>
 
-      <Tape w={280} rot={-8} tone="clear" style={{ left: 84, top: 210, opacity: inT }} />
-      <Tape w={280} rot={10} tone="clear" style={{ right: 84, bottom: 250, opacity: inT }} />
+      {/* ── the room ────────────────────────────────────────────────────── */}
+      <div
+        style={{
+          position: 'absolute', left: 540, top: 940, width: 0, height: 0,
+          perspective: 1900,
+          transform: `translateY(${-outT * 1800}px)`,
+        }}
+      >
+        <div style={{ position: 'absolute', width: 0, height: 0, transformStyle: 'preserve-3d', transform: camTransform(cam) }}>
+          {/* dust */}
+          {MOTES.map((m, i) => (
+            <div
+              key={i}
+              style={{
+                position: 'absolute', width: m.r * 2, height: m.r * 2, borderRadius: '50%',
+                background: C.muted, opacity: m.o,
+                transform: `translate3d(${m.x}px, ${m.y}px, ${m.z}px)`,
+              }}
+            />
+          ))}
+
+          {/* ST1 — the bill */}
+          <div
+            style={{
+              position: 'absolute', left: -440, top: -260, width: 880, height: 520,
+              transformStyle: 'preserve-3d', transform: poseTransform(ST[0]),
+              opacity: focus(0).opacity, filter: `blur(${focus(0).blur}px)`,
+            }}
+          >
+            <CardShell>
+              <Kicker>the bill</Kicker>
+              <div style={{ display: 'flex', alignItems: 'baseline', marginTop: 14 }}>
+                <DigitRoll value="₹1,199" delay={44} color={C.forest} size={168} />
+                <span style={{ fontFamily: FONT.display, fontSize: 74, color: C.muted, marginLeft: 14 }}>/mo</span>
+              </div>
+              <div style={{ height: 2, background: 'rgba(24,53,43,.12)', margin: '22px 0 20px' }} />
+              <div style={{ fontFamily: FONT.sans, fontWeight: 600, fontSize: 34, color: C.forest }}>
+                the full price, up front — nothing hidden
+              </div>
+              <Tape w={150} h={38} rot={-44} tone="clear" style={{ left: -48, top: -18 }} />
+            </CardShell>
+          </div>
+
+          {/* ST2 — the toggle */}
+          <div
+            style={{
+              position: 'absolute', left: -440, top: -260, width: 880, height: 520,
+              transformStyle: 'preserve-3d', transform: poseTransform(ST[1]),
+              opacity: focus(1).opacity, filter: `blur(${focus(1).blur}px)`,
+            }}
+          >
+            <CardShell>
+              <Kicker>monthly or yearly</Kicker>
+              <div
+                style={{
+                  position: 'relative', marginTop: 22, height: 104, borderRadius: 999,
+                  background: C.sage, boxShadow: 'inset 0 3px 10px rgba(24,53,43,.22)',
+                }}
+              >
+                <div
+                  style={{
+                    position: 'absolute', top: 9, bottom: 9, left: 9, width: 'calc(50% - 9px)',
+                    borderRadius: 999, background: C.forest,
+                    transform: `translateX(${thumbT * 100 * 1.02}%)`,
+                    boxShadow: '0 8px 22px rgba(24,53,43,.4)',
+                  }}
+                />
+                {['MONTHLY', 'YEARLY'].map((label, i) => (
+                  <div
+                    key={label}
+                    style={{
+                      position: 'absolute', top: 0, bottom: 0, left: `${i * 50}%`, width: '50%',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                      fontFamily: FONT.sans, fontWeight: 800, fontSize: 34, letterSpacing: '0.12em',
+                      color: (i === 0) !== yearly ? C.off : C.forest,
+                      opacity: (i === 0) !== yearly ? 1 : 0.6,
+                    }}
+                  >
+                    {label}
+                    {i === 1 ? (
+                      <span
+                        style={{
+                          fontFamily: FONT.sans, fontWeight: 800, fontSize: 20, letterSpacing: '0.08em',
+                          background: yearly ? C.off : 'rgba(24,53,43,.1)',
+                          color: C.forest, borderRadius: 999, padding: '5px 12px',
+                          opacity: yearly ? 1 : 0.55,
+                          transform: `scale(${1 + saveBell * 0.16}) rotate(${saveBell * -3}deg)`,
+                        }}
+                      >
+                        SAVE 10%
+                      </span>
+                    ) : null}
+                  </div>
+                ))}
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', marginTop: 26 }}>
+                <span key={yearly ? 'y' : 'm'} style={{ display: 'inline-flex', alignItems: 'baseline' }}>
+                  <DigitRoll
+                    value={yearly ? '₹12,948' : '₹1,199'}
+                    delay={yearly ? FLIP + 4 : 46}
+                    color={C.forest}
+                    size={132}
+                  />
+                  <span style={{ fontFamily: FONT.display, fontSize: 60, color: C.muted, marginLeft: 12 }}>
+                    /{yearly ? 'yr' : 'mo'}
+                  </span>
+                </span>
+              </div>
+              <div
+                style={{
+                  fontFamily: FONT.hand, fontSize: 44, color: C.muted, textAlign: 'center',
+                  marginTop: 4, opacity: saveT,
+                }}
+              >
+                ten percent off, every year
+              </div>
+            </CardShell>
+          </div>
+
+          {/* ST3 — the yearly receipt, lying on its side */}
+          <div
+            style={{
+              position: 'absolute', left: -440, top: -260, width: 880, height: 520,
+              transformStyle: 'preserve-3d', transform: poseTransform(ST[2]),
+              opacity: focus(2).opacity, filter: `blur(${focus(2).blur}px)`,
+            }}
+          >
+            <CardShell tone="forest">
+              <Kicker dark>the yearly bill</Kicker>
+              <div style={{ display: 'flex', alignItems: 'baseline', marginTop: 10 }}>
+                <span style={{ fontFamily: FONT.display, fontSize: 150, lineHeight: 1, color: C.off }}>₹12,948</span>
+                <span style={{ fontFamily: FONT.display, fontSize: 64, color: C.sage, marginLeft: 12 }}>/yr</span>
+              </div>
+              <div style={{ height: 2, background: 'rgba(221,227,213,.28)', margin: '20px 0 18px' }} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: FONT.sans, fontWeight: 600, fontSize: 30, color: C.sage }}>
+                <span>₹1,199 × 12 months</span>
+                <span style={{ color: C.off }}>− 10% yearly</span>
+              </div>
+              <div style={{ fontFamily: FONT.hand, fontSize: 44, color: C.off, marginTop: 16 }}>
+                that’s a year, paid once
+              </div>
+              <Tape w={150} h={38} rot={-44} tone="clear" style={{ left: -48, top: -18 }} />
+            </CardShell>
+          </div>
+        </div>
+      </div>
+
+      <div
+        style={{
+          position: 'absolute', left: 0, right: 0, top: 1600, textAlign: 'center',
+          fontFamily: FONT.hand, fontSize: 62, color: C.forest,
+          opacity: ramp(frame, 142, 12, EASE.out) * (1 - outT),
+        }}
+      >
+        no surprises. that’s the whole bill.
+      </div>
+
+      <Tape w={280} rot={-8} tone="clear" style={{ left: 84, top: 250, opacity: 0.9 * ramp(frame, 0, 12, EASE.out) }} />
+      <Tape w={280} rot={10} tone="clear" style={{ right: 84, bottom: 280, opacity: 0.9 * ramp(frame, 0, 12, EASE.out) }} />
       <Grain opacity={0.09} />
     </AbsoluteFill>
   );

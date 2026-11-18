@@ -32,13 +32,21 @@ Film: `out/webrivo-short.mp4` (VO+BGM+SFX) / `out/webrivo-short-sfxonly.mp4`
 - V2 ✓ hard-accelerated deals, press-easing stamps, holds ≥10f after batches.
 - V3 ✓ no drift to Ink Press/neon; paper-studio look consistent.
 - V4 ✓ no forbidden styles.
+- V5 ✓ all seven library effects are used and each was rebuilt in the site's
+  palette rather than shipped as the demo's dark/lime look:
+  `dataviz-landscape-open` (S1), `glass-pill-dictation-typing` +
+  `draw-svg-trace` (S2), `deck-deal-flyin` (S4), `carousel-3d` (S7, real
+  `.ht-prod` cards), `element-body-moves` (S8), `basic-3d-scene` (S9).
 
 ## B — storyboard
 
 - B1 ✓ order/durations match SPEC.md (8 shots, 1156f).
 - B2 ✓ actions/SFX align with AUDIO-TIMELINE.md.
-- B3 ✓ WEBRIVO wordmark locks up on the spoken "Webrivo." (letters 8–30 on VO
-  9.6–32.7); end card static 44f (1.5s).
+- B3 ✓ the film is de-branded until the last shot: S1 opens on the shops
+  (BAKERY / TAILOR / FLORIST / SALON / CAFE on a printed town map), no mark or
+  wordmark anywhere before S10. WEBRIVO locks up on the spoken "Webrivo."
+  (letters 5–17 on VO 9.6–32.7), then a slow 4.5% push keeps the 44f end hold
+  alive instead of freezing.
 - B5 ✓ story arc: hook (S1) → the search (S2) → what loses the customer (S4) →
   the fix (S5) → offer (S7) → what's included (S8) → no surprises (S9) →
   sign-off (S10). No music-only scenes, no title cards.
@@ -55,13 +63,14 @@ Film: `out/webrivo-short.mp4` (VO+BGM+SFX) / `out/webrivo-short-sfxonly.mp4`
 
 - A1 ✓ house-vibez BGM at 0.32 gain, 25f fade-in, fade-out 1111→1147, ducked to
   0.14 under each VO line.
-- A2 ✓ 53 cues pinned to action frames (AUDIO-TIMELINE.md); render-verified VO
-  onsets at +1.2–1.5f (a uniform encoder delay — no per-line drift).
+- A2 ✓ 68 cues pinned to `BEATS` exported by the shot files (AUDIO-TIMELINE.md);
+  render-verified VO onsets at +1.2–1.5f (a uniform encoder delay — no drift).
+  No whoosh in the mix — cuts are carried by voice and paper/click transients.
 - A3 ✓ beat grid 122.4 BPM measured from source; cuts 96/248/424/524/692/980
   within ±3f except 692 (+5) and 812 (−7.3), which follow the VO sentence
   starts rather than the grid.
-- A4 ✓ riser→cards arc: riser starts 496 under "SHIP", peaks 564 exactly as the
-  three plan cards stand up (546/552/558).
+- A4 ✓ riser→ring arc: riser starts 564 under "SHIP", peaks as the 3D plan
+  ring assembles and the first price lights (pops 546/552/558, ₹599 at 570).
 - A5 ✓ no sample outlives its action by more than design (riser 68f pre-land is
   the planned build).
 - A6 ✓ page turn (−31.8 dBFS) given 1.4 / 0.9 gain, verified audible in render.
@@ -106,10 +115,12 @@ correlates every VO line against the mix:
 
 | file | frames | duration | mean vol | max vol | worst VO lag |
 |------|-------:|---------:|---------:|--------:|-------------:|
-| `out/webrivo-short.mp4` | 1156 | 38.592s | −21.9 dB | −3.1 dB | +1.5f |
-| `out/webrivo-short-sfxonly.mp4` | 1156 | 38.592s | −22.7 dB | −3.2 dB | +1.5f |
+| `out/webrivo-short.mp4` | 1156 | 38.592s | −22.2 dB | −3.3 dB | +1.5f |
+| `out/webrivo-short-sfxonly.mp4` | 1156 | 38.592s | −23.0 dB | −3.2 dB | +1.5f |
 
 Picture is frame-identical between the two variants; the only difference is
-`bgm:false`. Stills checked with PIL ink-bbox / edge-clipping probes at
-f40, 88, 120, 200, 290, 330, 392, 420, 460–510, 540–660, 700, 760, 830, 920,
-950, 1000, 1030, 1120, 1150.
+`bgm:false`. Stills checked with PIL ink-bbox / edge-clipping probes (this pass
+had no image input, so every shot was verified numerically: per-band palette
+classification, ink bounding boxes, card/readout clearance). Frames sampled
+every 10 across the whole film for blank-frame and jump detection; the only
+near-empty frames are the 8f forest beat at 980 that opens the outro.

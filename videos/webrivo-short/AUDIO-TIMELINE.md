@@ -40,59 +40,80 @@ Music Free License (see `public/audio/ATTRIBUTION.md`).
 
 ## SFX (all Freesound CC0 — credits in `public/audio/sfx/FREESOUND-CREDITS.md`)
 
-| # | shot | action | frame (abs) | file | vol |
-|---|------|--------|------------:|------|----:|
-| 1 | S1 BrandOpen | film open | 0 | fs-879272 low thud | .32 |
-| 2 | S1 | badge stamp | 18 | fs-879272 low thud | .55 |
-| 3 | S1 | typewriter kicker | 36 | fs-630019 page turn | 1.4 |
-| 4 | S1 | exit lift | 82 | fs-449645 whoosh | .6 |
-| 5–7 | S2 Hero | query typed (3 ticks) | 108 / 126 / 142 | fs-872341 click | .16 |
-| 8 | S2 | "another bakery" row | 140 | fs-879272 thud | .24 |
-| 9 | S2 | YOUR SHOP row lands | 152 | fs-879272 thud | .42 |
-| 10 | S2 | FOUND pill | 160 | fs-878247 ping | .38 |
-| 11 | S2 | search card lifts away | 182 | fs-449645 whoosh | .5 |
-| 12 | S2 | headline lands | 190 | fs-879272 thud | .5 |
-| 13 | S2 | CTA pill | 208 | fs-278205 switch | .28 |
-| 14 | S2 | stamp signs | 216 | fs-131359 paper slap | .5 |
-| 15 | S2 | whip-up exit | 236 | fs-449645 whoosh | .7 |
-| 16 | S4 Collage | board appears | 252 | fs-879272 thud | .4 |
-| 17 | S4 | board tape press | 262 | fs-131359 slap | .65 |
-| 18 | S4 | "a slow page" card | 282 | fs-131359 slap | .7 |
-| 19 | S4 | "a pin three streets off" card | 322 | fs-131359 slap | .73 |
-| 20 | S4 | "a form nobody answers" card | 370 | fs-131359 slap | .76 |
-| 21 | S4 | "they leave" turn card | 388 | fs-131359 slap | .79 |
-| 22 | S4 | turn card ping | 394 | fs-878247 ping | .35 |
-| 23 | S5 Process | headline in | 427 | fs-879272 thud | .4 |
-| 24 | S5 | "keep it simple" note | 434 | fs-879272 thud | .35 |
-| 25 | S5 | BRIEF | 470 | fs-278205 switch | .45 |
-| 26 | S5 | BUILD | 482 | fs-278205 switch | .45 |
-| 27 | S5 | SHIP | 494 | fs-278205 switch | .45 |
-| 28 | S5 | SHIP stamp | 500 | fs-879272 thud | .3 |
-| 29 | S5 → S7 | riser starts (peaks 564 as the cards stand up) | 496 | fs-859482 riser | .4 |
-| 30 | S7 Plans | card 1 stands up | 546 | fs-131359 slap | .7 |
-| 31 | S7 | card 2 stands up | 552 | fs-131359 slap | .7 |
-| 32 | S7 | card 3 stands up | 558 | fs-131359 slap | .7 |
-| 33 | S7 | ₹599 lights | 570 | fs-878247 ping | .4 |
-| 34 | S7 | ₹1,199 lights | 602 | fs-878247 ping | .4 |
-| 35 | S7 | ₹2,199 lights | 612 | fs-878247 ping | .4 |
-| 36 | S7 | "everything handled" note | 644 | fs-278205 switch | .3 |
-| 37 | S7 | exit | 678 | fs-449645 whoosh | .55 |
-| 38 | S8 Inclusions | HOSTING row | 716 | fs-278205 switch | .35 |
-| 39 | S8 | MAINTENANCE row | 740 | fs-278205 switch | .35 |
-| 40 | S8 | DOMAIN row | 764 | fs-278205 switch | .35 |
-| 41 | S8 | "in every plan" note | 766 | fs-878247 ping | .25 |
-| 42 | S9 Estimator | entry | 812 | fs-449645 whoosh | .55 |
-| 43 | S9 | monthly ₹1,199 settles | 836 | fs-872341 click | .4 |
-| 44 | S9 | toggle flips YEARLY −10% | 916 | fs-278205 switch | .6 |
-| 45 | S9 | SAVE 10% stamp | 926 | fs-131359 slap | .55 |
-| 46 | S9 | yearly ₹12,948 settles | 942 | fs-872341 click | .4 |
-| 47 | S10 Outro | badge lands | 990 | fs-879272 thud | .4 |
-| 48 | S10 | wordmark lock ping | 1010 | fs-878247 ping | .35 |
-| 49 | S10 | plan print 1 | 1014 | fs-131359 slap | .6 |
-| 50 | S10 | plan print 2 | 1024 | fs-131359 slap | .6 |
-| 51 | S10 | plan print 3 | 1034 | fs-131359 slap | .6 |
-| 52 | S10 | sign-off scribble | 1112 | fs-630019 page turn | .9 |
-| 53 | S10 | contact details in | 1134 | fs-872341 click | .4 |
+68 cues, every one declared against a `BEATS` value exported by its shot file.
+There is no whoosh in the mix: cuts are carried by the voice and by paper/click
+transients. `local` is the shot-local frame, `abs` the film frame.
+
+| # | shot | action | local | abs | file | vol |
+|---|------|--------|------:|----:|------|----:|
+| 1 | S1 | film open (paper) | 0 | 0 | fs-879272 low thud | 0.3 |
+| 2 | S1 | first shop tag | 8 | 8 | fs-872341 click | 0.12 |
+| 3 | S1 | shop tag | 40 | 40 | fs-872341 click | 0.13 |
+| 4 | S1 | shop tag | 48 | 48 | fs-872341 click | 0.13 |
+| 5 | S1 | shop tag | 56 | 56 | fs-872341 click | 0.13 |
+| 6 | S1 | hook "EVERY SHOP" lands | 60 | 60 | fs-879272 low thud | 0.45 |
+| 7 | S2 | glass pill drops in | 6 | 102 | fs-872341 click | 0.14 |
+| 8 | S2 | dictation tick | 12 | 108 | fs-872341 click | 0.11 |
+| 9 | S2 | dictation tick | 18 | 114 | fs-872341 click | 0.11 |
+| 10 | S2 | dictation tick | 24 | 120 | fs-872341 click | 0.11 |
+| 11 | S2 | dictation tick | 30 | 126 | fs-872341 click | 0.11 |
+| 12 | S2 | dictation tick | 36 | 132 | fs-872341 click | 0.11 |
+| 13 | S2 | query submits | 40 | 136 | fs-278205 switch | 0.22 |
+| 14 | S2 | "another bakery" row | 46 | 142 | fs-879272 low thud | 0.22 |
+| 15 | S2 | YOUR SHOP row lands | 58 | 154 | fs-879272 low thud | 0.4 |
+| 16 | S2 | crop marks snap | 62 | 158 | fs-131359 paper slap | 0.3 |
+| 17 | S2 | pen starts tracing | 66 | 162 | fs-630019 page turn | 0.35 |
+| 18 | S2 | pen closes the ring | 90 | 186 | fs-878247 glass ping | 0.32 |
+| 19 | S2 | FOUND row goes to ink | 94 | 190 | fs-131359 paper slap | 0.45 |
+| 20 | S2 | "GET FOUND." lands | 104 | 200 | fs-879272 low thud | 0.5 |
+| 21 | S2 | "GET CHOSEN." lands | 114 | 210 | fs-879272 low thud | 0.34 |
+| 22 | S2 | "websites for main street" | 124 | 220 | fs-131359 paper slap | 0.4 |
+| 23 | S4 | desk + wall in | 0 | 248 | fs-879272 low thud | 0.35 |
+| 24 | S4 | stack presses down | 8 | 256 | fs-879272 low thud | 0.3 |
+| 25 | S4 | stack pulls back | 18 | 266 | fs-872341 click | 0.18 |
+| 26 | S4 | "a slow page" card deals | 34 | 282 | fs-131359 paper slap | 0.7 |
+| 27 | S4 | "a pin three streets off" card | 74 | 322 | fs-131359 paper slap | 0.73 |
+| 28 | S4 | third card picks up | 118 | 366 | fs-131359 paper slap | 0.4 |
+| 29 | S4 | "a form nobody answers" card | 122 | 370 | fs-131359 paper slap | 0.76 |
+| 30 | S4 | "they leave" turn card | 140 | 388 | fs-131359 paper slap | 0.79 |
+| 31 | S4 | turn card ping | 146 | 394 | fs-878247 glass ping | 0.35 |
+| 32 | S5 | headline in | 3 | 427 | fs-879272 low thud | 0.4 |
+| 33 | S5 | "keep it simple" note | 10 | 434 | fs-879272 low thud | 0.35 |
+| 34 | S5 | BRIEF rolls in | 46 | 470 | fs-278205 switch | 0.45 |
+| 35 | S5 | BUILD rolls in | 58 | 482 | fs-278205 switch | 0.45 |
+| 36 | S5 | SHIP rolls in | 70 | 494 | fs-278205 switch | 0.45 |
+| 37 | S5 | SHIP stamp | 76 | 500 | fs-879272 low thud | 0.3 |
+| 38 | S7 | card 1 pops onto the ring | 22 | 546 | fs-131359 paper slap | 0.7 |
+| 39 | S7 | card 2 pops | 28 | 552 | fs-131359 paper slap | 0.7 |
+| 40 | S7 | card 3 pops | 34 | 558 | fs-131359 paper slap | 0.7 |
+| 41 | S7 | riser starts under "SHIP" (peaks as the ring assembles) | 40 | 564 | fs-859482 riser | 0.4 |
+| 42 | S7 | ₹599 lights | 46 | 570 | fs-878247 glass ping | 0.4 |
+| 43 | S7 | ring whips to 1,199 | 70 | 594 | fs-278205 switch | 0.3 |
+| 44 | S7 | ₹1,199 lights | 78 | 602 | fs-878247 glass ping | 0.4 |
+| 45 | S7 | ring whips to 2,199 | 82 | 606 | fs-278205 switch | 0.3 |
+| 46 | S7 | ₹2,199 lights | 88 | 612 | fs-878247 glass ping | 0.4 |
+| 47 | S7 | "everything handled" note | 120 | 644 | fs-278205 switch | 0.3 |
+| 48 | S8 | HOSTING card lifts | 16 | 708 | fs-872341 click | 0.2 |
+| 49 | S8 | MAINTENANCE card lifts | 40 | 732 | fs-872341 click | 0.2 |
+| 50 | S8 | HOSTING drops back | 48 | 740 | fs-131359 paper slap | 0.3 |
+| 51 | S8 | DOMAIN card lifts | 64 | 756 | fs-872341 click | 0.2 |
+| 52 | S8 | MAINTENANCE drops back | 72 | 764 | fs-131359 paper slap | 0.3 |
+| 53 | S8 | "in every plan" note | 74 | 766 | fs-878247 glass ping | 0.25 |
+| 54 | S9 | room in / the bill | 0 | 812 | fs-879272 low thud | 0.32 |
+| 55 | S9 | ₹1,199 digits settle | 34 | 846 | fs-872341 click | 0.2 |
+| 56 | S9 | camera lands on the toggle | 56 | 868 | fs-872341 click | 0.3 |
+| 57 | S9 | toggle flips YEARLY | 104 | 916 | fs-278205 switch | 0.6 |
+| 58 | S9 | SAVE 10% stamp | 114 | 926 | fs-131359 paper slap | 0.55 |
+| 59 | S9 | ₹12,948 digits settle | 118 | 930 | fs-872341 click | 0.2 |
+| 60 | S9 | camera lands on the receipt | 138 | 950 | fs-879272 low thud | 0.4 |
+| 61 | S9 | receipt note | 142 | 954 | fs-878247 glass ping | 0.22 |
+| 62 | S10 | badge drops | 7 | 987 | fs-879272 low thud | 0.4 |
+| 63 | S10 | plan print 1 | 26 | 1006 | fs-131359 paper slap | 0.6 |
+| 64 | S10 | wordmark locks | 27 | 1007 | fs-878247 glass ping | 0.35 |
+| 65 | S10 | plan print 2 | 34 | 1014 | fs-131359 paper slap | 0.6 |
+| 66 | S10 | plan print 3 | 42 | 1022 | fs-131359 paper slap | 0.6 |
+| 67 | S10 | sign-off scribble | 132 | 1112 | fs-630019 page turn | 0.9 |
+| 68 | S10 | contact details in | 154 | 1134 | fs-872341 click | 0.4 |
 
 ## Loudness
 
@@ -130,17 +151,17 @@ gate), then every card / word / price beat pinned to those boundaries:
 
 | shot | VO speech (shot-local f) | visual beats (shot-local f) |
 |------|--------------------------|------------------------------|
-| S1 | 9.6–87 | badge 18, type 36, exit 82 |
-| S2 | 9.6–83.7 / 94.5–123 | card out 86, badge 94, head 97, sub 104, CTA 112, stamp 120 |
-| S4 | 9.3–36.3 / 42.3–77.7 / 87.9–128.4 / 130.2–147 | cards 34 / 74 / 122 / turn 140 |
-| S5 | 8.1–37.2 / 45.6–78.6 | note out 40, BRIEF 46, BUILD 58, SHIP 70 |
-| S7 | 9.6–34.5 / 45–79.8 / 79.8–108.9 / 118.8–147 | cards 22/28/34, prices 46 / 78 / 88, note 120 |
-| S8 | 9–42.6 / 50.4–93.6 | rows 16 / 40 / 64, note 74 |
-| S9 | 9.3–39 / 50.1–97.2 / 103.8–147.6 | price 24, flip 104, SAVE 114 |
-| S10 | 9.6–32.7 / 32.7–103.8 / 116.7–146.7 | badge 10, wordmark 8–20, prints 34/44/54, sign 118, contact 132 |
+| S1 | 9.6–87 | shop tags 9–21, hook 60 (holds to the cut) |
+| S2 | 9.6–83.7 / 94.5–123 | pill 6, type 12, submit 40, rows 46/58, marks 62, pen 66–90, found 94, card out 98, head 104, sub 114, note 124 |
+| S4 | 9.3–36.3 / 42.3–77.7 / 87.9–128.4 / 130.2–147 | cards 34 / 74 / 122 / turn 140, out 164 |
+| S5 | 8.1–37.2 / 45.6–78.6 | BRIEF 46, BUILD 58, SHIP 70, stamp 76, out 88 |
+| S7 | 9.6–34.5 / 45–79.8 / 79.8–108.9 / 118.8–147 | pops 22/28/34, ring 70 & 82, prices 46 / 78 / 88, note 120, out 154 |
+| S8 | 9–42.6 / 50.4–93.6 | lifts 16 / 40 / 64, drops 48 / 72, note 74, out 106 |
+| S9 | 9.3–39 / 50.1–97.2 / 103.8–147.6 | price 24, flip 104, SAVE 114, receipt 138, out 156 |
+| S10 | 9.6–32.7 / 32.7–103.8 / 116.7–146.7 | badge 7, wordmark 5–17, prints 26/34/42, sign 118, contact 132 |
 
 Measured on the delivered files (`scripts/verify-av.py`): both variants are
-1156 frames / 38.592s, mean −21.9 dB (with BGM) and −22.7 dB (SFX only), peaks
-−3.1 / −3.2 dB, and every VO line lands at +1.2…+1.5f — one uniform encoder
-delay, no drift. Spot-listen cues 18–21 (collage deal), 29→30 (riser → plan
-cards), 44–45 (estimator flip), 52 (final sign-off).
+1156 frames / 38.592s, mean −22.2 dB (with BGM) and −23.0 dB (SFX only), peaks
+−3.3 / −3.2 dB, and every VO line lands at +1.2…+1.5f — one uniform encoder
+delay, no drift. Spot-listen cues 26–30 (collage deal), 38–41 (plan ring
+assembles), 57–58 (estimator flip), 67 (final sign-off).
