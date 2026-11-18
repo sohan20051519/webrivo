@@ -1,8 +1,7 @@
-// Shot 04 — deck-deal-flyin (adapted): real collage cutouts (story card, to-do
-// note) dealt from a pile onto a paper board with the
-// card's hard-accelerated cue rhythm (cue = 36 + 4k − 0.0792·k(k−1), 8f dive +
-// 4f settle + press), flight ghosts, anticipation beat, camera pulls up.
-// The 4th card is the offer: "your site." — no invented work shown.
+// Shot 04 — deck-deal-flyin: the three things that lose a local customer —
+// slow page, wrong pin, no reply — dealt onto the studio wall on the exact
+// VO beats, then the turn: "so we fix ALL OF IT." 8f dive + 4f settle + press,
+// flight ghosts, anticipation pull, camera settles wide.
 import React from 'react';
 import { AbsoluteFill, Img, Easing, staticFile, useCurrentFrame, interpolate } from 'remotion';
 import { C, FONT, EASE, Grain, Tape, Daisy, Fonts, ramp, bell } from '../theme';
@@ -26,74 +25,143 @@ type Card = {
 
 const PILE = { x: 420, y: 1420 }; // screen coords of pile origin
 
+const LABEL: React.CSSProperties = {
+  fontFamily: FONT.sans, fontWeight: 700, fontSize: 17,
+  letterSpacing: '0.2em', color: C.muted,
+};
+
 const CARDS: Card[] = [
   {
-    // DOM story card — no screenshot; on-brand hero fragment
-    cssW: 563, cssH: 437,
-    tx: 90, ty: 120, rot: -2.2, pileX: 300, pileY: 1000, pileRot: 8,
+    // problem 01 — a page nobody waits for
+    cssW: 430, cssH: 280,
+    tx: 40, ty: 140, rot: -2.5, pileX: 300, pileY: 1000, pileRot: 8,
     render: (
       <div
         style={{
-          width: 563, height: 437, background: C.forest, color: C.off,
-          borderRadius: 10, padding: '28px 32px', display: 'flex', flexDirection: 'column',
-          justifyContent: 'space-between', boxSizing: 'border-box',
-          boxShadow: 'inset 0 0 0 1px rgba(221,227,213,.12)',
+          width: 430, height: 280, background: C.white, borderRadius: 10,
+          padding: '24px 30px', boxSizing: 'border-box',
+          display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
         }}
       >
-        <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 20, letterSpacing: '0.22em', color: C.sage }}>
-          THE STUDIO WALL
+        <div style={LABEL}>PROBLEM 01</div>
+        <div style={{ fontFamily: FONT.display, fontSize: 76, lineHeight: 0.95, color: C.forest }}>
+          SLOW<br />PAGE
         </div>
         <div>
-          <div style={{ fontFamily: FONT.display, fontSize: 86, lineHeight: 0.95, color: C.off }}>GET FOUND.</div>
-          <div style={{ fontFamily: FONT.display, fontSize: 86, lineHeight: 0.95, color: C.sage }}>GET CHOSEN.</div>
+          <div style={{ fontFamily: FONT.hand, fontSize: 32, color: C.muted }}>still loading…</div>
+          <div style={{ height: 12, borderRadius: 6, background: C.sage, marginTop: 8, overflow: 'hidden' }}>
+            <div style={{ width: '14%', height: '100%', background: C.forest }} />
+          </div>
         </div>
-        <div style={{ fontFamily: FONT.hand, fontSize: 34, color: C.sage }}>websites for main street</div>
       </div>
     ),
   },
   {
-    // DOM todo note — no screenshot
-    cssW: 317, cssH: 307,
-    tx: 120, ty: 640, rot: 2.8, pileX: 380, pileY: 1070, pileRot: -11,
+    // problem 02 — the map pin lands three streets off
+    cssW: 430, cssH: 280,
+    tx: 510, ty: 180, rot: 2.8, pileX: 380, pileY: 1070, pileRot: -11,
     render: (
       <div
         style={{
-          width: 317, height: 307, background: '#F6F0D9', color: C.forest,
-          borderRadius: 6, padding: '26px 28px', boxSizing: 'border-box',
+          width: 430, height: 280, background: '#EDEFE6', borderRadius: 10,
+          padding: '24px 30px', boxSizing: 'border-box',
+          display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
           boxShadow: 'inset 0 0 0 1px rgba(24,53,43,.08)',
-          fontFamily: FONT.hand, fontSize: 34, lineHeight: 1.35,
         }}
       >
-        <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 16, letterSpacing: '0.2em', color: C.muted, marginBottom: 10 }}>TODO</div>
-        <div>☐ fix the page</div>
-        <div>☐ claim the pin</div>
-        <div>☐ send the form</div>
-        <div style={{ marginTop: 6, color: C.muted }}>— by Friday</div>
+        <div style={LABEL}>PROBLEM 02</div>
+        <div
+          style={{
+            position: 'relative', height: 118, borderRadius: 8, overflow: 'hidden',
+            background: C.sage, boxShadow: 'inset 0 0 0 1px rgba(24,53,43,.1)',
+          }}
+        >
+          {[24, 58, 92].map((x) => (
+            <div key={`v${x}`} style={{ position: 'absolute', left: `${x}%`, top: 0, bottom: 0, width: 1, background: 'rgba(24,53,43,.12)' }} />
+          ))}
+          {[30, 70].map((y) => (
+            <div key={`h${y}`} style={{ position: 'absolute', top: `${y}%`, left: 0, right: 0, height: 1, background: 'rgba(24,53,43,.12)' }} />
+          ))}
+          {/* where they actually are */}
+          <div
+            style={{
+              position: 'absolute', left: '76%', top: '38%', width: 46, height: 46,
+              marginLeft: -23, marginTop: -23, borderRadius: '50%',
+              border: `2px dashed ${C.forest}`, opacity: 0.7,
+            }}
+          />
+          {/* the wrong pin */}
+          <div style={{ position: 'absolute', left: '24%', top: '52%', transform: 'translate(-50%,-100%)' }}>
+            <svg width={34} height={45} viewBox="0 0 72 96">
+              <path d="M36 0 C16 0 0 16 0 36 C0 62 36 96 36 96 C36 96 72 62 72 36 C72 16 56 0 36 0 Z" fill={C.forest} />
+              <circle cx={36} cy={36} r={12} fill={C.sage} />
+            </svg>
+          </div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+          <div style={{ fontFamily: FONT.display, fontSize: 46, color: C.forest, lineHeight: 1 }}>WRONG PIN</div>
+          <div style={{ fontFamily: FONT.hand, fontSize: 26, color: C.muted }}>3 streets off</div>
+        </div>
       </div>
     ),
   },
   {
-    // the offer card — hand lettered
-    cssW: 360, cssH: 300,
-    tx: 480, ty: 700, rot: -5, pileX: 240, pileY: 1110, pileRot: 14,
+    // problem 03 — the enquiry that never gets answered
+    cssW: 400, cssH: 260,
+    tx: 60, ty: 480, rot: 1.6, pileX: 240, pileY: 1110, pileRot: 14,
     render: (
       <div
         style={{
-          width: 360, height: 300, background: C.forest, color: C.off,
-          borderRadius: 10, display: 'flex', flexDirection: 'column',
-          alignItems: 'center', justifyContent: 'center', gap: 6,
-          fontFamily: FONT.sans,
+          width: 400, height: 260, background: C.white, borderRadius: 10,
+          padding: '24px 30px', boxSizing: 'border-box',
+          display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
         }}
       >
-        <span style={{ fontFamily: FONT.hand, fontSize: 64, color: C.sage }}>yours could be</span>
-        <span style={{ fontFamily: FONT.display, fontSize: 96, lineHeight: 1 }}>NEXT</span>
+        <div style={LABEL}>PROBLEM 03</div>
+        <div style={{ fontFamily: FONT.display, fontSize: 74, lineHeight: 0.95, color: C.forest }}>NO REPLY</div>
+        <div>
+          <div
+            style={{
+              display: 'flex', alignItems: 'center', gap: 10,
+              background: C.sage, borderRadius: 8, padding: '10px 14px',
+            }}
+          >
+            <div style={{ width: 9, height: 9, borderRadius: 5, background: C.forest }} />
+            <div style={{ fontFamily: FONT.sans, fontWeight: 600, fontSize: 20, color: C.forest }}>
+              New enquiry
+            </div>
+            <div style={{ flex: 1 }} />
+            <div style={{ fontFamily: FONT.hand, fontSize: 26, color: C.muted }}>3 days ago</div>
+          </div>
+        </div>
+      </div>
+    ),
+  },
+  {
+    // the turn — this is what we fix
+    cssW: 460, cssH: 300,
+    tx: 470, ty: 620, rot: -3, pileX: 420, pileY: 1010, pileRot: -6,
+    render: (
+      <div
+        style={{
+          width: 460, height: 300, background: C.forest, color: C.off,
+          borderRadius: 10, padding: '28px 34px', boxSizing: 'border-box',
+          display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 2,
+        }}
+      >
+        <span style={{ fontFamily: FONT.hand, fontSize: 46, color: C.sage }}>so we fix</span>
+        <span style={{ fontFamily: FONT.display, fontSize: 76, lineHeight: 0.95 }}>ALL OF IT.</span>
+        <span style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 17, letterSpacing: '0.2em', color: C.muted, marginTop: 10 }}>
+          ONE STUDIO · ONE BILL
+        </span>
       </div>
     ),
   },
 ];
 
-// tuned deal rhythm from the card
-const cue = (k: number) => 36 + 4 * k - 0.0792 * k * (k - 1);
+// cards land on the story beats (VO names each problem in turn)
+const LAND = [14, 47, 92, 124];
+const cue = (k: number) => LAND[k] - 12;
 const DIVE_EASE = EASE.smooth;
 const SETTLE_EASE = Easing.bezier(0.3, 0, 0.25, 1.15);
 

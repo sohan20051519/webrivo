@@ -87,7 +87,7 @@ export const Outro: React.FC = () => {
         }}
       >
         {WORD.split('').map((ch, i) => {
-          const delay = 64 + i * 3;
+          const delay = 24 + i * 3;
           const t = ramp(frame, delay, 12, EASE.press);
           const glintCenter = delay + 12;
           const glint = (() => {

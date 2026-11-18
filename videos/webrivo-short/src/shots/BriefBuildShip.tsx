@@ -17,7 +17,7 @@ export const BriefBuildShip: React.FC = () => {
 
   // roll position: word i is centred & held during segment i ([i*STEP,(i+1)*STEP));
   // at each segment start it rolls in from the previous word over TRANS frames
-  const STEP = 44;
+  const STEP = 40;
   const TRANS = 14;
   const seg = Math.min(WORDS.length - 1, Math.floor(frame / STEP));
   const segT = seg === 0 ? 1 : Math.min(1, (frame - seg * STEP) / TRANS);

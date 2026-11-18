@@ -32,27 +32,39 @@ const PEAK: Record<string, number> = {
 };
 
 const CUES: Cue[] = [
-  // S1 BrandOpen — badge stamp, typewriter, exit lift
+  // S1 BrandOpen — film open, badge stamp, typewriter, exit lift
+  { shot: 'Shot01BrandOpen', at: 0, file: 'fs-879272.mp3', vol: 0.32 },
   { shot: 'Shot01BrandOpen', at: 30, file: 'fs-879272.mp3', vol: 0.55 },
   { shot: 'Shot01BrandOpen', at: 44, file: 'fs-630019.mp3', vol: 1.4 },
   { shot: 'Shot01BrandOpen', at: 126, file: 'fs-449645.mp3', vol: 0.6 },
-  // S2 Hero — camera crash-in tail, Caveat stamp, whip-up exit
-  { shot: 'Shot02Hero', at: 140, file: 'fs-879272.mp3', vol: 0.3 },
-  { shot: 'Shot02Hero', at: 164, file: 'fs-131359.mp3', vol: 0.45 },
+  // S2 Hero — search typing, result rows, the FOUND moment, promise, exit
+  { shot: 'Shot02Hero', at: 14, file: 'fs-872341.mp3', vol: 0.16 },
+  { shot: 'Shot02Hero', at: 34, file: 'fs-872341.mp3', vol: 0.16 },
+  { shot: 'Shot02Hero', at: 52, file: 'fs-872341.mp3', vol: 0.16 },
+  { shot: 'Shot02Hero', at: 44, file: 'fs-879272.mp3', vol: 0.24 },
+  { shot: 'Shot02Hero', at: 60, file: 'fs-879272.mp3', vol: 0.42 },
+  { shot: 'Shot02Hero', at: 66, file: 'fs-878247.mp3', vol: 0.38 },
+  { shot: 'Shot02Hero', at: 84, file: 'fs-449645.mp3', vol: 0.5 },
+  { shot: 'Shot02Hero', at: 102, file: 'fs-879272.mp3', vol: 0.5 },
+  { shot: 'Shot02Hero', at: 132, file: 'fs-278205.mp3', vol: 0.28 },
+  { shot: 'Shot02Hero', at: 158, file: 'fs-131359.mp3', vol: 0.4 },
+  { shot: 'Shot02Hero', at: 186, file: 'fs-131359.mp3', vol: 0.5 },
   { shot: 'Shot02Hero', at: 224, file: 'fs-449645.mp3', vol: 0.7 },
   // S3 Title "MADE FOR MAIN STREET"
   { shot: 'Shot03Title', at: 8, file: 'fs-879272.mp3', vol: 0.5 },
-  // S4 Collage — board lands, 4 cards dealt on the accelerated cue rhythm
+  // S4 Collage — board lands, then the three problems land on the VO beats
   { shot: 'Shot04Collage', at: 4, file: 'fs-879272.mp3', vol: 0.4 },
-  { shot: 'Shot04Collage', at: 48, file: 'fs-131359.mp3', vol: 0.65 },
-  { shot: 'Shot04Collage', at: 52, file: 'fs-131359.mp3', vol: 0.7 },
-  { shot: 'Shot04Collage', at: 56, file: 'fs-131359.mp3', vol: 0.7 },
+  { shot: 'Shot04Collage', at: 14, file: 'fs-131359.mp3', vol: 0.65 },
+  { shot: 'Shot04Collage', at: 47, file: 'fs-131359.mp3', vol: 0.7 },
+  { shot: 'Shot04Collage', at: 92, file: 'fs-131359.mp3', vol: 0.7 },
+  { shot: 'Shot04Collage', at: 124, file: 'fs-131359.mp3', vol: 0.75 },
+  { shot: 'Shot04Collage', at: 130, file: 'fs-878247.mp3', vol: 0.35 },
   // S5 Process — word impacts, rolls, stamp + seal
   { shot: 'Shot05Process', at: 3, file: 'fs-879272.mp3', vol: 0.4 },
   { shot: 'Shot05Process', at: 10, file: 'fs-879272.mp3', vol: 0.35 },
-  { shot: 'Shot05Process', at: 44, file: 'fs-278205.mp3', vol: 0.45 },
+  { shot: 'Shot05Process', at: 40, file: 'fs-278205.mp3', vol: 0.45 },
   { shot: 'Shot05Process', at: 46, file: 'fs-879272.mp3', vol: 0.3 },
-  { shot: 'Shot05Process', at: 88, file: 'fs-278205.mp3', vol: 0.45 },
+  { shot: 'Shot05Process', at: 80, file: 'fs-278205.mp3', vol: 0.45 },
   // S6 Title "PICK YOUR PLAN" + riser into the first plan card
   { shot: 'Shot06Title', at: 8, file: 'fs-879272.mp3', vol: 0.5 },
   { shot: 'Shot06Title', at: 0, file: 'fs-859482.mp3', vol: 0.4 },
@@ -82,25 +94,20 @@ const CUES: Cue[] = [
 ];
 
 const VO = [
-  { id: 's1', start: 24, vol: 0.95 },
-  { id: 's2', start: 152, vol: 0.95 },
-  { id: 's4', start: 438, vol: 0.95 },
-  { id: 's5', start: 634, vol: 0.95 },
-  { id: 's7', start: 838, vol: 0.95 },
-  { id: 's8', start: 1022, vol: 0.95 },
-  { id: 's9', start: 1172, vol: 0.95 },
-  { id: 's10', start: 1450, vol: 0.95 },
+  { id: 's1', start: 24, dur: 90, vol: 0.95 },
+  { id: 's2', start: 152, dur: 141, vol: 0.95 },
+  { id: 's4', start: 440, dur: 163, vol: 0.95 },
+  { id: 's5', start: 618, dur: 91, vol: 0.95 },
+  { id: 's7', start: 836, dur: 161, vol: 0.95 },
+  { id: 's8', start: 1016, dur: 108, vol: 0.95 },
+  { id: 's9', start: 1170, dur: 162, vol: 0.95 },
+  { id: 's10', start: 1356, dur: 161, vol: 0.95 },
 ];
 
-// BGM base gain, ducked under VO (0.14) with 8f ramps
+// BGM base gain, ducked under each VO line (0.14) with 8f ramps
 const bgmGain = (f: number) => {
-  let g = 0.32;
-  const ducked = VO.some(({ start }) => {
-    const dur = start === 24 ? 97 : start === 152 ? 153 : start === 438 ? 178 : start === 634 ? 118 : start === 838 ? 167 : start === 1022 ? 135 : start === 1172 ? 149 : 92;
-    return f >= start - 8 && f <= start + dur + 8;
-  });
-  if (ducked) g = 0.14;
-  return g;
+  const ducked = VO.some(({ start, dur }) => f >= start - 8 && f <= start + dur + 8);
+  return ducked ? 0.14 : 0.32;
 };
 
 export const AudioTrack: React.FC<{ bgm?: boolean }> = ({ bgm = true }) => (

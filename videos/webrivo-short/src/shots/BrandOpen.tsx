@@ -8,6 +8,34 @@ import { C, FONT, EASE, Grain, Badge, Fonts, ramp } from '../theme';
 export const DURATION = 140;
 const WORD = 'WEBRIVO';
 
+// main-street marquee: the businesses this studio builds for, drifting behind
+// the wordmark (sets the story before a single line is spoken)
+const TRADES = 'BAKERY · TAILOR · FLORIST · SALON · CAFE · PLUMBER · BOOKSHOP · STUDIO · PHARMACY · ELECTRICIAN · ';
+const BAND_W = 1800;
+
+const Marquee: React.FC<{
+  frame: number; top: number; dir: 1 | -1; speed: number; size: number; opacity: number;
+}> = ({ frame, top, dir, speed, size, opacity }) => {
+  const t = (frame * speed) % BAND_W;
+  const x = dir === 1 ? -BAND_W + t : -t;
+  return (
+    <div style={{ position: 'absolute', left: 0, right: 0, top, overflow: 'hidden', opacity }}>
+      <div
+        style={{
+          display: 'flex', width: 'max-content', whiteSpace: 'nowrap',
+          transform: `translateX(${x}px)`,
+          fontFamily: FONT.sans, fontWeight: 700, fontSize: size,
+          letterSpacing: '0.18em', color: C.muted,
+        }}
+      >
+        {Array.from({ length: 3 }).map((_, i) => (
+          <span key={i}>{TRADES}</span>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 export const BrandOpen: React.FC = () => {
   const frame = useCurrentFrame();
 
@@ -52,6 +80,10 @@ export const BrandOpen: React.FC = () => {
         backgroundImage: `radial-gradient(1100px 750px at 50% 42%, ${C.white}, transparent 65%)`,
       }}
     >
+      {/* main-street marquee bands — the story's setting */}
+      <Marquee frame={frame} top={188} dir={1} speed={1.15} size={34} opacity={0.24 * (1 - out)} />
+      <Marquee frame={frame} top={1600} dir={-1} speed={0.85} size={34} opacity={0.24 * (1 - out)} />
+
         <div style={{ textAlign: 'center', opacity: 1 - out, transform: `translateY(${-out * 40}px) scale(${1 - out * 0.12})` }}>
           {/* registration marks */}
           <svg width={72} height={72} viewBox="0 0 72 72" style={{ display: 'block', margin: '0 auto 4px', opacity: markFade }}>
