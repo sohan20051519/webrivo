@@ -6,7 +6,7 @@ import React from 'react';
 import { AbsoluteFill, Img, Easing, staticFile, useCurrentFrame, interpolate } from 'remotion';
 import { C, FONT, EASE, Grain, Tape, Daisy, Fonts, ramp, bell } from '../theme';
 
-export const DURATION = 170;
+export const DURATION = 176;
 
 const BOARD = { w: 980, h: 1080 };
 const boardX = (1080 - BOARD.w) / 2;
@@ -159,8 +159,10 @@ const CARDS: Card[] = [
   },
 ];
 
-// cards land on the story beats (VO names each problem in turn)
-const LAND = [14, 47, 92, 124];
+// cards land on the story beats (VO names each problem in turn):
+// "A slow page." / "A pin three streets off." / "A form nobody answers." / "They leave."
+export const BEATS = { land: [34, 74, 122, 140], out: 164 };
+const LAND = BEATS.land;
 const cue = (k: number) => LAND[k] - 12;
 const DIVE_EASE = EASE.smooth;
 const SETTLE_EASE = Easing.bezier(0.3, 0, 0.25, 1.15);
@@ -248,7 +250,7 @@ const DealCard: React.FC<{ card: Card; k: number; frame: number; antT: number; c
 const camZAt = (f: number) => {
   const z1 = 1.22, z2 = 1.0;
   const t = ramp(f, 34, 70, EASE.smooth);
-  return z1 + (z2 - z1) * t + (f > 120 ? 0.012 * ramp(f, 120, 40, EASE.smooth) : 0);
+  return z1 + (z2 - z1) * t + (f > 140 ? 0.012 * ramp(f, 140, 24, EASE.smooth) : 0);
 };
 
 export const CollageDeal: React.FC = () => {
@@ -256,7 +258,7 @@ export const CollageDeal: React.FC = () => {
   const antT = ramp(frame, 26, 10, EASE.out);
   const camZ = camZAt(frame);
   const inT = ramp(frame, 0, 14, EASE.out);
-  const outT = ramp(frame, 156, 14, EASE.power4In);
+  const outT = ramp(frame, BEATS.out, 12, EASE.power4In);
 
   return (
     <AbsoluteFill style={{ backgroundColor: C.sage, overflow: 'hidden' }}>
@@ -305,8 +307,8 @@ export const CollageDeal: React.FC = () => {
         ))}
 
         {/* tape + daisy dressing once board is full */}
-        <Tape w={230} rot={-8} style={{ left: boardX + 700, top: boardY - 24, opacity: ramp(frame, 120, 10, EASE.out) }} />
-        <Daisy size={64} rot={-12} style={{ left: boardX + 60, top: boardY - 40, opacity: 0.95 * ramp(frame, 126, 10, EASE.out) }} />
+        <Tape w={230} rot={-8} style={{ left: boardX + 700, top: boardY - 24, opacity: ramp(frame, 116, 10, EASE.out) }} />
+        <Daisy size={64} rot={-12} style={{ left: boardX + 60, top: boardY - 40, opacity: 0.95 * ramp(frame, 122, 10, EASE.out) }} />
       </div>
 
       <Grain opacity={0.1} />

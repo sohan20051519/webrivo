@@ -6,17 +6,20 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { C, FONT, EASE, Grain, Tape, Daisy, Badge, Fonts, ramp, bell } from '../theme';
 
-export const DURATION = 240;
+export const DURATION = 152;
 
 const QUERY = 'bakery near me';
 
-// story beats (shot-local frames)
+// story beats (shot-local frames) — pinned to the two spoken sentences:
+// "Right now, someone nearby is searching for yours." / "We make sure they find it."
+export const BEATS = { cardOut: 86, badge: 94, head: 97, sub: 104, cta: 112, stamp: 120, out: 140 };
+
 const TYPE_START = 12;
-const TYPE_PER = 3.2;   // frames per character
-const ROW_A = 42;       // "another bakery"
-const ROW_B = 58;       // "your shop" — the found moment
-const NOTE = 74;
-const CARD_OUT = 92;    // search card leaves, promise takes the frame
+const TYPE_PER = 2.4;   // frames per character
+const ROW_A = 44;       // "another bakery"
+const ROW_B = 56;       // "your shop" — the found moment
+const NOTE = 72;
+const CARD_OUT = BEATS.cardOut;    // search card leaves, promise takes the frame
 
 const Magnifier: React.FC<{ size: number; color: string }> = ({ size, color }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -96,7 +99,7 @@ export const HeroShot: React.FC = () => {
   const frame = useCurrentFrame();
 
   const inT = ramp(frame, 0, 14, EASE.out);
-  const outT = ramp(frame, 224, 16, EASE.power4In);
+  const outT = ramp(frame, BEATS.out, 12, EASE.power4In);
 
   // search card
   const cardT = ramp(frame, 0, 12, EASE.out);
@@ -109,13 +112,13 @@ export const HeroShot: React.FC = () => {
   const noteT = ramp(frame, NOTE, 10, EASE.out);
 
   // promise
-  const badgeT = ramp(frame, 104, 10, EASE.power4In);
+  const badgeT = ramp(frame, BEATS.badge, 9, EASE.power4In);
   const badgeScale = 2.2 - 1.2 * badgeT;
   const badgeRot = -24 + 15 * badgeT;
-  const headT = ramp(frame, 110, 12, EASE.power4In);
-  const subT = ramp(frame, 136, 12, EASE.out);
-  const ctaT = ramp(frame, 162, 12, EASE.power4In);
-  const stampT = ramp(frame, 188, 12, EASE.power4In);
+  const headT = ramp(frame, BEATS.head, 11, EASE.power4In);
+  const subT = ramp(frame, BEATS.sub, 11, EASE.out);
+  const ctaT = ramp(frame, BEATS.cta, 11, EASE.power4In);
+  const stampT = ramp(frame, BEATS.stamp, 11, EASE.power4In);
   const stampRot = 14 - 26 * stampT;
 
   return (

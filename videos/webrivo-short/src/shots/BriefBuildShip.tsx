@@ -1,37 +1,41 @@
 // Shot 05 — vertical-word-roll-blur-cycle (adapted): the process line
-// BRIEF → BUILD → SHIP rolls through a masked window on forest, blur on the
-// fast pass, each word stamps on a beat.
+// "so we keep it simple" → BRIEF → BUILD → SHIP rolls through a masked window
+// on forest, blur on the fast pass, each word stamps on its spoken beat.
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { C, FONT, EASE, Grain, Tape, Daisy, Fonts, ramp, bell } from '../theme';
 
-export const DURATION = 170;
+export const DURATION = 100;
 
 const WORDS = ['BRIEF', 'BUILD', 'SHIP'];
 const WINDOW_H = 240;
 
+// word centres, pinned to "Brief, build, ship." (s5 at 1.52 / 1.95 / 2.35 s)
+export const BEATS = { roll: [46, 58, 70], out: 88 };
+const AT = BEATS.roll;
+const TRANS = 10;
+
 export const BriefBuildShip: React.FC = () => {
   const frame = useCurrentFrame();
   const inT = ramp(frame, 0, 12, EASE.out);
-  const outT = ramp(frame, 156, 14, EASE.power4In);
+  const outT = ramp(frame, BEATS.out, 12, EASE.power4In);
 
-  // roll position: word i is centred & held during segment i ([i*STEP,(i+1)*STEP));
-  // at each segment start it rolls in from the previous word over TRANS frames
-  const STEP = 40;
-  const TRANS = 14;
-  const seg = Math.min(WORDS.length - 1, Math.floor(frame / STEP));
-  const segT = seg === 0 ? 1 : Math.min(1, (frame - seg * STEP) / TRANS);
+  // which word is centred, and how far the roll has travelled (float index)
+  const seg = frame < AT[0] ? -1 : AT.reduce((k, a, i) => (frame >= a ? i : k), 0);
+  const segT = seg <= 0 ? 0 : Math.min(1, (frame - AT[seg]) / TRANS);
   const easedSeg = segT * segT * (3 - 2 * segT);
-  const progress = Math.max(0, seg - 1 + easedSeg);
+  const progress = seg < 0 ? 0 : seg === 0 ? 0 : seg - 1 + easedSeg;
   const rolling = seg > 0 && segT < 1;
 
   // blur peaks mid-roll
   const blur = rolling ? 10 * Math.sin(segT * Math.PI) : 0;
   const lineH = WINDOW_H * 0.86;
 
-  // SHIP stamp (SHIP lands when segment 2 begins)
-  const rollEnd = (WORDS.length - 1) * STEP;
-  const stampT = ramp(frame, rollEnd + 4, 10, EASE.power4In);
+  // SHIP stamp (lands with the last word)
+  const stampT = ramp(frame, AT[2] + 4, 10, EASE.power4In);
+
+  // the opening line, held while "so we keep it simple" is spoken
+  const noteT = ramp(frame, 0, 10, EASE.out) * (1 - ramp(frame, AT[0] - 6, 8, EASE.smooth));
 
   return (
     <AbsoluteFill style={{ backgroundColor: C.forest, overflow: 'hidden' }}>
@@ -52,15 +56,29 @@ export const BriefBuildShip: React.FC = () => {
         <div
           style={{
             marginTop: 28, height: WINDOW_H, width: 900, overflow: 'hidden',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative',
           }}
         >
-          <div style={{ transform: `translateY(${lineH * (1 - progress)}px)`, filter: `blur(${blur}px)`, willChange: 'transform' }}>
+          <div
+            style={{
+              position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              opacity: noteT, transform: `translateY(${(1 - noteT) * 18}px)`,
+              fontFamily: FONT.hand, fontSize: 92, lineHeight: 1.05, color: C.sage, textAlign: 'center',
+            }}
+          >
+            so we keep<br />it simple.
+          </div>
+
+          <div
+            style={{
+              transform: `translateY(${lineH * (1 - progress)}px)`, filter: `blur(${blur}px)`,
+              willChange: 'transform', opacity: ramp(frame, AT[0] - 4, 8, EASE.out),
+            }}
+          >
             {WORDS.map((w, i) => {
-              const landedAt = i * STEP;
+              const landedAt = AT[i];
               const landed = frame >= landedAt + (i === 2 ? 0 : 2);
               const impact = bell(frame, landedAt + (i === 0 ? 10 : 2), 4);
-              const t = landed ? 1 : 0;
               return (
                 <div
                   key={w}
@@ -89,12 +107,22 @@ export const BriefBuildShip: React.FC = () => {
               key={w}
               style={{
                 width: i === 2 ? 74 : 34, height: 8, borderRadius: 4,
-                background: frame >= i * STEP + (i === 2 ? 2 : 2) ? C.off : 'rgba(244,245,239,.28)',
+                background: frame >= AT[i] + 2 ? C.off : 'rgba(244,245,239,.28)',
               }}
             />
           ))}
         </div>
 
+        {/* the stamp under SHIP */}
+        <div
+          style={{
+            marginTop: 40, height: 60, display: 'flex', alignItems: 'center',
+            fontFamily: FONT.hand, fontSize: 54, color: C.off,
+            opacity: stampT, transform: `rotate(-3deg) scale(${0.86 + 0.14 * stampT})`,
+          }}
+        >
+          you only pay monthly
+        </div>
       </div>
 
       <Tape w={280} rot={-16} tone="clear" style={{ left: 96, top: 210, opacity: inT }} />

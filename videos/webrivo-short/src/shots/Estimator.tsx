@@ -6,9 +6,12 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { C, FONT, EASE, Grain, Tape, Fonts, ramp, bell } from '../theme';
 
-export const DURATION = 180;
+export const DURATION = 168;
 
-const FLIP = 70; // toggle flips to yearly
+// toggle flips on "and save ten percent yearly"; the monthly price is already
+// on screen while "See the exact price up front" is spoken
+const FLIP = 104;
+export const BEATS = { price: 24, flip: FLIP, save: FLIP + 10, out: 156 };
 const DIGITS = '0123456789';
 
 const DigitColumn: React.FC<{ ch: string; delay: number; lineH: number; size: number; color: string }> = ({
@@ -63,12 +66,12 @@ const DigitRoll: React.FC<{ value: string; delay: number; color: string; size: n
 export const Estimator: React.FC = () => {
   const frame = useCurrentFrame();
   const inT = ramp(frame, 0, 12, EASE.out);
-  const outT = ramp(frame, 168, 12, EASE.power4In);
+  const outT = ramp(frame, BEATS.out, 12, EASE.power4In);
   const yearly = frame >= FLIP;
 
   const thumbT = ramp(frame, FLIP, 12, EASE.smooth);
-  const saveT = ramp(frame, FLIP + 10, 9, EASE.power4In);
-  const saveBell = bell(frame, FLIP + 12, 5);
+  const saveT = ramp(frame, BEATS.save, 9, EASE.power4In);
+  const saveBell = bell(frame, BEATS.save + 2, 5);
 
   return (
     <AbsoluteFill style={{ backgroundColor: C.off, overflow: 'hidden' }}>
@@ -154,7 +157,7 @@ export const Estimator: React.FC = () => {
             key={yearly ? 'y' : 'm'}
             style={{ display: 'inline-flex', alignItems: 'baseline' }}
           >
-            <DigitRoll value={yearly ? '₹12,948' : '₹1,199'} delay={yearly ? FLIP + 12 : 26} color={C.forest} size={190} />
+            <DigitRoll value={yearly ? '₹12,948' : '₹1,199'} delay={yearly ? FLIP + 12 : BEATS.price} color={C.forest} size={190} />
             <span
               style={{
                 fontFamily: FONT.display, fontSize: 84, color: C.muted, marginLeft: 18,
@@ -169,20 +172,20 @@ export const Estimator: React.FC = () => {
           style={{
             position: 'absolute', left: 0, right: 0, top: 1150, textAlign: 'center',
             fontFamily: FONT.sans, fontWeight: 600, fontSize: 36, color: C.muted,
-            opacity: ramp(frame, yearly ? FLIP + 34 : 60, 12, EASE.out),
+            opacity: ramp(frame, yearly ? FLIP + 24 : 46, 12, EASE.out),
           }}
         >
-          {yearly ? 'that’s a year, paid once' : 'no lock-in games — 6-month minimum'}
+          {yearly ? 'that’s a year, paid once' : 'the full price, up front — nothing hidden'}
         </div>
 
         <div
           style={{
             position: 'absolute', left: 0, right: 0, top: 1330, textAlign: 'center',
             fontFamily: FONT.hand, fontSize: 68, color: C.forest,
-            opacity: ramp(frame, 128, 12, EASE.out),
+            opacity: ramp(frame, 28, 12, EASE.out),
           }}
         >
-          pick your extras → price updates live
+          no surprises. that’s the whole bill.
         </div>
       </div>
 

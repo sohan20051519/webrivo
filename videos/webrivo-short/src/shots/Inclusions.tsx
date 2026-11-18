@@ -5,18 +5,21 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { C, FONT, EASE, Grain, Tape, Daisy, Fonts, ramp, bell } from '../theme';
 
-export const DURATION = 150;
+export const DURATION = 120;
 
 const ROWS = [
-  { text: 'HOSTING', sub: 'fast, maintained, ours to worry about', rot: -1.4, y: 640 },
-  { text: 'MAINTENANCE', sub: 'updates while you run the shop', rot: 1.1, y: 960 },
-  { text: 'DOMAIN', sub: 'your .in, on us', rot: -0.7, y: 1280 },
+  { text: 'HOSTING', sub: 'fast, maintained, ours to worry about', rot: -1.4, y: 640, at: 16 },
+  { text: 'MAINTENANCE', sub: 'updates while you run the shop', rot: 1.1, y: 960, at: 40 },
+  { text: 'DOMAIN', sub: 'your .in, on us', rot: -0.7, y: 1280, at: 64 },
 ];
+
+// pinned to "Hosting, maintenance, your domain — in every plan."
+export const BEATS = { note: 74, out: 106 };
 
 export const Inclusions: React.FC = () => {
   const frame = useCurrentFrame();
   const bgIn = ramp(frame, 0, 12, EASE.out);
-  const bgOut = ramp(frame, 138, 12, EASE.power4In);
+  const bgOut = ramp(frame, BEATS.out, 12, EASE.power4In);
 
   return (
     <AbsoluteFill style={{ backgroundColor: C.forest, overflow: 'hidden' }}>
@@ -33,7 +36,7 @@ export const Inclusions: React.FC = () => {
         </div>
 
         {ROWS.map((r, k) => {
-          const start = 22 + k * 34;
+          const start = r.at;
           const t = ramp(frame, start, 10, EASE.power4In);
           const press = bell(frame, start + 8, 3);
           const impact = bell(frame, start + 8, 4);
@@ -78,7 +81,7 @@ export const Inclusions: React.FC = () => {
           style={{
             position: 'absolute', left: 0, right: 0, bottom: 260, textAlign: 'center',
             fontFamily: FONT.hand, fontSize: 66, color: C.sage,
-            opacity: ramp(frame, 118, 12, EASE.out),
+            opacity: ramp(frame, BEATS.note, 12, EASE.out),
           }}
         >
           even the ₹599 one.

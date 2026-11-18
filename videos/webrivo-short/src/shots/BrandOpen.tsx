@@ -5,7 +5,9 @@ import React from 'react';
 import { AbsoluteFill, interpolate, useCurrentFrame } from 'remotion';
 import { C, FONT, EASE, Grain, Badge, Fonts, ramp } from '../theme';
 
-export const DURATION = 140;
+export const DURATION = 96;
+// shot-local frames other files (audio cues) pin to
+export const BEATS = { badge: 18, type: 36, out: 82 };
 const WORD = 'WEBRIVO';
 
 // main-street marquee: the businesses this studio builds for, drifting behind
@@ -46,30 +48,30 @@ export const BrandOpen: React.FC = () => {
   const hDraw = interpolate(frame, [8, 18], [100, 0], {
     extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: EASE.smooth,
   });
-  const markFade = interpolate(frame, [24, 34], [1, 0], {
+  const markFade = interpolate(frame, [18, 28], [1, 0], {
     extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
   });
 
   // badge: stamps in as the marks fade (scale 2.2 → 1, power4.in — site stamp move)
-  const badgeT = ramp(frame, 22, 10, EASE.power4In);
+  const badgeT = ramp(frame, BEATS.badge, 10, EASE.power4In);
   const badgeScale = 2.2 - 1.2 * badgeT;
   const badgeRot = -24 + 15 * badgeT;
 
   // kicker typewriter (Caveat, hand-written)
   const KICK = 'websites for main street';
-  const perChar = 1.1;
-  const kickStart = 44;
+  const perChar = 0.95;
+  const kickStart = BEATS.type;
   const kickChars = Math.floor(Math.max(0, frame - kickStart) / perChar);
   const kickDone = kickStart + KICK.length * perChar;
   const cursorOn = (() => {
     if (frame < kickStart) return false;
     if (frame < kickDone) return true;
-    if (frame > 118) return false;
+    if (frame > 74) return false;
     return Math.floor((frame - kickDone) / 2) % 2 === 0;
   })();
 
-  // hold ≥1s, then lift+shrink+fade (126 → 140)
-  const out = ramp(frame, 126, 14, EASE.smooth);
+  // hold the finished lockup, then lift+shrink+fade
+  const out = ramp(frame, BEATS.out, 14, EASE.smooth);
 
   return (
     <AbsoluteFill
@@ -109,7 +111,7 @@ export const BrandOpen: React.FC = () => {
           }}
         >
           {WORD.split('').map((ch, i) => {
-            const delay = 14 + i * 4;
+            const delay = 12 + i * 3.2;
             const t = interpolate(frame, [delay, delay + 12], [0, 1], {
               extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: EASE.press,
             });

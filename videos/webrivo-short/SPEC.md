@@ -1,55 +1,84 @@
 # WebRivo Explainer Short — Design Spec (video-shotcraft, mode: autonomous)
 
 ## Phase 0 — Product brief
-- Product: WebRivo — a web agency that designs, builds, hosts and maintains websites for local small businesses ("Main Street").
-- Audience: local business owners scrolling social feeds → **vertical 1080×1920, 30fps** ("scroll-stopping"), ~50s.
-- Voice: no narration; kinetic type + SFX + BGM carry the film.
-- Facts (site-derived, no invention): plans ₹599/mo Basic · ₹1,199/mo Business (Best value) · ₹2,199/mo Premium; every plan includes hosting, maintenance, domain; estimator toggle Monthly/Yearly "SAVE 10%"; contact webrivo.official@gmail.com / +91 9113253753.
-- Positioning line: GET FOUND. GET CHOSEN. Process: BRIEF → BUILD → SHIP.
 
-## Phase 1 — Visual direction (chosen: "print shop亲和活泼")
-Tokens grown from TapeLanding (no new palette):
-- `off #F4F5EF` paper · `sage #DDE3D5` tape · `muted #899982` ink shadow · `forest #18352B` deep bg · `white #FFFFFF` · `ink #202522` text.
-- Type: Anton (condensed display, uppercase) / Bricolage Grotesque (body, 75% stretch headings) / Caveat (hand notes).
-- Material: matte paper, masking-tape strips, daisy stickers, riso grain (--ht-noise), subtle 2.5D camera.
-- Motion personality (energy: medium-high / tone: playful-print):
-  - in/out: `cubic-bezier(0.25,0.46,0.45,0.94)`, overshoot scale ~1.04
-  - slam/impact: power4.in, 4–6f impact frame
-  - hold floor: every landing ≥24f rest; sign-off hold ≥60f.
+- Product: WebRivo — a small studio that designs, builds, hosts and maintains
+  websites for local businesses ("main street").
+- Audience: local business owners scrolling a vertical feed → **1080×1920,
+  30fps**, 38.5s.
+- Narration: **yes** — eight spoken lines (Kokoro-82M `af_heart`, local model,
+  `kokoro-js`). SFX + BGM support the voice; they never carry information alone.
+- Facts (site-derived, nothing invented): plans ₹599/mo Basic · ₹1,199/mo
+  Business (Best value) · ₹2,199/mo Premium; every plan includes hosting,
+  maintenance and a domain; estimator toggle Monthly/Yearly "SAVE 10%"
+  (yearly = monthly × 12 × 0.9 → Business ₹12,948/yr); contact
+  webrivo.official@gmail.com / +91 9113253753 / webrivo.site.
+- Positioning: GET FOUND. GET CHOSEN. Process: BRIEF → BUILD → SHIP.
+- **No delivery-time claim anywhere** (the site's "live in 3 days" seal and
+  stamp are deliberately not used, on screen or in the voice-over).
 
-## Phase 2 — Feature → shot mapping
-| # | Feature (site) | Shot card | Style |
-|---|----------------|-----------|-------|
-| ① | Brand mark | brand-ink-open (tape-press adaptation) | opening |
-| ② | Hero "GET FOUND. GET CHOSEN." | spotlight-hero-card | opening/hero |
-| ③ | Breather | paper-title-card "MADE FOR MAIN STREET" | typography |
-| ④ | Work collage | deck-deal-flyin (dealt paper cards) | ui-entrance |
-| ⑤ | Process BRIEF·BUILD·SHIP | vertical-word-roll-blur-cycle (tape roller bg) | typography |
-| ⑥ | Breather | paper-title-card "PICK YOUR PLAN" | typography |
-| ⑦ | Plans ₹599/₹1,199/₹2,199 | product-card-progressive-assemble | ui-entrance |
-| ⑧ | Hosting·Maintenance·Domain in every plan | list-stack-press | ui-entrance |
-| ⑨ | Estimator SAVE 10% toggle | pill-slot-cycle + DigitRoll (2,199→1,979 math check) | typography/data |
-| ⑩ | Sign-off | outro-group-photo-launch → logo-shrink-wordmark-lockup | outro |
+## Phase 1 — Visual direction ("print shop, playful")
 
-Transitions: print-texture / tear-streak between paper scenes, whip cuts on beats.
+Tokens grown from `components/TapeLanding.jsx` — no new palette:
 
-## Phase 3 — Frame timeline (30fps)
-| Shot | frames | dur |
-|------|--------|-----|
-| ① brand-open | 0–139 | 140 |
-| ② hero | 140–379 | 240 |
-| ③ title "MAIN STREET" | 380–433 | 54 |
-| ④ collage deal | 434–603 | 170 |
-| ⑤ BRIEF BUILD SHIP | 604–773 | 170 |
-| ⑥ title "PICK YOUR PLAN" | 774–827 | 54 |
-| ⑦ plan cards | 828–1007 | 180 |
-| ⑧ inclusions stack | 1008–1157 | 150 |
-| ⑨ estimator | 1158–1337 | 180 |
-| ⑩ outro | 1338–1557 | 220 |
-Total 1558f ≈ 51.9s. Format: 1080×1920.
+- `off #F4F5EF` paper · `sage #DDE3D5` tape · `muted #899982` ink shadow ·
+  `forest #18352B` deep bg · `white #FFFFFF` · `ink #202522` text.
+- Type: Anton (condensed display, uppercase) / Bricolage Grotesque (body, 75%
+  stretch headings) / Caveat (hand notes).
+- Material: matte paper, masking/washi tape strips, daisy stickers, riso grain
+  (`--ht-noise`), subtle 2.5D camera.
+- Motion personality (medium-high energy, playful print):
+  - in/out `cubic-bezier(0.25,0.46,0.45,0.94)`, overshoot scale ~1.04
+  - slam/impact power4.in, 4–6f impact frame
+  - every landing holds ≥10f; the sign-off holds 44f.
+- Everything on screen is a **DOM UI component**. No page screenshots, no
+  bitmap captures.
 
-## Phase 4 — Capture
-Real TapeLanding page via headless Chrome @2x: full-page hero, shop grid, estimator, footer; element cutouts (plan cards ×3, hero copy, collage cards, badge SVG) + layout.json.
+## Phase 2 — Story → shot mapping
+
+| # | Story beat | Shot card | Style |
+|---|------------|-----------|-------|
+| ① | "Every great shop on this street has a story." | brand-ink-open (tape press) | opening |
+| ② | "Someone nearby is searching for yours." | spotlight-hero-card + search result rows | hero |
+| ④ | "A slow page. A pin three streets off. A form nobody answers. They leave." | deck-deal-flyin (3 problem cards → turn card) | ui-entrance |
+| ⑤ | "So we keep it simple. Brief, build, ship." | vertical-word-roll-blur-cycle | typography |
+| ⑦ | "Three plans. 599 to 2,199. Everything handled." | the site's three real `.ht-prod` cards, in a row | ui-entrance |
+| ⑧ | "Hosting, maintenance, your domain — in every plan." | list-stack-press | ui-entrance |
+| ⑨ | "See the exact price up front — and save ten percent yearly." | estimator + DigitRoll (₹1,199/mo → ₹12,948/yr) | data |
+| ⑩ | "Webrivo. For the businesses that make a town feel like home." | outro-group-photo-launch → wordmark lockup | outro |
+
+Transitions: whip cuts, print-texture tears; every cut lands 0.3–1.3s after the
+previous spoken word (no music-only scenes, no title cards).
+
+## Phase 3 — Frame timeline (30fps, 1156f)
+
+| Shot | id | frames | dur |
+|------|----|--------|-----|
+| ① brand-open | Shot01BrandOpen | 0–95 | 96 |
+| ② hero / the search | Shot02Hero | 96–247 | 152 |
+| ④ collage / what loses them | Shot04Collage | 248–423 | 176 |
+| ⑤ BRIEF · BUILD · SHIP | Shot05Process | 424–523 | 100 |
+| ⑦ plan cards | Shot07Plans | 524–691 | 168 |
+| ⑧ inclusions stack | Shot08Inclusions | 692–811 | 120 |
+| ⑨ estimator | Shot09Estimator | 812–979 | 168 |
+| ⑩ outro | Shot10Outro | 980–1155 | 176 |
+
+Total **1156f ≈ 38.5s**, 1080×1920. The table lives in `src/timeline.tsx` and is
+shared by picture and sound.
+
+## Phase 4 — Assets
+
+- Plan card: `src/ui/PlanCard.tsx`, a 1:1 port of the site's `.ht-prod`
+  (washi tapes at 18%/7% and 84%/7%, tape roll face, badge, name, line, price,
+  `Send request` + `Customize`, sage Business gradient, forest Premium).
+- VO: `public/audio/vo/s*.wav`, regenerated by `scripts/tts.mjs`
+  (+ `scripts/vo-script.json`) — local Kokoro-82M only.
+- SFX: Freesound CC0 (manifest + credits in `public/audio/sfx/`), BGM
+  "House Vibez" (Mixkit, `public/audio/ATTRIBUTION.md`).
 
 ## Phase 5–7
-Per-shot Remotion comps, `npx remotion still` QA per shot, full render, then Freesound SFX + BGM (both BGM / no-BGM deliverables), independent final review.
+
+Per-shot Remotion comps registered from the timeline, `npx remotion still` QA
+per shot (PIL ink-bbox / edge-clipping checks), full render, then the SFX pin
+table in `src/AudioTrack.tsx` (both BGM / no-BGM deliverables) and the
+independent review in `FINAL-REVIEW.md`.

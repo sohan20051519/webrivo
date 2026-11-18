@@ -1,31 +1,14 @@
-// WebRivoShort — master timeline (1080×1920, 30fps)
+// WebRivoShort — master composition (1080×1920, 30fps)
+// 1216f ≈ 40.5s. Each cut is snapped near the BGM grid (122.4 BPM → 9 + k·14.7f)
+// and every shot is sized to its own voice-over line: the next picture starts
+// ~0.5–0.8s after the last spoken word, so the film never sits in silence.
+// The shot table itself lives in src/timeline.tsx (shared with the audio mix).
 import React from 'react';
 import { AbsoluteFill, Sequence } from 'remotion';
 import { AudioTrack } from '../AudioTrack';
-import { BrandOpen } from './BrandOpen';
-import { HeroShot } from './HeroShot';
-import { TitleCard } from './TitleCard';
-import { CollageDeal } from './CollageDeal';
-import { BriefBuildShip } from './BriefBuildShip';
-import { PlanCards } from './PlanCards';
-import { Inclusions } from './Inclusions';
-import { Estimator } from './Estimator';
-import { Outro } from './Outro';
+import { SHOTS } from '../timeline';
 
-export const SHOTS: { id: string; from: number; dur: number; comp: React.FC }[] = [
-  { id: 'Shot01BrandOpen', from: 0, dur: 140, comp: BrandOpen },
-  { id: 'Shot02Hero', from: 140, dur: 240, comp: HeroShot },
-  { id: 'Shot03Title', from: 380, dur: 55, comp: () => <TitleCard line1="MADE FOR" line2="MAIN STREET" accent="STREET" sub="the studio wall" /> },
-  { id: 'Shot04Collage', from: 435, dur: 170, comp: CollageDeal },
-  { id: 'Shot05Process', from: 605, dur: 170, comp: BriefBuildShip },
-  { id: 'Shot06Title', from: 775, dur: 55, comp: () => <TitleCard line1="PICK YOUR" line2="PLAN" accent="PLAN" sub="hosting · maintenance · domain" /> },
-  { id: 'Shot07Plans', from: 830, dur: 180, comp: PlanCards },
-  { id: 'Shot08Inclusions', from: 1010, dur: 150, comp: Inclusions },
-  { id: 'Shot09Estimator', from: 1160, dur: 180, comp: Estimator },
-  { id: 'Shot10Outro', from: 1340, dur: 220, comp: Outro },
-];
-
-export const TOTAL_FRAMES = SHOTS[SHOTS.length - 1].from + SHOTS[SHOTS.length - 1].dur; // 1560
+export { SHOTS, TOTAL_FRAMES, VO_LEAD } from '../timeline';
 
 export const WebRivoShort: React.FC<{ bgm?: boolean }> = ({ bgm = true }) => (
   <AbsoluteFill style={{ backgroundColor: '#F4F5EF', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>

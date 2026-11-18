@@ -1,117 +1,166 @@
-// Shot 07 — plan cards (product-card-progressive-assemble / deck-deal hybrid):
-// three plan cards take the stage one at a time — hard in from the right,
-// beat, hard out left; Business gets the "BEST VALUE" stamp.
+// Shot 07 — the plans, shown as the site actually shows them: the three real
+// .ht-prod cards (src/ui/PlanCard.tsx) side by side, washi tape and all.
+// Each card springs up while "Three plans." is spoken, then a price spotlight
+// travels 599 → 1,199 → 2,199 exactly as the voice says the range, with a big
+// readout under the row so the numbers are legible at phone size.
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
-import { C, FONT, EASE, Grain, Tape, Fonts, ramp, bell } from '../theme';
+import { C, FONT, EASE, Grain, Fonts, Tape, ramp } from '../theme';
+import { PlanCard, PLANS, W as CARD_W, H as CARD_H } from '../ui/PlanCard';
 
-export const DURATION = 180;
+export const DURATION = 168;
 
-const PLANS = [
-  { tier: 'BASIC', price: '₹599', kicker: '01 — BASIC', stamp: null },
-  { tier: 'BUSINESS', price: '₹1,199', kicker: '02 — BUSINESS', stamp: 'BEST VALUE' },
-  { tier: 'PREMIUM', price: '₹2,199', kicker: '03 — PREMIUM', stamp: null },
-];
-const CARD_W = 620;
-const STEP = 50;
+const SCALE = 0.47;
+const CW = CARD_W * SCALE;
+const CH = CARD_H * SCALE;
+const GAP = 22;
+const ROW_W = CW * 3 + GAP * 2;
+const ROW_X = (1080 - ROW_W) / 2;
+const ROW_Y = 470;
 
-const PlanCard: React.FC<{ plan: (typeof PLANS)[number] }> = ({ plan }) => (
-  <div
-    style={{
-      width: CARD_W, height: Math.round(CARD_W * 1.35), background: C.white,
-      borderRadius: 20, padding: '40px 44px', boxSizing: 'border-box',
-      display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-      boxShadow: '0 40px 90px rgba(24,53,43,.4), 0 8px 24px rgba(24,53,43,.18)',
-      border: `1px solid rgba(24,53,43,.08)`,
-    }}
-  >
-    <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 26, letterSpacing: '0.22em', color: C.muted }}>{plan.tier}</div>
-    <div>
-      <div style={{ fontFamily: FONT.display, fontSize: 118, lineHeight: 0.95, color: C.forest }}>{plan.price}</div>
-      <div style={{ fontFamily: FONT.sans, fontWeight: 600, fontSize: 26, color: C.muted, marginTop: 6, letterSpacing: '0.1em' }}>/ month</div>
-    </div>
-    <div style={{ fontFamily: FONT.hand, fontSize: 34, color: C.forest, lineHeight: 1.4 }}>
-      hosting<br />maintenance<br />domain
-    </div>
-  </div>
-);
+// price spotlight windows, pinned to "Five ninety nine / to / twenty one ninety nine"
+export const BEATS = {
+  pop: [22, 28, 34],
+  price: [[46, 78], [78, 88], [88, 118]] as [number, number][],
+  note: 120,
+  out: 154,
+};
+
+// how lit card k is at this frame (fast in, slower out)
+const litAt = (frame: number, k: number) => {
+  const [a, b] = BEATS.price[k];
+  return ramp(frame, a, 4, EASE.out) * (1 - ramp(frame, b - 3, 5, EASE.smooth));
+};
 
 export const PlanCards: React.FC = () => {
   const frame = useCurrentFrame();
-  const bgIn = ramp(frame, 0, 12, EASE.out);
-  const bgOut = ramp(frame, 168, 12, EASE.power4In);
+  const headT = ramp(frame, 0, 12, EASE.out);
+  const noteT = ramp(frame, BEATS.note, 12, EASE.out);
+  const outT = ramp(frame, BEATS.out, 14, EASE.power4In);
+  const drift = 1 + 0.02 * ramp(frame, 0, DURATION, EASE.smooth);
 
   return (
-    <AbsoluteFill style={{ backgroundColor: C.off, overflow: 'hidden' }}>
+    <AbsoluteFill style={{ backgroundColor: C.sage, overflow: 'hidden' }}>
       <Fonts />
-      <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(1100px 900px at 50% 30%, ${C.white}, transparent 70%)`, opacity: bgIn }} />
+      <div
+        style={{
+          position: 'absolute', inset: 0,
+          background: `radial-gradient(1200px 1000px at 50% 34%, rgba(244,245,239,.9), transparent 72%)`,
+        }}
+      />
 
-      <div style={{ position: 'absolute', inset: 0, transform: `translateY(${(1 - bgIn) * 160 - bgOut * 2000}px)` }}>
-        {PLANS.map((p, k) => {
-          const start = k * STEP;
-          const last = k === PLANS.length - 1;
-          const enterT = ramp(frame, start + (k === 0 ? 6 : 0), 12, EASE.power4In);
-          const exitT = last ? 0 : ramp(frame, start + STEP - 12, 12, EASE.power4In);
-          const impact = bell(frame, start + (k === 0 ? 14 : 12), 4);
-          const x = (1 - enterT) * 760 - exitT * 820;
-          const rot = (1 - enterT) * 10 - exitT * 12;
-          const scale = 1 + impact * 0.04;
-          const opacity = Math.min(enterT, 1 - exitT);
-          return (
-            <React.Fragment key={k}>
-              {/* kicker */}
-              <div
-                style={{
-                  position: 'absolute', left: 0, right: 0, top: 420, textAlign: 'center',
-                  fontFamily: FONT.sans, fontWeight: 700, fontSize: 40, letterSpacing: '0.2em',
-                  color: C.muted, opacity: opacity * (1 - ramp(frame, start + STEP - 24, 10, EASE.smooth) * (last ? 0 : 1)),
-                }}
-              >
-                {p.kicker}
-              </div>
-              {/* stamp */}
-              {p.stamp ? (
-                <div
-                  style={{
-                    position: 'absolute', left: '50%', top: 560, transform: `translateX(-50%) rotate(-7deg) scale(${0.7 + 0.3 * ramp(frame, start + 8, 8, EASE.power4In)})`,
-                    opacity: opacity * ramp(frame, start + 8, 8, EASE.power4In),
-                    background: C.sage, color: C.forest, borderRadius: 999, padding: '12px 30px',
-                    fontFamily: FONT.sans, fontWeight: 800, fontSize: 30, letterSpacing: '0.14em',
-                    boxShadow: '0 6px 16px rgba(24,53,43,.25)',
-                  }}
-                >
-                  {p.stamp}
-                </div>
-              ) : null}
-              {/* card */}
-              <div
-                style={{
-                  position: 'absolute', left: (1080 - CARD_W) / 2, top: 660, opacity,
-                  transform: `translateX(${x}px) rotate(${rot}deg) scale(${scale})`,
-                  transformOrigin: 'center bottom',
-                  filter: 'drop-shadow(0 40px 90px rgba(24,53,43,.4))',
-                }}
-              >
-                <PlanCard plan={p} />
-              </div>
-            </React.Fragment>
-          );
-        })}
-
-        {/* every-plan note */}
-        <div
-          style={{
-            position: 'absolute', left: 0, right: 0, bottom: 210, textAlign: 'center',
-            fontFamily: FONT.hand, fontSize: 64, color: C.forest,
-            opacity: ramp(frame, 150, 12, EASE.out),
-          }}
-        >
-          hosting + domain + updates, in all three
+      {/* header */}
+      <div
+        style={{
+          position: 'absolute', left: 0, right: 0, top: 214, textAlign: 'center',
+          opacity: headT, transform: `translateY(${(1 - headT) * 26 - outT * 60}px)`,
+        }}
+      >
+        <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 24, letterSpacing: '0.24em', color: 'rgba(24,53,43,.55)' }}>
+          04 — THE PLANS
+        </div>
+        <div style={{ fontFamily: FONT.display, fontSize: 100, lineHeight: 1, color: C.forest, marginTop: 10 }}>
+          THREE WAYS IN
         </div>
       </div>
 
-      <Tape w={260} rot={-10} tone="clear" style={{ left: 90, top: 200, opacity: bgIn }} />
-      <Tape w={260} rot={12} tone="clear" style={{ right: 90, bottom: 260, opacity: bgIn }} />
+      {/* the row of real plan cards */}
+      <div
+        style={{
+          position: 'absolute', left: 0, right: 0, top: ROW_Y,
+          transform: `translateY(${-outT * 1900}px) scale(${drift})`,
+          transformOrigin: '540px 700px',
+        }}
+      >
+        {PLANS.map((plan, k) => {
+          const pop = ramp(frame, BEATS.pop[k], 14, EASE.outBack);
+          const lit = litAt(frame, k);
+          const hero = k === 1;
+          return (
+            <div
+              key={plan.name}
+              style={{
+                position: 'absolute', left: ROW_X + k * (CW + GAP), top: 0, width: CW, height: CH,
+                opacity: Math.min(1, pop * 1.4),
+                transform: `translateY(${(1 - pop) * 120}px) scale(${0.94 + 0.06 * pop + 0.045 * lit})`,
+                transformOrigin: '50% 100%',
+                filter: `drop-shadow(0 ${26 + 18 * lit}px ${54 + 30 * lit}px rgba(24,53,43,${0.18 + 0.14 * lit}))`,
+              }}
+            >
+              {/* the spotlight behind the card */}
+              <div
+                style={{
+                  position: 'absolute', left: -26, right: -26, top: -30, bottom: -26,
+                  borderRadius: 26, opacity: lit,
+                  background: `radial-gradient(70% 60% at 50% 42%, rgba(255,255,255,.95), rgba(255,255,255,0) 72%)`,
+                }}
+              />
+              <div
+                style={{
+                  position: 'absolute', inset: -4, borderRadius: 14, opacity: lit,
+                  boxShadow: `0 0 0 3px rgba(24,53,43,${0.35 * lit}), 0 0 0 12px rgba(244,245,239,${0.5 * lit})`,
+                }}
+              />
+              {hero ? (
+                <div
+                  style={{
+                    position: 'absolute', left: '50%', bottom: -30, transform: 'translateX(-50%) rotate(-2deg)',
+                    fontFamily: FONT.hand, fontSize: 32, color: 'rgba(24,53,43,.72)', whiteSpace: 'nowrap',
+                    opacity: 0.6 + 0.4 * lit,
+                  }}
+                >
+                  most picked
+                </div>
+              ) : null}
+              <div style={{ transform: `scale(${SCALE})`, transformOrigin: 'top left' }}>
+                <PlanCard plan={plan} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* big readout: the price being spoken */}
+      <div style={{ position: 'absolute', left: 0, right: 0, top: 1030, height: 340, textAlign: 'center' }}>
+        {PLANS.map((plan, k) => {
+          const lit = litAt(frame, k);
+          return (
+            <div
+              key={`cap${plan.name}`}
+              style={{
+                position: 'absolute', left: 0, right: 0, top: 0, opacity: lit,
+                transform: `translateY(${(1 - lit) * 18}px) scale(${0.96 + 0.04 * lit})`,
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center' }}>
+                <span style={{ fontFamily: FONT.display, fontSize: 190, lineHeight: 1, color: C.forest, letterSpacing: '-0.01em' }}>
+                  {plan.amount}
+                </span>
+                <span style={{ fontFamily: FONT.display, fontSize: 76, color: C.muted, marginLeft: 12 }}>
+                  /mo
+                </span>
+              </div>
+              <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 30, letterSpacing: '0.24em', color: C.muted, textTransform: 'uppercase', marginTop: 14 }}>
+                {plan.name} plan
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* the promise under the price */}
+      <div
+        style={{
+          position: 'absolute', left: 0, right: 0, top: 1420, textAlign: 'center',
+          fontFamily: FONT.hand, fontSize: 66, color: C.forest, opacity: noteT,
+          transform: `translateY(${(1 - noteT) * 16}px) rotate(-0.8deg)`,
+        }}
+      >
+        everything handled. one bill.
+      </div>
+
+      <Tape w={300} rot={-8} tone="clear" style={{ left: 54, top: 190, opacity: 0.9 * headT }} />
+      <Tape w={280} rot={9} tone="clear" style={{ right: 58, top: 300, opacity: 0.9 * headT }} />
       <Grain opacity={0.09} />
     </AbsoluteFill>
   );

@@ -6,13 +6,16 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { C, FONT, EASE, Grain, Tape, Daisy, Badge, Fonts, ramp, bell } from '../theme';
 
-export const DURATION = 220;
+export const DURATION = 176;
 
 const PLANS = [
-  { tier: 'BASIC', price: '₹599', x: 84, y: 1030, rot: -7, start: 26 },
-  { tier: 'BUSINESS', price: '₹1,199', x: 415, y: 1075, rot: 2, start: 38, best: true },
-  { tier: 'PREMIUM', price: '₹2,199', x: 746, y: 1030, rot: 7, start: 50 },
+  { tier: 'BASIC', price: '₹599', x: 84, y: 1030, rot: -7, start: 34 },
+  { tier: 'BUSINESS', price: '₹1,199', x: 415, y: 1075, rot: 2, start: 44, best: true },
+  { tier: 'PREMIUM', price: '₹2,199', x: 746, y: 1030, rot: 7, start: 54 },
 ];
+
+// pinned to "Webrivo." / "For the businesses…" / "Let's get you found."
+export const BEATS = { badge: 10, word: 8, sign: 118, contact: 132 };
 
 const MiniPlan: React.FC<{ tier: string; price: string; best?: boolean }> = ({ tier, price, best }) => (
   <div
@@ -45,8 +48,8 @@ export const Outro: React.FC = () => {
   const frame = useCurrentFrame();
   const inT = ramp(frame, 0, 12, EASE.out);
 
-  const signT = ramp(frame, 96, 12, EASE.out);
-  const contactT = ramp(frame, 116, 14, EASE.out);
+  const signT = ramp(frame, BEATS.sign, 12, EASE.out);
+  const contactT = ramp(frame, BEATS.contact, 14, EASE.out);
 
   return (
     <AbsoluteFill style={{ backgroundColor: C.forest, overflow: 'hidden' }}>
@@ -73,8 +76,8 @@ export const Outro: React.FC = () => {
       {/* badge drops in above the wordmark */}
       <div
         style={{
-          position: 'absolute', left: '50%', top: 470, transform: `translateX(-50%) scale(${2.2 - 1.2 * ramp(frame, 12, 10, EASE.power4In)}) rotate(${-24 + 24 * ramp(frame, 12, 10, EASE.power4In)}deg)`,
-          opacity: ramp(frame, 12, 10, EASE.power4In),
+          position: 'absolute', left: '50%', top: 470, transform: `translateX(-50%) scale(${2.2 - 1.2 * ramp(frame, BEATS.badge, 10, EASE.power4In)}) rotate(${-24 + 24 * ramp(frame, BEATS.badge, 10, EASE.power4In)}deg)`,
+          opacity: ramp(frame, BEATS.badge, 10, EASE.power4In),
         }}
       >
         <Badge size={140} tone="dark" />
@@ -87,7 +90,7 @@ export const Outro: React.FC = () => {
         }}
       >
         {WORD.split('').map((ch, i) => {
-          const delay = 24 + i * 3;
+          const delay = BEATS.word + i * 2;
           const t = ramp(frame, delay, 12, EASE.press);
           const glintCenter = delay + 12;
           const glint = (() => {
