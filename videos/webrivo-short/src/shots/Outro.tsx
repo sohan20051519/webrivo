@@ -1,18 +1,43 @@
 // Shot 10 — outro-group-photo-launch + logo-shrink-wordmark-lockup (adapted):
 // everything the film showed gathers around the wordmark — badge, the three
-// plan cards, the 3-day seal, tape & daisies — then WEBRIVO locks up with the
-// sign-off and real contact details. ≥60f hold before the end.
+// plan cards, tape & daisies — then WEBRIVO locks up with the sign-off and
+// real contact details. ≥60f hold before the end.
 import React from 'react';
-import { AbsoluteFill, Img, staticFile, useCurrentFrame } from 'remotion';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { C, FONT, EASE, Grain, Tape, Daisy, Badge, Fonts, ramp, bell } from '../theme';
 
 export const DURATION = 220;
 
-const GROUP = [
-  { file: 'plan-0.png', w: 250, h: 339, x: 84, y: 1030, rot: -7, start: 26, cropTop: 0 },
-  { file: 'plan-1.png', w: 250, h: 339, x: 415, y: 1075, rot: 2, start: 38, cropTop: 40 },
-  { file: 'plan-2.png', w: 250, h: 339, x: 746, y: 1030, rot: 7, start: 50, cropTop: 0 },
+const PLANS = [
+  { tier: 'BASIC', price: '₹599', x: 84, y: 1030, rot: -7, start: 26 },
+  { tier: 'BUSINESS', price: '₹1,199', x: 415, y: 1075, rot: 2, start: 38, best: true },
+  { tier: 'PREMIUM', price: '₹2,199', x: 746, y: 1030, rot: 7, start: 50 },
 ];
+
+const MiniPlan: React.FC<{ tier: string; price: string; best?: boolean }> = ({ tier, price, best }) => (
+  <div
+    style={{
+      width: 250, height: 339, background: C.white, borderRadius: 12,
+      padding: '22px 20px', boxSizing: 'border-box',
+      display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+      boxShadow: '0 20px 40px rgba(0,0,0,.35)',
+      border: best ? `3px solid ${C.sage}` : '1px solid rgba(24,53,43,.1)',
+      position: 'relative',
+    }}
+  >
+    {best ? (
+      <div style={{ position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%) rotate(-6deg)', background: C.sage, color: C.forest, fontFamily: FONT.sans, fontWeight: 800, fontSize: 14, letterSpacing: '0.14em', padding: '4px 12px', borderRadius: 999, whiteSpace: 'nowrap' }}>
+        BEST VALUE
+      </div>
+    ) : null}
+    <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 18, letterSpacing: '0.2em', color: C.muted }}>{tier}</div>
+    <div>
+      <div style={{ fontFamily: FONT.display, fontSize: 58, lineHeight: 0.95, color: C.forest }}>{price}</div>
+      <div style={{ fontFamily: FONT.sans, fontWeight: 600, fontSize: 14, color: C.muted, marginTop: 4 }}>/ month</div>
+    </div>
+    <div style={{ fontFamily: FONT.hand, fontSize: 22, color: C.forest, lineHeight: 1.3 }}>hosting<br />maintenance<br />domain</div>
+  </div>
+);
 
 const WORD = 'WEBRIVO';
 
@@ -27,28 +52,20 @@ export const Outro: React.FC = () => {
     <AbsoluteFill style={{ backgroundColor: C.forest, overflow: 'hidden' }}>
       <Fonts />
       {/* group photo: elements fly in and settle */}
-      {GROUP.map((g, i) => {
+      {PLANS.map((g) => {
         const t = ramp(frame, g.start, 14, EASE.power4In);
         const impact = bell(frame, g.start + 12, 4);
         return (
           <div
-            key={g.file}
+            key={g.tier}
             style={{
-              position: 'absolute', left: g.x, top: g.y, width: g.w, height: g.h,
+              position: 'absolute', left: g.x, top: g.y, width: 250, height: 339,
               opacity: t,
               transform: `translateY(${(1 - t) * -900}px) rotate(${g.rot + (1 - t) * 22}deg) scale(${(1 + (1 - t) * 0.35) * (1 + impact * 0.03)})`,
               filter: 'drop-shadow(0 30px 60px rgba(0,0,0,.5))',
-              overflow: 'hidden',
             }}
           >
-            <Img
-              src={staticFile(`captures/${g.file}`)}
-              style={{
-                position: 'absolute', left: 0, width: '100%',
-                height: `${100 + (g.cropTop / g.h) * 100}%`,
-                objectFit: 'fill', top: `-${(g.cropTop / g.h) * 100}%`,
-              }}
-            />
+            <MiniPlan tier={g.tier} price={g.price} best={g.best} />
           </div>
         );
       })}

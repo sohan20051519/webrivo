@@ -1,5 +1,5 @@
 // Shot 04 — deck-deal-flyin (adapted): real collage cutouts (story card, to-do
-// note, "live in 3 days" seal) dealt from a pile onto a paper board with the
+// note) dealt from a pile onto a paper board with the
 // card's hard-accelerated cue rhythm (cue = 36 + 4k − 0.0792·k(k−1), 8f dive +
 // 4f settle + press), flight ghosts, anticipation beat, camera pulls up.
 // The 4th card is the offer: "your site." — no invented work shown.
@@ -28,33 +28,47 @@ const PILE = { x: 420, y: 1420 }; // screen coords of pile origin
 
 const CARDS: Card[] = [
   {
-    // capture's clip box starts mid-seal (site seal overlaps the card top),
-    // so it sits low enough that its opaque top strip clears the headline
-    // pile coords are board-relative; boardX/boardY offset puts the dealt
-    // pile on screen at ~(300–560, 1380–1560) — over the pile shadow
-    file: 'story-card.png', cssW: 563, cssH: 437,
+    // DOM story card — no screenshot; on-brand hero fragment
+    cssW: 563, cssH: 437,
     tx: 90, ty: 120, rot: -2.2, pileX: 300, pileY: 1000, pileRot: 8,
-  },
-  {
-    file: 'todo-note.png', cssW: 317, cssH: 307,
-    tx: 120, ty: 640, rot: 2.8, pileX: 380, pileY: 1070, pileRot: -11,
-  },
-  {
-    // built-in seal covers the baked clipped seal in the story-card capture
-    cssW: 170, cssH: 170, plain: true,
-    tx: 522, ty: 103, rot: 10, pileX: 470, pileY: 1020, pileRot: 4,
     render: (
       <div
         style={{
-          width: 170, height: 170, borderRadius: '50%', background: C.forest,
-          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-          position: 'relative', filter: 'drop-shadow(0 10px 22px rgba(24,53,43,.4))',
+          width: 563, height: 437, background: C.forest, color: C.off,
+          borderRadius: 10, padding: '28px 32px', display: 'flex', flexDirection: 'column',
+          justifyContent: 'space-between', boxSizing: 'border-box',
+          boxShadow: 'inset 0 0 0 1px rgba(221,227,213,.12)',
         }}
       >
-        <div style={{ position: 'absolute', inset: 9, border: '2px dashed rgba(244,245,239,.45)', borderRadius: '50%' }} />
-        <span style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 19, letterSpacing: '0.14em', color: C.sage }}>LIVE IN</span>
-        <span style={{ fontFamily: FONT.display, fontSize: 44, lineHeight: 1.05, color: C.off }}>3 DAYS</span>
-        <span style={{ fontFamily: FONT.hand, fontSize: 26, color: C.sage, marginTop: 2 }}>*per site</span>
+        <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 20, letterSpacing: '0.22em', color: C.sage }}>
+          THE STUDIO WALL
+        </div>
+        <div>
+          <div style={{ fontFamily: FONT.display, fontSize: 86, lineHeight: 0.95, color: C.off }}>GET FOUND.</div>
+          <div style={{ fontFamily: FONT.display, fontSize: 86, lineHeight: 0.95, color: C.sage }}>GET CHOSEN.</div>
+        </div>
+        <div style={{ fontFamily: FONT.hand, fontSize: 34, color: C.sage }}>websites for main street</div>
+      </div>
+    ),
+  },
+  {
+    // DOM todo note — no screenshot
+    cssW: 317, cssH: 307,
+    tx: 120, ty: 640, rot: 2.8, pileX: 380, pileY: 1070, pileRot: -11,
+    render: (
+      <div
+        style={{
+          width: 317, height: 307, background: '#F6F0D9', color: C.forest,
+          borderRadius: 6, padding: '26px 28px', boxSizing: 'border-box',
+          boxShadow: 'inset 0 0 0 1px rgba(24,53,43,.08)',
+          fontFamily: FONT.hand, fontSize: 34, lineHeight: 1.35,
+        }}
+      >
+        <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 16, letterSpacing: '0.2em', color: C.muted, marginBottom: 10 }}>TODO</div>
+        <div>☐ fix the page</div>
+        <div>☐ claim the pin</div>
+        <div>☐ send the form</div>
+        <div style={{ marginTop: 6, color: C.muted }}>— by Friday</div>
       </div>
     ),
   },
@@ -117,7 +131,7 @@ const DealCard: React.FC<{ card: Card; k: number; frame: number; antT: number; c
 
   return (
     <>
-      {showGhost ? (
+      {showGhost && card.file ? (
         <div
           style={{
             position: 'absolute', left: boardX + card.tx, top: boardY + card.ty, width: w, height: h,

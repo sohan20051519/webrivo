@@ -47,15 +47,12 @@ const CUES: Cue[] = [
   { shot: 'Shot04Collage', at: 48, file: 'fs-131359.mp3', vol: 0.65 },
   { shot: 'Shot04Collage', at: 52, file: 'fs-131359.mp3', vol: 0.7 },
   { shot: 'Shot04Collage', at: 56, file: 'fs-131359.mp3', vol: 0.7 },
-  { shot: 'Shot04Collage', at: 59, file: 'fs-131359.mp3', vol: 0.6 },
   // S5 Process — word impacts, rolls, stamp + seal
   { shot: 'Shot05Process', at: 3, file: 'fs-879272.mp3', vol: 0.4 },
   { shot: 'Shot05Process', at: 10, file: 'fs-879272.mp3', vol: 0.35 },
   { shot: 'Shot05Process', at: 44, file: 'fs-278205.mp3', vol: 0.45 },
   { shot: 'Shot05Process', at: 46, file: 'fs-879272.mp3', vol: 0.3 },
   { shot: 'Shot05Process', at: 88, file: 'fs-278205.mp3', vol: 0.45 },
-  { shot: 'Shot05Process', at: 92, file: 'fs-131359.mp3', vol: 0.5 },
-  { shot: 'Shot05Process', at: 106, file: 'fs-878247.mp3', vol: 0.5 },
   // S6 Title "PICK YOUR PLAN" + riser into the first plan card
   { shot: 'Shot06Title', at: 8, file: 'fs-879272.mp3', vol: 0.5 },
   { shot: 'Shot06Title', at: 0, file: 'fs-859482.mp3', vol: 0.4 },

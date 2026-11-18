@@ -1,6 +1,6 @@
 // Shot 05 — vertical-word-roll-blur-cycle (adapted): the process line
 // BRIEF → BUILD → SHIP rolls through a masked window on forest, blur on the
-// fast pass, each word stamps on a beat, ending on SHIP + the 3-day seal.
+// fast pass, each word stamps on a beat.
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { C, FONT, EASE, Grain, Tape, Daisy, Fonts, ramp, bell } from '../theme';
@@ -29,10 +29,9 @@ export const BriefBuildShip: React.FC = () => {
   const blur = rolling ? 10 * Math.sin(segT * Math.PI) : 0;
   const lineH = WINDOW_H * 0.86;
 
-  // SHIP stamp + seal (SHIP lands when segment 2 begins)
+  // SHIP stamp (SHIP lands when segment 2 begins)
   const rollEnd = (WORDS.length - 1) * STEP;
   const stampT = ramp(frame, rollEnd + 4, 10, EASE.power4In);
-  const sealT = ramp(frame, rollEnd + 18, 12, EASE.power4In);
 
   return (
     <AbsoluteFill style={{ backgroundColor: C.forest, overflow: 'hidden' }}>
@@ -96,17 +95,6 @@ export const BriefBuildShip: React.FC = () => {
           ))}
         </div>
 
-        {/* 3-day seal stamp */}
-        <div
-          style={{
-            marginTop: 46, opacity: sealT, transform: `scale(${1.8 - 0.8 * sealT}) rotate(${stampT * -8 + 8}deg)`,
-            border: `5px solid ${C.sage}`, borderRadius: 999, padding: '18px 38px',
-            display: 'flex', alignItems: 'baseline', gap: 12, background: 'rgba(221,227,213,.08)',
-          }}
-        >
-          <span style={{ fontFamily: FONT.display, fontSize: 66, color: C.off, lineHeight: 1 }}>LIVE IN 3 DAYS</span>
-          <span style={{ fontFamily: FONT.hand, fontSize: 44, color: C.sage }}>*per site</span>
-        </div>
       </div>
 
       <Tape w={280} rot={-16} tone="clear" style={{ left: 96, top: 210, opacity: inT }} />

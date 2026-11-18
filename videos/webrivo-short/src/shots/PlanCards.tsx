@@ -1,20 +1,40 @@
 // Shot 07 — plan cards (product-card-progressive-assemble / deck-deal hybrid):
-// the three REAL plan cutouts take the stage one at a time — hard in from the
-// right, beat, hard out left; kickers name the tier; Business gets the
-// "BEST VALUE" stamp. Prices live inside the captures (₹599/₹1,199/₹2,199).
+// three plan cards take the stage one at a time — hard in from the right,
+// beat, hard out left; Business gets the "BEST VALUE" stamp.
 import React from 'react';
-import { AbsoluteFill, Img, staticFile, useCurrentFrame } from 'remotion';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { C, FONT, EASE, Grain, Tape, Fonts, ramp, bell } from '../theme';
 
 export const DURATION = 180;
 
 const PLANS = [
-  { file: 'plan-0.png', w: 376.97, h: 510.38, kicker: '01 — BASIC', cropTop: 0 },
-  { file: 'plan-1.png', w: 376.97, h: 510.38, kicker: '02 — BUSINESS', stamp: 'BEST VALUE', cropTop: 40 },
-  { file: 'plan-2.png', w: 376.97, h: 510.38, kicker: '03 — PREMIUM', cropTop: 0 },
+  { tier: 'BASIC', price: '₹599', kicker: '01 — BASIC', stamp: null },
+  { tier: 'BUSINESS', price: '₹1,199', kicker: '02 — BUSINESS', stamp: 'BEST VALUE' },
+  { tier: 'PREMIUM', price: '₹2,199', kicker: '03 — PREMIUM', stamp: null },
 ];
 const CARD_W = 620;
 const STEP = 50;
+
+const PlanCard: React.FC<{ plan: (typeof PLANS)[number] }> = ({ plan }) => (
+  <div
+    style={{
+      width: CARD_W, height: Math.round(CARD_W * 1.35), background: C.white,
+      borderRadius: 20, padding: '40px 44px', boxSizing: 'border-box',
+      display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+      boxShadow: '0 40px 90px rgba(24,53,43,.4), 0 8px 24px rgba(24,53,43,.18)',
+      border: `1px solid rgba(24,53,43,.08)`,
+    }}
+  >
+    <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 26, letterSpacing: '0.22em', color: C.muted }}>{plan.tier}</div>
+    <div>
+      <div style={{ fontFamily: FONT.display, fontSize: 118, lineHeight: 0.95, color: C.forest }}>{plan.price}</div>
+      <div style={{ fontFamily: FONT.sans, fontWeight: 600, fontSize: 26, color: C.muted, marginTop: 6, letterSpacing: '0.1em' }}>/ month</div>
+    </div>
+    <div style={{ fontFamily: FONT.hand, fontSize: 34, color: C.forest, lineHeight: 1.4 }}>
+      hosting<br />maintenance<br />domain
+    </div>
+  </div>
+);
 
 export const PlanCards: React.FC = () => {
   const frame = useCurrentFrame();
@@ -66,23 +86,13 @@ export const PlanCards: React.FC = () => {
               {/* card */}
               <div
                 style={{
-                  position: 'absolute', left: (1080 - CARD_W) / 2, top: 660, width: CARD_W,
-                  height: CARD_W * (p.h / p.w), opacity,
+                  position: 'absolute', left: (1080 - CARD_W) / 2, top: 660, opacity,
                   transform: `translateX(${x}px) rotate(${rot}deg) scale(${scale})`,
                   transformOrigin: 'center bottom',
                   filter: 'drop-shadow(0 40px 90px rgba(24,53,43,.4))',
-                  overflow: 'hidden',
                 }}
               >
-                {/* cropTop hides capture artefacts (plan-1's clipped baked badge) */}
-                <Img
-                  src={staticFile(`captures/${p.file}`)}
-                  style={{
-                    position: 'absolute', left: 0, width: '100%',
-                    height: `${100 + (p.cropTop / p.h) * 100}%`,
-                    objectFit: 'fill', top: `-${(p.cropTop / p.h) * 100}%`,
-                  }}
-                />
+                <PlanCard plan={p} />
               </div>
             </React.Fragment>
           );

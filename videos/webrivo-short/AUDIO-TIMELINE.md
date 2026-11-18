@@ -29,12 +29,10 @@ Music Free License (see `public/audio/ATTRIBUTION.md`).
 | 6 | S2 | whip-up exit | 224 | fs-449645 whoosh | .7 |
 | 7 | S3 Title | "MADE FOR MAIN STREET" lands | 388 | fs-879272 thud | .5 |
 | 8 | S4 Collage | board appears | 439 | fs-879272 thud | .4 |
-| 9–12 | S4 | 4 cards dealt (cue rhythm 48/52/56/59) | 483+ | fs-131359 slap | .6–.7 |
+| 9–11 | S4 | 3 cards dealt (cue rhythm 48/52/56) | 483+ | fs-131359 slap | .65–.7 |
 | 13 | S5 Process | headline in | 608 | fs-879272 thud | .4 |
 | 14 | S5 | BRIEF impact | 615 | fs-879272 thud | .35 |
 | 15–16 | S5 | roll → BUILD / SHIP | 649 / 693 | fs-278205 switch + fs-879272 | .45/.3 |
-| 17 | S5 | "3 DAYS" stamp | 697 | fs-131359 slap | .5 |
-| 18 | S5 | dashed seal | 711 | fs-878247 glass ping | .5 |
 | 19 | S6 Title | "PICK YOUR PLAN" lands | 783 | fs-879272 thud | .5 |
 | 20 | S6 | riser into first plan card (peaks f842) | 775 | fs-859482 riser | .4 |
 | 21–23 | S7 Plans | cards deal at k×50 (842/892/942) | 842+ | fs-131359 slap | .7–.75 |
