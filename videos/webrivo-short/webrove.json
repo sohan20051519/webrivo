@@ -1,8 +1,0 @@
-{
-  "extends": "midnight",
-  "name": "webrove",
-  "fonts": {
-    "display": { "family": "Anton", "weight": 400 },
-    "body": { "family": "Bricolage Grotesque", "weight": 600 }
-  }
-}
