@@ -52,7 +52,14 @@ Film: `out/webrivo-short.mp4` (SFX+BGM) / `out/webrivo-short-sfxonly.mp4`.
   output offset measured post-render (+1.3–2.0f, encoder delay scale) — no systematic drift.
 - A10 ✓ 8/8 SFX from Freesound, all CC0, manifest + credits shipped; Remotion reads local files.
 
-## Q — technical
+## Voice-over (added)
+
+- Kokoro-82M (local model `~/.cache/explainroo/models/.../Kokoro-82M-v1.0-ONNX`,
+  runtime `kokoro-js`), voice `am_michael`, 8 lines, 3.05–5.92s each.
+- All 8 within their shot windows; BGM ducked to 0.14 gain under each line.
+- VO peak −3.4 to −5.7 dBFS → mixed at 0.95 (no clipping, track peak −3.8 dB).
+- S2 hero reframed (full-bleed headline, no mid-word clip) and S4 pile repositioned
+  to bottom-left over the pile shadow after review of the opening sequence.
 
 - Q ✓ text sharp at rest; deterministic renders (no Date.now/Math.random); grain deterministic;
   fonts loaded via module-scope FontFace + delayRender with 30s race fallback

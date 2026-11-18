@@ -84,6 +84,28 @@ const CUES: Cue[] = [
   { shot: 'Shot10Outro', at: 116, file: 'fs-872341.mp3', vol: 0.4 },
 ];
 
+const VO = [
+  { id: 's1', start: 24, vol: 0.95 },
+  { id: 's2', start: 152, vol: 0.95 },
+  { id: 's4', start: 438, vol: 0.95 },
+  { id: 's5', start: 634, vol: 0.95 },
+  { id: 's7', start: 838, vol: 0.95 },
+  { id: 's8', start: 1022, vol: 0.95 },
+  { id: 's9', start: 1172, vol: 0.95 },
+  { id: 's10', start: 1450, vol: 0.95 },
+];
+
+// BGM base gain, ducked under VO (0.14) with 8f ramps
+const bgmGain = (f: number) => {
+  let g = 0.32;
+  const ducked = VO.some(({ start }) => {
+    const dur = start === 24 ? 97 : start === 152 ? 153 : start === 438 ? 178 : start === 634 ? 118 : start === 838 ? 167 : start === 1022 ? 135 : start === 1172 ? 149 : 92;
+    return f >= start - 8 && f <= start + dur + 8;
+  });
+  if (ducked) g = 0.14;
+  return g;
+};
+
 export const AudioTrack: React.FC<{ bgm?: boolean }> = ({ bgm = true }) => (
   <>
     {CUES.map((c, i) => {
@@ -95,17 +117,22 @@ export const AudioTrack: React.FC<{ bgm?: boolean }> = ({ bgm = true }) => (
         </Sequence>
       );
     })}
+    {VO.map((v) => (
+      <Sequence key={`vo-${v.id}`} from={v.start} name={`vo:${v.id}`}>
+        <Audio src={staticFile(`audio/vo/${v.id}.wav`)} volume={v.vol} />
+      </Sequence>
+    ))}
     {bgm && (
       <Sequence from={9} name="bgm">
-        {/* house-vibez ~122.4 BPM grid: beats land 10.8f + k*14.7f from film start */}
         <Audio
           src={BG}
-          volume={(f: number) =>
-            interpolate(f, [0, 25, 1511, 1551], [0, 0.32, 0.32, 0], {
+          volume={(f: number) => {
+            const base = interpolate(f, [0, 25, 1511, 1551], [0, 1, 1, 0], {
               extrapolateLeft: 'clamp',
               extrapolateRight: 'clamp',
-            })
-          }
+            });
+            return base * bgmGain(f + 9);
+          }}
         />
       </Sequence>
     )}

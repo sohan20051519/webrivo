@@ -16,13 +16,14 @@ const PRINT_H = PRINT_W * (PAGE_H / PAGE_W); // 1012.5
 const printLeft = (1080 - PRINT_W) / 2; // -270
 const printTop = (1920 - PRINT_H) / 2;
 
-// camera anchors: focus point in page CSS px + zoom
+// camera anchors: focus point in page CSS px + zoom.
+// The headline is ~962 page px wide ≈ the whole visible width, so the opening
+// frames it full-bleed (z≈1.04) and settles with a gentle drift — never clips mid-word.
 const ANCH: { f: number; cx: number; cy: number; z: number; rot: number }[] = [
-  { f: 0,   cx: 720, cy: 300, z: 2.9, rot: 1.6 },
-  { f: 66,  cx: 720, cy: 330, z: 1.7, rot: 0.5 },
-  { f: 118, cx: 720, cy: 420, z: 1.22, rot: -0.25 },
-  { f: 170, cx: 720, cy: 450, z: 1.06, rot: 0 },
-  { f: 240, cx: 720, cy: 450, z: 1.02, rot: 0 },
+  { f: 0,   cx: 722, cy: 328, z: 1.04, rot: 1.4 },
+  { f: 90,  cx: 722, cy: 400, z: 1.02, rot: 0.3 },
+  { f: 170, cx: 720, cy: 430, z: 1.02, rot: 0 },
+  { f: 240, cx: 720, cy: 440, z: 1.02, rot: 0 },
 ];
 const hermite = (xs: number[], ys: number[]) => {
   const n = xs.length;
@@ -69,7 +70,7 @@ export const HeroShot: React.FC = () => {
   // spotlight hole tracks the focus on screen
   const screenX = printLeft + Fx + (1 - inT) * 0;
   const screenY = printTop + Fy + (1 - inT) * -200;
-  const holeR = 170 + z * 210;
+  const holeR = 200 + z * 260;
 
   const stampT = ramp(frame, 150, 14, EASE.power4In);
   const stampRot = 14 - 26 * stampT;

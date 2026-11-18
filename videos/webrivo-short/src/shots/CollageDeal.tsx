@@ -30,17 +30,19 @@ const CARDS: Card[] = [
   {
     // capture's clip box starts mid-seal (site seal overlaps the card top),
     // so it sits low enough that its opaque top strip clears the headline
+    // pile coords are board-relative; boardX/boardY offset puts the dealt
+    // pile on screen at ~(300–560, 1380–1560) — over the pile shadow
     file: 'story-card.png', cssW: 563, cssH: 437,
-    tx: 90, ty: 120, rot: -2.2, pileX: -80, pileY: -60, pileRot: 8,
+    tx: 90, ty: 120, rot: -2.2, pileX: 300, pileY: 1000, pileRot: 8,
   },
   {
     file: 'todo-note.png', cssW: 317, cssH: 307,
-    tx: 120, ty: 640, rot: 2.8, pileX: 30, pileY: -20, pileRot: -11,
+    tx: 120, ty: 640, rot: 2.8, pileX: 380, pileY: 1070, pileRot: -11,
   },
   {
     // built-in seal covers the baked clipped seal in the story-card capture
     cssW: 170, cssH: 170, plain: true,
-    tx: 522, ty: 103, rot: 10, pileX: 90, pileY: 40, pileRot: 4,
+    tx: 522, ty: 103, rot: 10, pileX: 470, pileY: 1020, pileRot: 4,
     render: (
       <div
         style={{
@@ -59,7 +61,7 @@ const CARDS: Card[] = [
   {
     // the offer card — hand lettered
     cssW: 360, cssH: 300,
-    tx: 480, ty: 700, rot: -5, pileX: -20, pileY: 30, pileRot: 14,
+    tx: 480, ty: 700, rot: -5, pileX: 240, pileY: 1110, pileRot: 14,
     render: (
       <div
         style={{
@@ -160,9 +162,9 @@ const DealCard: React.FC<{ card: Card; k: number; frame: number; antT: number; c
   );
 };
 
-// camera: tight on pile → whole board (zoom 1.55 → 1.0)
+// camera: board nearly fills the frame → gentle settle to whole board (1.22 → 1.0)
 const camZAt = (f: number) => {
-  const z1 = 1.55, z2 = 1.0;
+  const z1 = 1.22, z2 = 1.0;
   const t = ramp(f, 34, 70, EASE.smooth);
   return z1 + (z2 - z1) * t + (f > 120 ? 0.012 * ramp(f, 120, 40, EASE.smooth) : 0);
 };
@@ -185,7 +187,7 @@ export const CollageDeal: React.FC = () => {
         style={{
           position: 'absolute', inset: 0,
           transform: `translateY(${(1 - inT) * 220 - outT * 2200}px) scale(${camZ})`,
-          transformOrigin: '540px 900px',
+          transformOrigin: '540px 920px',
         }}
       >
         {/* the board */}

@@ -57,7 +57,23 @@ Volumes are multiplicative mix factors, not target LUFS. Hot sources (thud
 −2.6 dBFS peak) are scaled down; quiet ones (page turn −31.8 dBFS RMS) scaled
 up. Multi-track peaks checked after render; BGM sits under SFX.
 
-## Verification
+## Voice-over (Kokoro-82M, model from ~/.cache/explainroo/models, runtime kokoro-js)
+
+8 lines generated locally with Kokoro-82M (voice `am_michael`, speeds 1.0–1.12),
+pinned to shot starts, BGM ducked to 0.14 gain under each line (8f ramps).
+
+| id | shot | start | dur | text |
+|----|------|------:|----:|------|
+| s1 | S1 BrandOpen | 24 | 3.23 | "Webrivo. Websites for main street." |
+| s2 | S2 Hero | 152 | 5.10 | "Your site, live in three days. Built to get found, and get chosen." |
+| s4 | S4 Collage | 438 | 5.92 | "A slow page. A pin three streets off. A form nobody sends. We fix all of it." |
+| s5 | S5 Process | 634 | 3.92 | "Brief, build, ship. The whole job, one line." |
+| s7 | S7 Plans | 838 | 5.58 | "Three plans. Five ninety nine. Eleven ninety nine. Twenty one ninety nine." |
+| s8 | S8 Inclusions | 1022 | 4.50 | "Every plan includes hosting, maintenance, and your domain." |
+| s9 | S9 Estimator | 1172 | 4.95 | "And the estimator shows the price first. Save ten percent, yearly." |
+| s10 | S10 Outro | 1450 | 3.05 | "Webrivo. Get found. Get chosen." |
+
+VO files: `public/audio/vo/s*.wav` (24 kHz, peak −3.4 to −5.7 dBFS).
 
 After render: `ffprobe` audio stream present in both variants; spot-listen
 cues 9–12 (collage deal), 20+21 (riser→plan), 31–33 (estimator flip), 40
