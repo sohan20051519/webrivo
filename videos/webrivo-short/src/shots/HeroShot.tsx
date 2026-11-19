@@ -1,6 +1,6 @@
 // Shot 02 — glass-pill-dictation-typing + draw-svg-trace.
 // A frosted sage-glass pill drops in on the forest field and types the search
-// ("bakery near me"); the light inside it drains as the words arrive. The
+// ("boutique near me"); the light inside it drains as the words arrive. The
 // results land, then a real pen traces the YOUR SHOP row (crop marks, closing
 // flash, content goes to ink) and the promise takes the frame.
 // Components only — no screenshots, no brand mark yet.
@@ -10,7 +10,7 @@ import { C, FONT, EASE, Grain, Tape, Fonts, ramp, bell } from '../theme';
 
 export const DURATION = 152;
 
-const QUERY = 'bakery near me';
+const QUERY = 'boutique near me';
 
 // pinned to "Right now, someone nearby is searching for yours." / "We make sure
 // they find it." — the pen closes in the gap, the promise lands on the second line
@@ -241,7 +241,7 @@ export const HeroShot: React.FC = () => {
           }}
         >
           {[
-            { title: 'Another bakery', meta: '1.2 km · closed', t: rowA, hl: false },
+            { title: 'Another boutique', meta: '1.2 km · closed', t: rowA, hl: false },
             { title: 'YOUR SHOP', meta: '0.3 km · open now', t: rowB, hl: true },
           ].map((r, i) => (
             <div

@@ -46,7 +46,7 @@ const PEAK: Record<string, number> = {
 // exported so scripts can regenerate the AUDIO-TIMELINE.md cue table
 export const CUES: Cue[] = [
   // S1 map — film open, streets draw, shop tags surface, the hook lands, then
-  // the camera actually visits the bakery and the tailor
+  // the camera actually visits the boutique and the tailor
   { shot: 'Shot01BrandOpen', at: 0, file: 'fs-879272.mp3', vol: 0.3 },
   ...[8, 11, 14, 17, 20].map((at) => ({ shot: 'Shot01BrandOpen', at, file: 'fs-872341.mp3', vol: 0.13 })),
   { shot: 'Shot01BrandOpen', at: B1.hook, file: 'fs-879272.mp3', vol: 0.45 },

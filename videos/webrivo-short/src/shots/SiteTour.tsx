@@ -78,7 +78,7 @@ const Page: React.FC<{ frame: number }> = ({ frame }) => {
       <div style={{ position: 'absolute', left: 0, right: 0, top: 0, transform: `translateY(${scroll}px)` }}>
         {/* shop header */}
         <div style={{ height: 104, background: C.forest, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 34px', boxSizing: 'border-box' }}>
-          <span style={{ fontFamily: FONT.display, fontSize: 38, letterSpacing: '0.06em', color: C.off }}>ANNA&rsquo;S BAKERY</span>
+          <span style={{ fontFamily: FONT.display, fontSize: 34, letterSpacing: '0.05em', color: C.off }}>RIYA&rsquo;S BOUTIQUE</span>
           <span style={{ fontFamily: FONT.sans, fontWeight: 800, fontSize: 18, letterSpacing: '0.2em', color: 'rgba(221,227,213,.72)' }}>MENU</span>
         </div>
 
@@ -86,28 +86,28 @@ const Page: React.FC<{ frame: number }> = ({ frame }) => {
         <div style={{ height: 560, background: C.sage, padding: '38px 38px 0', boxSizing: 'border-box', position: 'relative' }}>
           <div style={{ fontFamily: FONT.hand, fontSize: 34, color: C.muted }}>since 1998</div>
           <div style={{ fontFamily: FONT.display, fontSize: 82, lineHeight: 0.92, color: C.forest, marginTop: 6 }}>
-            FRESH BREAD,<br />BAKED AT 5 AM.
+            HANDPICKED<br />STYLES FOR YOU.
           </div>
           <div style={{ fontFamily: FONT.sans, fontWeight: 500, fontSize: 24, color: 'rgba(32,37,34,.72)', marginTop: 14 }}>
-            Sourdough, buns and birthday cakes.
+            Sarees, kurtas and custom fits.
           </div>
           {/* the photo: the shop, abstracted, bleeding to both edges */}
           <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 196, background: `linear-gradient(140deg, ${C.forest}, #2F5A45)`, overflow: 'hidden' }}>
             <div style={{ position: 'absolute', left: 60, bottom: 24, width: 150, height: 92, borderRadius: '75px 75px 10px 10px', background: 'rgba(221,227,213,.3)' }} />
             <div style={{ position: 'absolute', left: 236, bottom: 24, width: 96, height: 96, borderRadius: 48, background: 'rgba(221,227,213,.18)' }} />
             <div style={{ position: 'absolute', right: 46, bottom: 30, width: 190, height: 120, borderRadius: 8, background: 'rgba(221,227,213,.12)' }} />
-            <div style={{ position: 'absolute', left: 22, top: 16, fontFamily: FONT.sans, fontWeight: 700, fontSize: 14, letterSpacing: '0.18em', color: 'rgba(221,227,213,.6)' }}>THE SHOP</div>
+            <div style={{ position: 'absolute', left: 22, top: 16, fontFamily: FONT.sans, fontWeight: 700, fontSize: 14, letterSpacing: '0.18em', color: 'rgba(221,227,213,.6)' }}>THE BOUTIQUE</div>
           </div>
         </div>
 
         {/* services */}
         <div style={{ background: C.white, padding: '34px 32px 38px', boxSizing: 'border-box' }}>
-          <div style={{ fontFamily: FONT.sans, fontWeight: 800, fontSize: 18, letterSpacing: '0.22em', color: C.muted }}>WHAT WE BAKE</div>
+          <div style={{ fontFamily: FONT.sans, fontWeight: 800, fontSize: 18, letterSpacing: '0.22em', color: C.muted }}>WHAT WE OFFER</div>
           <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
             {[
-              { t: 'BREADS', s: 'daily, from 6am' },
-              { t: 'CAKES', s: 'made to order' },
-              { t: 'CATERING', s: 'for the whole street' },
+              { t: 'SAREES', s: 'handpicked edits' },
+              { t: 'KURTAS', s: 'everyday & festive' },
+              { t: 'CUSTOM', s: 'stitched to fit' },
             ].map((x) => (
               <div key={x.t} style={{ flex: 1, background: 'rgba(221,227,213,.55)', borderRadius: 12, padding: '18px 16px', boxSizing: 'border-box' }}>
                 <div style={{ fontFamily: FONT.display, fontSize: 30, color: C.forest }}>{x.t}</div>
@@ -205,7 +205,7 @@ const Booking: React.FC<{ frame: number }> = ({ frame }) => {
       ) : (
         <>
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginTop: 34 }}>
-            <span style={{ fontFamily: FONT.display, fontSize: 62, color: C.forest }}>BOOK A TABLE</span>
+            <span style={{ fontFamily: FONT.display, fontSize: 62, color: C.forest }}>BOOK A FITTING</span>
             <svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M5 5l14 14M19 5L5 19" stroke={C.muted} strokeWidth="2.6" strokeLinecap="round" /></svg>
           </div>
           <div style={{ fontFamily: FONT.sans, fontWeight: 600, fontSize: 24, color: C.muted, marginTop: 6 }}>November 2026</div>
@@ -292,7 +292,7 @@ const Payment: React.FC<{ frame: number }> = ({ frame }) => {
         <>
           <div style={{ fontFamily: FONT.display, fontSize: 62, color: C.off, marginTop: 34 }}>YOUR ORDER</div>
           <div style={{ marginTop: 30 }}>
-            {[['Sourdough loaf × 2', '₹240'], ['Birthday cake × 1', '₹400']].map(([l, v]) => (
+            {[['Cotton kurta set × 1', '₹240'], ['Silk dupatta × 1', '₹400']].map(([l, v]) => (
               <div key={l} style={{ display: 'flex', justifyContent: 'space-between', padding: '18px 0', borderBottom: '1px solid rgba(221,227,213,.16)' }}>
                 <span style={{ fontFamily: FONT.sans, fontWeight: 600, fontSize: 27, color: 'rgba(244,245,239,.86)' }}>{l}</span>
                 <span style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 27, color: C.off }}>{v}</span>

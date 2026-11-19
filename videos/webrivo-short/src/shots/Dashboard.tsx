@@ -21,9 +21,9 @@ const STATS = [
 ];
 
 const ROWS = [
-  { t: '11:30', n: 'Anita R.', w: 'Table for 2', s: 'PAID' },
-  { t: '12:00', n: 'Rahul M.', w: 'Birthday cake', s: 'PAID' },
-  { t: '12:30', n: 'Meera K.', w: 'Table for 4', s: 'NEW' },
+  { t: '11:30', n: 'Anita R.', w: 'Trial fitting', s: 'PAID' },
+  { t: '12:00', n: 'Neha M.', w: 'Bridal blouse', s: 'PAID' },
+  { t: '12:30', n: 'Meera K.', w: 'Saree draping', s: 'NEW' },
 ];
 
 const BARS = [42, 58, 47, 72, 66, 88, 61];
@@ -62,7 +62,7 @@ export const Dashboard: React.FC = () => {
             ))}
             <div style={{ flex: 1 }} />
             <div style={{ fontFamily: FONT.sans, fontWeight: 600, fontSize: 18, color: 'rgba(221,227,213,.62)', background: 'rgba(244,245,239,.1)', borderRadius: 999, padding: '8px 22px' }}>
-              annasbakery.webrivo.site / dashboard
+              riyasboutique.webrivo.site / dashboard
             </div>
             <div style={{ flex: 1 }} />
             <div style={{ width: 30, height: 30, borderRadius: 15, background: C.sage }} />
@@ -82,7 +82,7 @@ export const Dashboard: React.FC = () => {
             {/* body */}
             <div style={{ flex: 1, padding: '34px 36px 0', boxSizing: 'border-box' }}>
               <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-                <div style={{ fontFamily: FONT.display, fontSize: 52, color: C.forest }}>GOOD MORNING, ANNA</div>
+                <div style={{ fontFamily: FONT.display, fontSize: 52, color: C.forest }}>GOOD MORNING, RIYA</div>
                 <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 18, letterSpacing: '0.16em', color: C.muted }}>NOV 17–23</div>
               </div>
 

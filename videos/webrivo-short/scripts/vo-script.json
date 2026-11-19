@@ -1,20 +1,92 @@
 [
-  { "id": "s1a",  "text": "Every great shop on this street has a story.", "voice": "af_heart" },
-  { "id": "s1b",  "text": "The bakery on the corner. The tailor three doors down.", "voice": "af_heart" },
-  { "id": "s2a",  "text": "Right now, someone nearby is looking for exactly what you sell.", "voice": "af_heart" },
-  { "id": "s2b",  "text": "They open their phone, and you're not there.", "voice": "af_heart" },
-  { "id": "s4a",  "text": "So the sale goes to someone else.", "voice": "af_heart" },
-  { "id": "s5a",  "text": "So we keep it simple. Brief, build, ship.", "voice": "af_heart" },
-  { "id": "s6a",  "text": "What you get is a landing page.", "voice": "af_heart" },
-  { "id": "s6b",  "text": "Your photos, your services, and one tap to call.", "voice": "af_heart" },
-  { "id": "s7a",  "text": "A booking system, so they pick a time instead of calling.", "voice": "af_heart" },
-  { "id": "s8a",  "text": "A payment gateway, so they pay before they arrive.", "voice": "af_heart" },
-  { "id": "s9a",  "text": "And a dashboard, so you see every booking, and every rupee.", "voice": "af_heart" },
-  { "id": "s10a", "text": "Three plans. Five ninety nine to twenty one ninety nine a month.", "voice": "af_heart" },
-  { "id": "s10b", "text": "Bookings, payments and dashboards come with Premium.", "voice": "af_heart" },
-  { "id": "s11a", "text": "Every plan includes hosting, maintenance, and your domain.", "voice": "af_heart" },
-  { "id": "s11b", "text": "Pay yearly, and you save ten percent.", "voice": "af_heart" },
-  { "id": "s12a", "text": "Webrivo.", "voice": "af_heart" },
-  { "id": "s12b", "text": "For the businesses that make a town feel like home.", "voice": "af_heart" },
-  { "id": "s12c", "text": "Let's get you found.", "voice": "af_heart" }
+  {
+    "id": "s1a",
+    "text": "Every great shop on this street has a story.",
+    "voice": "af_heart"
+  },
+  {
+    "id": "s1b",
+    "text": "The boutique on the corner. The tailor three doors down.",
+    "voice": "af_heart"
+  },
+  {
+    "id": "s2a",
+    "text": "Right now, someone nearby is looking for exactly what you sell.",
+    "voice": "af_heart"
+  },
+  {
+    "id": "s2b",
+    "text": "They open their phone, and you're not there.",
+    "voice": "af_heart"
+  },
+  {
+    "id": "s4a",
+    "text": "So the sale goes to someone else.",
+    "voice": "af_heart"
+  },
+  {
+    "id": "s5a",
+    "text": "So we keep it simple. Brief, build, ship.",
+    "voice": "af_heart"
+  },
+  {
+    "id": "s6a",
+    "text": "What you get is a landing page.",
+    "voice": "af_heart"
+  },
+  {
+    "id": "s6b",
+    "text": "Your photos, your services, and one tap to call.",
+    "voice": "af_heart"
+  },
+  {
+    "id": "s7a",
+    "text": "A booking system, so they pick a time instead of calling.",
+    "voice": "af_heart"
+  },
+  {
+    "id": "s8a",
+    "text": "A payment gateway, so they pay before they arrive.",
+    "voice": "af_heart"
+  },
+  {
+    "id": "s9a",
+    "text": "And a dashboard, so you see every booking, and every rupee.",
+    "voice": "af_heart"
+  },
+  {
+    "id": "s10a",
+    "text": "Three plans. Five ninety nine to twenty one ninety nine a month.",
+    "voice": "af_heart"
+  },
+  {
+    "id": "s10b",
+    "text": "Bookings, payments and dashboards come with Premium.",
+    "voice": "af_heart"
+  },
+  {
+    "id": "s11a",
+    "text": "Every plan includes hosting, maintenance, and your domain.",
+    "voice": "af_heart"
+  },
+  {
+    "id": "s11b",
+    "text": "Pay yearly, and you save ten percent.",
+    "voice": "af_heart"
+  },
+  {
+    "id": "s12a",
+    "text": "Webrivo.",
+    "voice": "af_heart"
+  },
+  {
+    "id": "s12b",
+    "text": "For the businesses that make a town feel like home.",
+    "voice": "af_heart"
+  },
+  {
+    "id": "s12c",
+    "text": "Let's get you found.",
+    "voice": "af_heart"
+  }
 ]

@@ -27,8 +27,8 @@ const CARDS: Card[] = [
 
 // who they buy from instead — the panel's proof
 const ELSE = [
-  { name: 'Sunrise Bakery', meta: 'open now · 1.2 km · ★ 5.0' },
-  { name: 'The Bread House', meta: 'opens 7 am · 2.8 km · ★ 4.0' },
+  { name: 'Silk & Stitch', meta: 'open now · 1.2 km · ★ 5.0' },
+  { name: 'Urban Loom', meta: 'opens 11 am · 2.8 km · ★ 4.0' },
 ];
 
 // ── the picture inside each card ──────────────────────────────────────────

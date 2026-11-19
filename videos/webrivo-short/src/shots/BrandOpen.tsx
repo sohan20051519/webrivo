@@ -2,7 +2,7 @@
 // A printed town map: blocks of buildings, a white main street drawn over them,
 // shop tags surfacing along it, the hook landing. Then the camera does what a
 // map film should do — it pushes in and visits two of the shops while the voice
-// names them ("the bakery at five", "the tailor who never misses a stitch").
+// names them ("the boutique on the corner", "the tailor three doors down").
 // No brand mark, no wordmark: the film opens on the businesses, not on us.
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
@@ -54,7 +54,7 @@ const BLOCKS = (() => {
 
 // the shops this film is about — the two named in the voice are `hot`
 const SHOPS = [
-  { t: 'BAKERY', n: '04', x: 96, y: 1170, rot: -4, at: 8, near: true, hot: 0 },
+  { t: 'BOUTIQUE', n: '04', x: 96, y: 1170, rot: -4, at: 8, near: true, hot: 0 },
   { t: 'TAILOR', n: '11', x: 606, y: 1052, rot: 3, at: 11, near: true, hot: 1 },
   { t: 'FLORIST', n: '17', x: 74, y: 936, rot: -3, at: 14, near: false, hot: -1 },
   { t: 'SALON', n: '23', x: 626, y: 822, rot: 5, at: 17, near: true, hot: -1 },
@@ -62,7 +62,7 @@ const SHOPS = [
 ];
 
 const centre = (s: typeof SHOPS[number]) => ({ x: s.x + (s.near ? 120 : 105), y: s.y + 31 });
-const BAKERY = centre(SHOPS[0]);
+const BOUTIQUE = centre(SHOPS[0]);
 const TAILOR = centre(SHOPS[1]);
 
 // camera keyframes: (scale, translate). A point p maps to p*s + t, so we solve
@@ -73,8 +73,8 @@ const at = (s: number, p: { x: number; y: number }, cx = 540, cy = 900) => ({
 const CAM = [
   { f: 0, ...at(1.06, { x: 540, y: 960 }, 540, 960), y: 70 },
   { f: 96, s: 1.0, x: 8, y: -58 },
-  { f: 122, ...at(2.32, BAKERY) },
-  { f: 140, ...at(2.38, BAKERY) },
+  { f: 122, ...at(2.32, BOUTIQUE) },
+  { f: 140, ...at(2.38, BOUTIQUE) },
   { f: 172, ...at(2.3, TAILOR) },
   { f: 219, ...at(2.14, TAILOR) },
 ];
@@ -159,7 +159,7 @@ export const BrandOpen: React.FC = () => {
   const hotB = ramp(frame, BEATS.hotB - 6, 12, EASE.out);
   const hot = [hotA, hotB, 0, 0, 0];
 
-  const focus = cam.s > 1.3 ? (hotB > 0.4 ? TAILOR : BAKERY) : null;
+  const focus = cam.s > 1.3 ? (hotB > 0.4 ? TAILOR : BOUTIQUE) : null;
   const fx = focus ? focus.x * cam.s + cam.x : 540;
   const fy = focus ? focus.y * cam.s + cam.y : 900;
   const dim = Math.max(hotA, hotB);
@@ -313,7 +313,7 @@ export const BrandOpen: React.FC = () => {
           opacity: hotA, transform: `translateY(${(1 - hotA) * 20}px) rotate(-1.4deg)`,
         }}
       >
-        the bakery on the corner
+        the boutique on the corner
       </div>
       <div
         style={{

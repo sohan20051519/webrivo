@@ -23,14 +23,14 @@ export const BEATS = {
   out: 196,
 };
 
-const QUERY = 'bakery near me';
+const QUERY = 'boutique near me';
 const SUGGEST = [
-  'bakery near me',
-  'bakery near me open now',
-  'birthday cake main street',
-  'bread home delivery',
-  'bakery with seating',
-  'cupcakes near me',
+  'boutique near me',
+  'boutique near me open now',
+  'ladies kurta set',
+  'saree shop main street',
+  'ethnic wear boutique',
+  'bridal blouse stitching',
 ];
 const TYPE_PER = 3.1;
 
@@ -77,15 +77,15 @@ const Stars: React.FC<{ n: number; size: number }> = ({ n, size }) => (
 type Row = { name: string; url: string; snippet: string; stars: number; reviews: number; dist: string };
 
 const ROWS: Row[] = [
-  { name: 'Sunrise Bakery — fresh bread, main street', url: 'sunrisebakery.in › menu', snippet: 'Sourdough, buns and birthday cakes. Open from 5 am. Order online for pickup.', stars: 5, reviews: 214, dist: '1.2 km' },
-  { name: 'The Bread House', url: 'thebreadhouse.in › bakery', snippet: 'Wood-fired loaves and pastries. Closed now — opens tomorrow at 7 am.', stars: 4, reviews: 96, dist: '2.8 km' },
-  { name: 'Corner Oven', url: 'corneroven.shop › bakes', snippet: 'Small-batch cookies and cakes. Delivery within 5 km.', stars: 4, reviews: 41, dist: '3.1 km' },
+  { name: 'Silk & Stitch — ethnic wear, main street', url: 'silkandstitch.in › collection', snippet: 'Sarees, kurtas and custom blouses. Open from 10 am. Visit our store.', stars: 5, reviews: 214, dist: '1.2 km' },
+  { name: 'Urban Loom', url: 'urbanloom.in › boutique', snippet: 'Contemporary ethnic and fusion wear. Closed now — opens tomorrow at 11 am.', stars: 4, reviews: 96, dist: '2.8 km' },
+  { name: 'The Drapery', url: 'thedrapery.shop › styles', snippet: 'Ready-to-wear kurtas and dupattas. Delivery within 5 km.', stars: 4, reviews: 41, dist: '3.1 km' },
 ];
 
 const PINS = [
-  { x: 232, y: 190, label: 'Sunrise' },
-  { x: 470, y: 268, label: 'Bread House' },
-  { x: 700, y: 150, label: 'Corner Oven' },
+  { x: 232, y: 190, label: 'Silk & Stitch' },
+  { x: 470, y: 268, label: 'Urban Loom' },
+  { x: 700, y: 150, label: 'The Drapery' },
 ];
 
 // rough hand-drawn rectangle around the empty slot
@@ -261,7 +261,7 @@ export const SearchShot: React.FC = () => {
           </svg>
           <div style={{ position: 'absolute', left: 18, top: 16, display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(255,255,255,.92)', borderRadius: 999, padding: '8px 16px' }}>
             <Magnifier size={20} color={C.forest} w={2.6} />
-            <span style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 20, color: C.forest }}>bakery · this area</span>
+            <span style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 20, color: C.forest }}>boutiques · this area</span>
           </div>
         </div>
 
@@ -373,7 +373,7 @@ export const SearchShot: React.FC = () => {
         <div style={{ position: 'absolute', left: 62, right: 62, top: 1648, opacity: ramp(frame, 104, 14, EASE.out) }}>
           <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 22, letterSpacing: '0.14em', color: C.muted }}>RELATED</div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14, marginTop: 14 }}>
-            {['bakery near me open now', 'birthday cake main street', 'bread home delivery'].map((q) => (
+            {['boutique near me open now', 'saree shop main street', 'kurta set near me'].map((q) => (
               <div key={q} style={{ borderRadius: 999, background: '#EDEFE6', border: '1px solid rgba(24,53,43,.1)', padding: '14px 22px', fontFamily: FONT.sans, fontWeight: 600, fontSize: 24, color: C.forest }}>
                 {q}
               </div>
