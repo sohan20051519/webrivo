@@ -1,144 +1,129 @@
-// Shot 01 — dataviz-landscape-open (town edition), 210f.
-// A printed town map: blocks of buildings, a white main street drawn over them,
-// shop tags surfacing along it, the hook landing. Then the camera does what a
-// map film should do — it pushes in and visits two of the shops while the voice
-// names them ("the boutique on the corner", "the tailor three doors down").
-// No brand mark, no wordmark: the film opens on the businesses, not on us.
+// Shot 01 — street-drive open, 210f.
+// A realistic-feeling street scene: we move along a road and pass shop fronts,
+// so the film opens on real businesses on a real street. The camera advances
+// down the road, boutique and tailor come into view as the voice names them.
+// Same DURATION/BEATS contract as before (audio cues pinned to B1).
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { C, FONT, EASE, Grain, Tape, Fonts, ramp, bell } from '../theme';
 
 export const DURATION = 210;
 
-// shot-local frames the audio pins to
+// shot-local frames the audio pins to (keep contract)
 export const BEATS = { hook: 12, out: 80, hotA: 104, hotB: 146, end: 203 };
 
-const TRUNK = 'M 540 1980 C 508 1720 568 1360 552 1060 C 542 900 556 700 560 470';
-const TRUNK_Y = [1640, 1480, 1330, 1190, 1060, 945, 840, 748, 668, 600];
-
-const TRIBS = TRUNK_Y.map((ty, i) => {
-  const left = i % 2 === 0;
-  const sx = left ? -160 : 1240;
-  const sy = ty + 250 + ((i * 7) % 4) * 90;
-  const cx = 552 + (left ? -220 : 220);
-  const cy = ty + 190;
-  return {
-    d: `M ${sx} ${sy} Q ${cx} ${cy} 552 ${ty}`,
-    delay: -2 + i * 1.4,
-    op: 0.9 - i * 0.03,
-  };
-});
-
-// deterministic town blocks — dense enough that every zoom level has texture
-const BLOCKS = (() => {
-  const out: { x: number; y: number; w: number; h: number; tone: number; rot: number }[] = [];
-  let seed = 7;
-  const rnd = () => {
-    seed = (seed * 1103515245 + 12345) % 2147483648;
-    return seed / 2147483648;
-  };
-  const cols = [-110, 110, 330, 660, 900, 1020, -40, 200];
-  for (let y = 250; y < 1820; y += 112) {
-    for (const cx of cols) {
-      const w = 110 + Math.floor(rnd() * 130);
-      const h = 62 + Math.floor(rnd() * 48);
-      const x = cx + Math.floor(rnd() * 46) - 20;
-      const yy = y + Math.floor(rnd() * 46);
-      // keep the main street and its verges clear
-      if (x + w > 476 && x < 636) continue;
-      out.push({ x, y: yy, w, h, tone: rnd(), rot: (rnd() - 0.5) * 1.6 });
-    }
-  }
-  return out;
-})();
-
-// the shops this film is about — the two named in the voice are `hot`
-const SHOPS = [
-  { t: 'BOUTIQUE', n: '04', x: 96, y: 1170, rot: -4, at: 8, near: true, hot: 0 },
-  { t: 'TAILOR', n: '11', x: 606, y: 1052, rot: 3, at: 11, near: true, hot: 1 },
-  { t: 'FLORIST', n: '17', x: 74, y: 936, rot: -3, at: 14, near: false, hot: -1 },
-  { t: 'SALON', n: '23', x: 626, y: 822, rot: 5, at: 17, near: true, hot: -1 },
-  { t: 'CAFE', n: '08', x: 128, y: 712, rot: -2, at: 20, near: false, hot: -1 },
-];
-
-const centre = (s: typeof SHOPS[number]) => ({ x: s.x + (s.near ? 120 : 105), y: s.y + 31 });
-const BOUTIQUE = centre(SHOPS[0]);
-const TAILOR = centre(SHOPS[1]);
-
-// camera keyframes: (scale, translate). A point p maps to p*s + t, so we solve
-// t from the tag we want centred at (540, 900).
-const at = (s: number, p: { x: number; y: number }, cx = 540, cy = 900) => ({
-  s, x: cx - p.x * s, y: cy - p.y * s,
-});
-const CAM = [
-  { f: 0, ...at(1.06, { x: 540, y: 960 }, 540, 960), y: 70 },
-  { f: 96, s: 1.0, x: 8, y: -58 },
-  { f: 122, ...at(2.32, BOUTIQUE) },
-  { f: 140, ...at(2.38, BOUTIQUE) },
-  { f: 172, ...at(2.3, TAILOR) },
-  { f: 219, ...at(2.14, TAILOR) },
-];
-
-const camAt = (f: number) => {
-  for (let i = 0; i < CAM.length - 1; i++) {
-    const a = CAM[i];
-    const b = CAM[i + 1];
-    if (f <= b.f) {
-      const u = ramp(f, a.f, b.f - a.f, EASE.smooth);
-      return { s: a.s + (b.s - a.s) * u, x: a.x + (b.x - a.x) * u, y: a.y + (b.y - a.y) * u };
-    }
-  }
-  const z = CAM[CAM.length - 1];
-  return { s: z.s, x: z.x, y: z.y };
+// world layout: camera moves forward along z; shops sit on left/right of road
+// z = distance ahead of camera start. We choose positions so boutique arrives
+// near hotA and tailor near hotB while earlier shops pass during the intro.
+type Shop = {
+  name: string;
+  sub: string;
+  side: 'left' | 'right';
+  z: number; // world distance
+  w: number;
+  h: number;
+  awning: string;
+  accent: string;
+  hot?: 0 | 1; // index into hot captions
 };
 
-const ShopTag: React.FC<{ s: typeof SHOPS[number]; frame: number; hot: number }> = ({ s, frame, hot }) => {
-  const t = ramp(frame, s.at, 9, EASE.outBack);
-  const near = s.near;
-  const pulse = hot * (0.85 + 0.15 * Math.cos((frame - BEATS.hotA) * 0.12));
+const SHOPS: Shop[] = [
+  { name: 'GROCERY', sub: 'daily needs', side: 'left', z: 18, w: 320, h: 360, awning: '#8FA07E', accent: '#2F5A45' },
+  { name: 'SALON', sub: 'cuts & care', side: 'right', z: 26, w: 300, h: 340, awning: C.sage, accent: C.muted },
+  { name: 'FLORIST', sub: 'fresh blooms', side: 'left', z: 34, w: 290, h: 330, awning: '#C7D4B8', accent: '#5E7A5A' },
+  { name: 'BOUTIQUE', sub: 'styles for you', side: 'right', z: 44, w: 360, h: 380, awning: C.sage, accent: C.forest, hot: 0 },
+  { name: 'CAFE', sub: 'tea & snacks', side: 'left', z: 52, w: 300, h: 340, awning: '#B9C8A8', accent: '#4A6A52' },
+  { name: 'TAILOR', sub: 'perfect fit', side: 'left', z: 60, w: 340, h: 360, awning: '#D6DEC9', accent: C.forest, hot: 1 },
+  { name: 'BAKERY', sub: 'fresh daily', side: 'right', z: 68, w: 300, h: 330, awning: '#C4D0B6', accent: '#6B8260' },
+];
+
+// camera travels forward over time (world units)
+const camZ = (f: number) => {
+  // ease in, cruise, then slow near end as we settle on tailor
+  if (f <= 10) return 2 + 2 * ramp(f, 0, 10, EASE.out);
+  if (f <= 90) return 4 + 22 * ramp(f, 10, 80, EASE.smooth);
+  if (f <= 130) return 26 + 16 * ramp(f, 90, 40, EASE.smooth);
+  if (f <= 160) return 42 + 12 * ramp(f, 130, 30, EASE.smooth);
+  return 54 + 4 * ramp(f, 160, 50, EASE.smooth);
+};
+
+// project a world point (x lateral, y up, z depth from camera) to screen
+// simple perspective: scale = fov / (z - camZ)
+const VP = { x: 540, y: 520 }; // vanishing point
+const FOV = 900;
+
+const project = (wx: number, wy: number, wz: number, cz: number) => {
+  const dz = Math.max(0.6, wz - cz);
+  const s = FOV / dz;
+  return { x: VP.x + wx * s, y: VP.y - wy * s, s, dz };
+};
+
+const ShopFront: React.FC<{ shop: Shop; cz: number; frame: number; focus: number }> = ({ shop, cz, frame, focus }) => {
+  const rel = shop.z - cz;
+  if (rel < 1.2 || rel > 40) return null;
+  const base = project(shop.side === 'left' ? -3.4 : 3.4, 0, shop.z, cz);
+  const scale = base.s;
+  const w = shop.w * scale;
+  const h = shop.h * scale;
+  const x = base.x + (shop.side === 'left' ? -w : 0);
+  const y = base.y - h;
+  const fadeIn = ramp(rel, 38, 8, EASE.out);
+  const fadeOut = 1 - ramp(rel, 1.2, 1.6, EASE.smooth);
+  const alpha = Math.max(0, Math.min(1, fadeIn * (0.25 + 0.75 * fadeOut)));
+  const dim = focus > 0.01 && shop.hot === undefined ? 1 - 0.45 * focus : 1;
+  const pop = shop.hot === 0 ? 1 + 0.04 * focus : shop.hot === 1 ? 1 + 0.04 * focus : 1;
+
+  // window grid
+  const cols = 2;
+  const rows = 2;
+  const pad = 18 * scale;
+  const winW = (w - pad * 3) / cols;
+  const winH = (h * 0.38 - pad * 2) / rows;
+
   return (
     <div
       style={{
-        position: 'absolute', left: s.x, top: s.y,
-        opacity: t,
-        transform: `translateY(${(1 - t) * 18}px) rotate(${s.rot}deg) scale(${(0.88 + 0.12 * t) * (near ? 1 : 0.92) * (1 + 0.06 * hot)})`,
-        transformOrigin: 'left center',
-        display: 'flex', alignItems: 'center', gap: 12,
+        position: 'absolute', left: x, top: y, width: w, height: h,
+        opacity: alpha * dim,
+        transform: `scale(${pop})`,
+        transformOrigin: shop.side === 'left' ? 'right bottom' : 'left bottom',
       }}
     >
-      {/* halo behind the two shops the voice visits */}
-      <div
-        style={{
-          position: 'absolute', left: -46, top: -34, width: 430, height: 132,
-          borderRadius: 66, opacity: hot,
-          background: `radial-gradient(ellipse at 40% 50%, rgba(221,227,213,${0.55 + 0.25 * pulse}) 0%, rgba(221,227,213,0) 70%)`,
-        }}
-      />
-      <div
-        style={{
-          width: near ? 15 : 12, height: near ? 15 : 12, borderRadius: 99,
-          background: C.forest, boxShadow: `0 0 0 4px rgba(244,245,239,${near ? 0.95 : 0.7})`,
-          position: 'relative',
-        }}
-      />
-      <div
-        style={{
-          display: 'flex', alignItems: 'baseline', gap: 10,
-          padding: near ? '12px 18px' : '10px 15px',
-          borderRadius: 6, position: 'relative',
-          background: C.white,
-          border: '1px solid rgba(24,53,43,.16)',
-          boxShadow: hot > 0.02
-            ? `0 ${8 + 18 * hot}px ${18 + 30 * hot}px rgba(24,53,43,${0.14 + 0.2 * hot})`
-            : '0 4px 12px rgba(24,53,43,.12)',
-        }}
-      >
-        <span style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: near ? 34 : 28, letterSpacing: '0.18em', color: C.forest }}>
-          {s.t}
-        </span>
-        <span style={{ fontFamily: FONT.sans, fontWeight: 600, fontSize: near ? 23 : 19, letterSpacing: '0.08em', color: C.muted }}>
-          {s.n}
-        </span>
+      {/* building body */}
+      <div style={{ position: 'absolute', inset: 0, background: C.white, borderRadius: 6 * scale, boxShadow: `0 ${8 * scale}px ${20 * scale}px rgba(24,53,43,${0.18 * alpha})`, overflow: 'hidden', border: `${Math.max(1, 1.5 * scale)}px solid rgba(24,53,43,.12)` }}>
+        {/* awning */}
+        <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: h * 0.22, background: shop.awning }}>
+          <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: Math.max(2, 6 * scale), background: 'rgba(24,53,43,.12)' }} />
+          {/* scallops */}
+          <div style={{ position: 'absolute', left: 0, right: 0, bottom: -Math.max(2, 8 * scale), height: Math.max(4, 14 * scale), display: 'flex' }}>
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} style={{ flex: 1, background: shop.awning, borderRadius: `0 0 ${8 * scale}px ${8 * scale}px` }} />
+            ))}
+          </div>
+        </div>
+        {/* sign */}
+        <div style={{ position: 'absolute', left: pad, right: pad, top: h * 0.05, height: h * 0.12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ fontFamily: FONT.sans, fontWeight: 800, fontSize: Math.max(10, 34 * scale), letterSpacing: '0.12em', color: shop.accent, textAlign: 'center', lineHeight: 1 }}>
+            {shop.name}
+          </div>
+        </div>
+        {/* windows */}
+        <div style={{ position: 'absolute', left: pad, top: h * 0.28, width: w - pad * 2, height: h * 0.38, display: 'grid', gridTemplateColumns: `1fr 1fr`, gap: pad }}>
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} style={{ background: 'linear-gradient(180deg, rgba(221,227,213,.85), rgba(221,227,213,.45))', borderRadius: 3 * scale, border: `${Math.max(1, 1.2 * scale)}px solid rgba(24,53,43,.12)`, position: 'relative' }}>
+              <div style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: Math.max(1, 1.5 * scale), background: 'rgba(24,53,43,.1)' }} />
+              <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: Math.max(1, 1.5 * scale), background: 'rgba(24,53,43,.1)' }} />
+            </div>
+          ))}
+        </div>
+        {/* door */}
+        <div style={{ position: 'absolute', left: w * 0.38, bottom: 0, width: w * 0.24, height: h * 0.28, background: shop.accent, borderRadius: `${4 * scale}px ${4 * scale}px 0 0` }}>
+          <div style={{ position: 'absolute', right: '18%', top: '52%', width: Math.max(2, 5 * scale), height: Math.max(2, 5 * scale), borderRadius: 99, background: 'rgba(244,245,239,.8)' }} />
+        </div>
+        {/* sub label on glass */}
+        <div style={{ position: 'absolute', left: 0, right: 0, bottom: h * 0.30, textAlign: 'center', fontFamily: FONT.hand, fontSize: Math.max(8, 22 * scale), color: C.muted, opacity: 0.9 }}>
+          {shop.sub}
+        </div>
       </div>
     </div>
   );
@@ -146,147 +131,76 @@ const ShopTag: React.FC<{ s: typeof SHOPS[number]; frame: number; hot: number }>
 
 export const BrandOpen: React.FC = () => {
   const frame = useCurrentFrame();
-  const cam = camAt(frame);
+  const cz = camZ(frame);
 
-  const trunkP = ramp(frame, -18, 56, EASE.smooth);
-  const gate = ramp(frame, 0, 18, EASE.out);
   const hookT = ramp(frame, BEATS.hook, 12, EASE.out);
   const outT = ramp(frame, BEATS.out, 12, EASE.power4In);
   const ruleP = ramp(frame, BEATS.hook + 12, 12, EASE.smooth);
-  const chromeT = ramp(frame, 2, 16, EASE.out);
-
   const hotA = ramp(frame, BEATS.hotA - 10, 12, EASE.out) * (1 - ramp(frame, BEATS.hotB - 14, 10, EASE.smooth));
   const hotB = ramp(frame, BEATS.hotB - 6, 12, EASE.out);
-  const hot = [hotA, hotB, 0, 0, 0];
+  const focus = Math.max(hotA, hotB);
+  const roadScroll = cz * 60;
 
-  const focus = cam.s > 1.3 ? (hotB > 0.4 ? TAILOR : BOUTIQUE) : null;
-  const fx = focus ? focus.x * cam.s + cam.x : 540;
-  const fy = focus ? focus.y * cam.s + cam.y : 900;
-  const dim = Math.max(hotA, hotB);
+  // subtle camera sway
+  const sway = Math.sin(frame * 0.04) * 6;
 
   return (
     <AbsoluteFill style={{ backgroundColor: '#E8ECE1', overflow: 'hidden' }}>
       <Fonts />
 
-      {/* map paper */}
-      <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(130% 100% at 50% 34%, #EFF2E9 0%, #E7EBDF 62%, #DFE5D6 100%)` }} />
-
-      {/* ── the map ─────────────────────────────────────────────────────── */}
-      <div
-        style={{
-          position: 'absolute', inset: 0,
-          transform: `translate3d(${Math.round(cam.x)}px, ${Math.round(cam.y)}px, 0) scale(${cam.s})`,
-          transformOrigin: '0 0',
-          willChange: 'transform',
-        }}
-      >
-        <svg width={1080} height={1920} viewBox="0 0 1080 1920" style={{ position: 'absolute', inset: 0 }}>
-          {/* blocks of town */}
-          {BLOCKS.map((b, i) => {
-            const p = ramp(frame, -8 + (i % 22) * 0.5, 12, EASE.out);
-            const dark = b.tone > 0.72;
-            return (
-              <g key={i} opacity={p} transform={`rotate(${b.rot} ${b.x + b.w / 2} ${b.y + b.h / 2})`}>
-                <rect
-                  x={b.x} y={b.y} width={b.w} height={b.h} rx={2}
-                  fill={dark ? '#B7C4A9' : '#D2DAC6'}
-                  stroke={C.forest} strokeWidth={1.3} strokeOpacity={0.34}
-                />
-                {dark ? (
-                  <path
-                    d={`M ${b.x} ${b.y + b.h} L ${b.x} ${b.y} L ${b.x + b.w} ${b.y}`}
-                    fill="none" stroke={C.muted} strokeWidth={2.4} strokeOpacity={0.45}
-                  />
-                ) : null}
-              </g>
-            );
-          })}
-
-          {/* the side streets, drawn as road shoulders + white tarmac */}
-          {TRIBS.map((s, i) => {
-            const p = ramp(frame, s.delay, 22, EASE.smooth);
-            return (
-              <g key={i} opacity={s.op}>
-                <path d={s.d} fill="none" stroke={C.muted} strokeWidth={17} strokeOpacity={0.28} strokeLinecap="round"
-                  pathLength={1} strokeDasharray={1} strokeDashoffset={1 - p} />
-                <path d={s.d} fill="none" stroke="#F7F8F2" strokeWidth={12} strokeLinecap="round"
-                  pathLength={1} strokeDasharray={1} strokeDashoffset={1 - p} />
-              </g>
-            );
-          })}
-
-          {/* the main street */}
-          <path d={TRUNK} fill="none" stroke={C.muted} strokeWidth={40} strokeOpacity={0.22} strokeLinecap="round"
-            pathLength={1} strokeDasharray={1} strokeDashoffset={1 - trunkP} />
-          <path d={TRUNK} fill="none" stroke="#F9FAF4" strokeWidth={33} strokeLinecap="round"
-            pathLength={1} strokeDasharray={1} strokeDashoffset={1 - trunkP} />
-          <path d={TRUNK} fill="none" stroke={C.muted} strokeWidth={2.4} strokeOpacity={0.55} strokeLinecap="round"
-            strokeDasharray="16 16" pathLength={1} strokeDashoffset={1 - trunkP} />
-
-          {/* storefront footprints beside every tag, so a 2.3× push has structure */}
-          {SHOPS.map((s) => (
-            <g key={`b-${s.t}`} opacity={ramp(frame, s.at - 2, 12, EASE.out)}>
-              <rect x={s.x - 26} y={s.y - 26} width={s.near ? 330 : 300} height={s.near ? 120 : 110} rx={4}
-                fill="#E7EBDD" stroke={C.forest} strokeWidth={1.5} strokeOpacity={0.32} />
-              <path d={`M ${s.x - 20} ${s.y - 2} h 76`} stroke={C.forest} strokeWidth={5} strokeOpacity={0.55} strokeLinecap="round" />
-              <path d={`M ${s.x - 20} ${s.y + 12} h 54`} stroke={C.muted} strokeWidth={3.4} strokeOpacity={0.6} strokeLinecap="round" />
-            </g>
-          ))}
-
-          {/* trees along the verges */}
-          {Array.from({ length: 26 }).map((_, i) => {
-            const side = i % 2 === 0 ? -1 : 1;
-            const y = 420 + i * 58;
-            const x = 540 + side * (78 + ((i * 37) % 42));
-            const p = ramp(frame, 12 + (i % 9), 12, EASE.out);
-            return <circle key={i} cx={x} cy={y} r={5.5} fill={C.sage} stroke={C.muted} strokeWidth={1.2} opacity={0.9 * p} />;
+      {/* sky */}
+      <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 780, background: `linear-gradient(180deg, #D9E3D0 0%, #E8ECE1 70%, ${C.sage} 100%)` }} />
+      {/* distant buildings silhouette */}
+      <div style={{ position: 'absolute', left: 0, right: 0, top: 430, height: 160, opacity: 0.35 }}>
+        <svg width={1080} height={160} viewBox="0 0 1080 160">
+          {[40, 120, 210, 320, 420, 520, 640, 760, 860, 960, 1040].map((x, i) => {
+            const h = 60 + ((i * 37) % 70);
+            return <rect key={x} x={x} y={160 - h} width={50 + ((i * 23) % 40)} height={h} rx={2} fill={C.muted} opacity={0.5 + ((i % 3) * 0.15)} />;
           })}
         </svg>
+      </div>
 
-        {/* street name, printed along the road */}
-        <div
-          style={{
-            position: 'absolute', left: 508, top: 1500, transform: 'rotate(-88deg)', transformOrigin: '0 0',
-            fontFamily: FONT.sans, fontWeight: 700, fontSize: 15, letterSpacing: '0.42em',
-            color: C.forest, opacity: 0.5 * gate, whiteSpace: 'nowrap',
-          }}
-        >
-          MAIN STREET
-        </div>
+      <div style={{ position: 'absolute', inset: 0, transform: `translateX(${sway}px)` }}>
+        {/* road (perspective trapezoid) */}
+        <svg width={1080} height={1920} viewBox="0 0 1080 1920" style={{ position: 'absolute', inset: 0 }}>
+          {/* ground */}
+          <rect x={0} y={520} width={1080} height={1400} fill="#E3E8DC" />
+          {/* road surface */}
+          <polygon points={`${VP.x},${VP.y} -80,1980 ${VP.x + 40},${VP.y} 1160,1980`} fill="#C9D1C0" />
+          {/* road edges */}
+          <line x1={VP.x} y1={VP.y} x2={-40} y2={1980} stroke={C.muted} strokeWidth={10} opacity={0.5} />
+          <line x1={VP.x} y1={VP.y} x2={1120} y2={1980} stroke={C.muted} strokeWidth={10} opacity={0.5} />
+          {/* lane markings moving toward camera */}
+          {Array.from({ length: 10 }).map((_, i) => {
+            const t = ((roadScroll / 120) + i) % 10;
+            const p = t / 10; // 0 far, 1 near
+            const y = VP.y + (1920 - VP.y) * Math.pow(p, 1.6);
+            const h = 20 + 80 * Math.pow(p, 1.4);
+            const w = 4 + 18 * p;
+            if (y > 1940) return null;
+            return <rect key={i} x={VP.x - w / 2} y={y} width={w} height={h} rx={w / 2} fill={C.off} opacity={0.3 + 0.5 * p} />;
+          })}
+          {/* sidewalks */}
+          <polygon points={`${VP.x},${VP.y} -80,1980 -220,1980 420,${VP.y + 60}`} fill={C.sage} opacity={0.55} />
+          <polygon points={`${VP.x},${VP.y} 1160,1980 1300,1980 660,${VP.y + 60}`} fill={C.sage} opacity={0.55} />
+        </svg>
 
-        {SHOPS.map((s, i) => (
-          <ShopTag key={s.t} s={s} frame={frame} hot={hot[i] * gate} />
+        {/* shop fronts */}
+        {SHOPS.map((shop) => (
+          <ShopFront key={shop.name} shop={shop} cz={cz} frame={frame} focus={focus} />
         ))}
       </div>
 
-      {/* map chrome — north arrow + legend, printed in the corners */}
-      <div style={{ position: 'absolute', right: 54, top: 396, opacity: 0.62 * chromeT, textAlign: 'center' }}>
-        <svg width={30} height={46} viewBox="0 0 30 46">
-          <path d="M15 2 L26 44 L15 34 L4 44 Z" fill={C.forest} />
-        </svg>
-        <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 13, letterSpacing: '0.3em', color: C.forest, marginTop: 2 }}>N</div>
-      </div>
-      <div
-        style={{
-          position: 'absolute', left: 54, bottom: 210, opacity: 0.7 * chromeT,
-          background: 'rgba(255,255,255,.72)', border: '1px solid rgba(24,53,43,.14)',
-          borderRadius: 6, padding: '12px 16px',
-        }}
-      >
-        <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 13, letterSpacing: '0.26em', color: C.forest }}>TOWN CENTRE</div>
-        <div style={{ fontFamily: FONT.hand, fontSize: 26, color: C.muted, marginTop: 2 }}>five shops, one street</div>
+      {/* street label / context */}
+      <div style={{ position: 'absolute', left: 54, top: 110, opacity: 0.7 * ramp(frame, 0, 14, EASE.out), background: 'rgba(255,255,255,.78)', border: '1px solid rgba(24,53,43,.14)', borderRadius: 8, padding: '12px 18px' }}>
+        <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 13, letterSpacing: '0.26em', color: C.forest }}>MAIN STREET</div>
+        <div style={{ fontFamily: FONT.hand, fontSize: 28, color: C.muted, marginTop: 2 }}>shops along the road</div>
       </div>
 
-      {/* the spotlight: everything but the visited shop goes soft */}
-      <div
-        style={{
-          position: 'absolute', inset: 0, pointerEvents: 'none',
-          background: `radial-gradient(circle 560px at ${fx}px ${fy}px, rgba(244,245,239,0) 12%, rgba(244,245,239,.6) 54%, rgba(244,245,239,.88) 100%)`,
-          opacity: dim * gate,
-        }}
-      />
+      {/* spotlight softening when focusing a shop */}
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: `radial-gradient(circle 520px at 540px 980px, rgba(244,245,239,0) 0%, rgba(244,245,239,.35) 55%, rgba(244,245,239,.6) 100%)`, opacity: focus }} />
 
-      {/* ── the hook ────────────────────────────────────────────────────── */}
+      {/* the hook */}
       <div
         style={{
           position: 'absolute', left: 0, right: 0, top: 1216, textAlign: 'center',
@@ -294,43 +208,30 @@ export const BrandOpen: React.FC = () => {
           transform: `translateY(${(1 - hookT) * 46 - outT * 120}px)`,
         }}
       >
-        <div style={{ fontFamily: FONT.display, fontSize: 150, lineHeight: 0.94, color: C.forest }}>
+        <div style={{ fontFamily: FONT.display, fontSize: 140, lineHeight: 0.94, color: C.forest, textShadow: '0 2px 0 rgba(244,245,239,.6)' }}>
           EVERY SHOP
         </div>
         <div style={{ position: 'relative', display: 'inline-block', marginTop: 4 }}>
-          <span style={{ fontFamily: FONT.display, fontSize: 150, lineHeight: 0.94, color: C.forest }}>
+          <span style={{ fontFamily: FONT.display, fontSize: 140, lineHeight: 0.94, color: C.forest, textShadow: '0 2px 0 rgba(244,245,239,.6)' }}>
             HAS A STORY.
           </span>
           <div style={{ position: 'absolute', left: -4, bottom: 4, height: 15, borderRadius: 8, width: `${ruleP * 100}%`, background: C.sage }} />
         </div>
       </div>
 
-      {/* the two visited shops get a hand-written caption, synced to s1b */}
-      <div
-        style={{
-          position: 'absolute', left: 0, right: 0, bottom: 236, textAlign: 'center',
-          fontFamily: FONT.hand, fontSize: 64, color: C.forest,
-          opacity: hotA, transform: `translateY(${(1 - hotA) * 20}px) rotate(-1.4deg)`,
-        }}
-      >
+      {/* captions synced to s1b */}
+      <div style={{ position: 'absolute', left: 0, right: 0, bottom: 236, textAlign: 'center', fontFamily: FONT.hand, fontSize: 64, color: C.forest, opacity: hotA, transform: `translateY(${(1 - hotA) * 20}px) rotate(-1.4deg)`, textShadow: '0 2px 10px rgba(244,245,239,.8)' }}>
         the boutique on the corner
       </div>
-      <div
-        style={{
-          position: 'absolute', left: 0, right: 0, bottom: 236, textAlign: 'center',
-          fontFamily: FONT.hand, fontSize: 64, color: C.forest,
-          opacity: hotB, transform: `translateY(${(1 - hotB) * 20}px) rotate(1.2deg)`,
-        }}
-      >
+      <div style={{ position: 'absolute', left: 0, right: 0, bottom: 236, textAlign: 'center', fontFamily: FONT.hand, fontSize: 64, color: C.forest, opacity: hotB, transform: `translateY(${(1 - hotB) * 20}px) rotate(1.2deg)`, textShadow: '0 2px 10px rgba(244,245,239,.8)' }}>
         the tailor three doors down
       </div>
 
-      <Tape w={250} rot={-9} tone="sage" style={{ left: -40, top: 96, opacity: 0.55 * ramp(frame, 0, 12, EASE.out) }} />
-      <Tape w={220} rot={7} tone="sage" style={{ right: -34, bottom: 420, opacity: 0.45 * ramp(frame, 6, 12, EASE.out) }} />
+      <Tape w={250} rot={-9} tone="sage" style={{ left: -40, top: 96, opacity: 0.45 * ramp(frame, 0, 12, EASE.out) }} />
+      <Tape w={220} rot={7} tone="sage" style={{ right: -34, bottom: 420, opacity: 0.35 * ramp(frame, 6, 12, EASE.out) }} />
 
       <Grain opacity={0.1} />
-      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none',
-        background: `radial-gradient(ellipse 96% 82% at 50% 42%, transparent 54%, rgba(137,153,130,.3) 100%)` }} />
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: `radial-gradient(ellipse 96% 82% at 50% 52%, transparent 54%, rgba(137,153,130,.25) 100%)` }} />
     </AbsoluteFill>
   );
 };
