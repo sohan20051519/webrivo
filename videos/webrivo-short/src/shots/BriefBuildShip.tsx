@@ -5,13 +5,13 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { C, FONT, EASE, Grain, Tape, Daisy, Fonts, ramp, bell } from '../theme';
 
-export const DURATION = 100;
+export const DURATION = 104;
 
 const WORDS = ['BRIEF', 'BUILD', 'SHIP'];
 const WINDOW_H = 240;
 
 // word centres, pinned to "Brief, build, ship." (s5 at 1.52 / 1.95 / 2.35 s)
-export const BEATS = { roll: [46, 58, 70], out: 88 };
+export const BEATS = { roll: [46, 58, 70], out: 86 };
 const AT = BEATS.roll;
 const TRANS = 10;
 
@@ -48,7 +48,10 @@ export const BriefBuildShip: React.FC = () => {
           opacity: 0.25 * inT, transform: 'rotate(-3deg)',
         }}
       />
-      <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+      {/* a 2.8% dolly through the whole shot: the marked-up window is a
+          photograph being pushed in, never a slide that hangs still */}
+      <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        transform: `translateY(${-outT * 120 - 10 * ramp(frame, 0, DURATION, EASE.smooth)}px) scale(${(1 + 0.028 * ramp(frame, 0, DURATION, EASE.smooth)) * (1 + 0.03 * outT)})` }}>
         <div style={{ fontFamily: FONT.hand, fontSize: 62, color: C.sage, opacity: inT, transform: `translateY(${(1 - inT) * 30}px)` }}>
           three moves, one site
         </div>

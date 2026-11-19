@@ -6,22 +6,22 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { C, FONT, EASE, Grain, Tape, Daisy, Badge, Fonts, ramp, bell } from '../theme';
 
-export const DURATION = 176;
+export const DURATION = 236;
 
 const PLANS = [
-  { tier: 'BASIC', price: '₹599', x: 84, y: 1030, rot: -7, start: 26 },
-  { tier: 'BUSINESS', price: '₹1,199', x: 415, y: 1075, rot: 2, start: 34, best: true },
-  { tier: 'PREMIUM', price: '₹2,199', x: 746, y: 1030, rot: 7, start: 42 },
+  { tier: 'BASIC', price: '₹599', x: 74, y: 1036, rot: -7, start: 0 },
+  { tier: 'BUSINESS', price: '₹1,199', x: 390, y: 1084, rot: 2, start: 5, best: true },
+  { tier: 'PREMIUM', price: '₹2,199', x: 706, y: 1036, rot: 7, start: 10 },
 ];
 
 // pinned to "Webrivo." / "For the businesses…" / "Let's get you found."
-export const BEATS = { badge: 7, word: 5, sign: 118, contact: 132 };
+export const BEATS = { badge: 4, word: 6, sign: 158, contact: 178 };
 
 const MiniPlan: React.FC<{ tier: string; price: string; best?: boolean }> = ({ tier, price, best }) => (
   <div
     style={{
-      width: 250, height: 339, background: C.white, borderRadius: 12,
-      padding: '22px 20px', boxSizing: 'border-box',
+      width: 300, height: 406, background: C.white, borderRadius: 14,
+      padding: '26px 24px', boxSizing: 'border-box',
       display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
       boxShadow: '0 20px 40px rgba(0,0,0,.35)',
       border: best ? `3px solid ${C.sage}` : '1px solid rgba(24,53,43,.1)',
@@ -35,7 +35,7 @@ const MiniPlan: React.FC<{ tier: string; price: string; best?: boolean }> = ({ t
     ) : null}
     <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 18, letterSpacing: '0.2em', color: C.muted }}>{tier}</div>
     <div>
-      <div style={{ fontFamily: FONT.display, fontSize: 58, lineHeight: 0.95, color: C.forest }}>{price}</div>
+      <div style={{ fontFamily: FONT.display, fontSize: 68, lineHeight: 0.95, color: C.forest }}>{price}</div>
       <div style={{ fontFamily: FONT.sans, fontWeight: 600, fontSize: 14, color: C.muted, marginTop: 4 }}>/ month</div>
     </div>
     <div style={{ fontFamily: FONT.hand, fontSize: 22, color: C.forest, lineHeight: 1.3 }}>hosting<br />maintenance<br />domain</div>
@@ -46,7 +46,7 @@ const WORD = 'WEBRIVO';
 
 export const Outro: React.FC = () => {
   const frame = useCurrentFrame();
-  const inT = ramp(frame, 0, 12, EASE.out);
+  const inT = ramp(frame, -10, 12, EASE.out);
 
   // a slow push keeps the lockup alive through the two-second hold
   const push = 1 + 0.045 * (frame / DURATION);
@@ -56,17 +56,29 @@ export const Outro: React.FC = () => {
   return (
     <AbsoluteFill style={{ backgroundColor: C.forest, overflow: 'hidden', transform: `scale(${push})`, transformOrigin: '50% 45%' }}>
       <Fonts />
+      {/* soft light behind the group photo — the cut lands on printed sage
+          tape and this glow, never on a flat colour field */}
+      <div
+        style={{
+          position: 'absolute', inset: 0,
+          background: `radial-gradient(90% 55% at 50% 62%, rgba(221,227,213,.16) 0%, rgba(221,227,213,.06) 46%, rgba(24,53,43,0) 78%)`,
+          opacity: ramp(frame, -8, 14, EASE.out),
+        }}
+      />
       {/* group photo: elements fly in and settle */}
       {PLANS.map((g) => {
-        const t = ramp(frame, g.start, 14, EASE.power4In);
-        const impact = bell(frame, g.start + 12, 4);
+        const t = ramp(frame, g.start, 12, EASE.power4In);
+        const impact = bell(frame, g.start + 10, 4);
+        // a slow float once the print has settled keeps the hold alive
+        const settle = ramp(frame, g.start + 12, 10, EASE.out);
+        const bob = Math.sin((frame - g.start) * 0.045 + PLANS.indexOf(g)) * 4 * settle;
         return (
           <div
             key={g.tier}
             style={{
-              position: 'absolute', left: g.x, top: g.y, width: 250, height: 339,
+              position: 'absolute', left: g.x, top: g.y, width: 300, height: 406,
               opacity: t,
-              transform: `translateY(${(1 - t) * -900}px) rotate(${g.rot + (1 - t) * 22}deg) scale(${(1 + (1 - t) * 0.35) * (1 + impact * 0.03)})`,
+              transform: `translateY(${(1 - t) * -900 + bob}px) rotate(${g.rot + (1 - t) * 22 + bob * 0.12}deg) scale(${(1 + (1 - t) * 0.35) * (1 + impact * 0.03)})`,
               filter: 'drop-shadow(0 30px 60px rgba(0,0,0,.5))',
             }}
           >
@@ -78,7 +90,7 @@ export const Outro: React.FC = () => {
       {/* badge drops in above the wordmark */}
       <div
         style={{
-          position: 'absolute', left: '50%', top: 470, transform: `translateX(-50%) scale(${2.2 - 1.2 * ramp(frame, BEATS.badge, 10, EASE.power4In)}) rotate(${-24 + 24 * ramp(frame, BEATS.badge, 10, EASE.power4In)}deg)`,
+          position: 'absolute', left: '50%', top: 420, transform: `translateX(-50%) scale(${2.2 - 1.2 * ramp(frame, BEATS.badge, 10, EASE.power4In)}) rotate(${-24 + 24 * ramp(frame, BEATS.badge, 10, EASE.power4In)}deg)`,
           opacity: ramp(frame, BEATS.badge, 10, EASE.power4In),
         }}
       >
@@ -88,7 +100,7 @@ export const Outro: React.FC = () => {
       {/* wordmark lockup: letterpress per glyph */}
       <div
         style={{
-          position: 'absolute', left: 0, right: 0, top: 700, display: 'flex', justifyContent: 'center',
+          position: 'absolute', left: 0, right: 0, top: 646, display: 'flex', justifyContent: 'center',
         }}
       >
         {WORD.split('').map((ch, i) => {
@@ -106,7 +118,7 @@ export const Outro: React.FC = () => {
                 display: 'inline-block', opacity: t,
                 transform: `scale(${1.6 - 0.6 * t})`, transformOrigin: 'center bottom',
                 filter: `blur(${(1 - t) * 6}px)`,
-                fontFamily: FONT.display, fontSize: 168, lineHeight: 1, color: C.off,
+                fontFamily: FONT.display, fontSize: 196, lineHeight: 1, color: C.off,
                 position: 'relative',
               }}
             >
@@ -125,7 +137,7 @@ export const Outro: React.FC = () => {
       {/* sign-off + contact */}
       <div
         style={{
-          position: 'absolute', left: 0, right: 0, top: 920, textAlign: 'center',
+          position: 'absolute', left: 0, right: 0, top: 878, textAlign: 'center',
           fontFamily: FONT.hand, fontSize: 88, color: C.sage, opacity: signT,
           transform: `translateY(${(1 - signT) * 24}px) rotate(-1.5deg)`,
         }}
@@ -134,7 +146,7 @@ export const Outro: React.FC = () => {
       </div>
       <div
         style={{
-          position: 'absolute', left: 120, right: 120, top: 1560, opacity: contactT,
+          position: 'absolute', left: 90, right: 90, top: 1552, opacity: contactT,
           transform: `translateY(${(1 - contactT) * 30}px)`,
         }}
       >

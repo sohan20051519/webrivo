@@ -1,10 +1,17 @@
 [
-  { "id": "s1", "text": "Every great shop on this street has a story.", "voice": "af_heart" },
-  { "id": "s2", "text": "Right now, someone nearby is searching for yours. We make sure they find it.", "voice": "af_heart" },
-  { "id": "s4", "text": "A slow page. A pin three streets off. A form nobody answers. They leave.", "voice": "af_heart" },
-  { "id": "s5", "text": "So we keep it simple. Brief, build, ship.", "voice": "af_heart" },
-  { "id": "s7", "text": "Three plans. Five ninety nine to twenty one ninety nine. Everything handled.", "voice": "af_heart" },
-  { "id": "s8", "text": "Hosting, maintenance, your domain — in every plan.", "voice": "af_heart" },
-  { "id": "s9", "text": "No surprises. See the exact price up front — and save ten percent yearly.", "voice": "af_heart" },
-  { "id": "s10", "text": "Webrivo. For the businesses that make a town feel like home. Let's get you found.", "voice": "af_heart" }
+  { "id": "s1a", "text": "Every great shop on this street has a story.", "voice": "af_heart" },
+  { "id": "s1b", "text": "The bakery at five. The tailor who never misses a stitch.", "voice": "af_heart" },
+  { "id": "s2a", "text": "Right now, someone nearby is looking for exactly what you sell.", "voice": "af_heart" },
+  { "id": "s2b", "text": "They open their phone, and they search.", "voice": "af_heart" },
+  { "id": "s4a", "text": "A slow page. A pin three streets off. A form nobody answers.", "voice": "af_heart" },
+  { "id": "s4b", "text": "So they scroll on, and buy from someone else.", "voice": "af_heart" },
+  { "id": "s5a", "text": "So we keep it simple. Brief, build, ship.", "voice": "af_heart" },
+  { "id": "s7a", "text": "Three plans. Five ninety nine to twenty one ninety nine a month.", "voice": "af_heart" },
+  { "id": "s7b", "text": "Everything handled.", "voice": "af_heart" },
+  { "id": "s8a", "text": "Hosting, maintenance, your domain, in every plan.", "voice": "af_heart" },
+  { "id": "s9a", "text": "No surprises. The exact price up front.", "voice": "af_heart" },
+  { "id": "s9b", "text": "Pay yearly, and you save ten percent.", "voice": "af_heart" },
+  { "id": "s10a", "text": "Webrivo.", "voice": "af_heart" },
+  { "id": "s10b", "text": "For the businesses that make a town feel like home.", "voice": "af_heart" },
+  { "id": "s10c", "text": "Let's get you found.", "voice": "af_heart" }
 ]

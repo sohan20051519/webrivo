@@ -7,12 +7,12 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { C, FONT, EASE, Grain, Tape, Fonts, ramp, bell } from '../theme';
 
-export const DURATION = 168;
+export const DURATION = 196;
 
-// toggle flips on "and save ten percent yearly"; the monthly price is already
-// on screen while "See the exact price up front" is spoken
-const FLIP = 104;
-export const BEATS = { price: 24, flip: FLIP, save: FLIP + 10, out: 156 };
+// toggle flips on "pay yearly"; the monthly price is already on screen while
+// "the exact price up front" is spoken
+const FLIP = 116;
+export const BEATS = { price: 22, flip: FLIP, save: FLIP + 20, receipt: 162, out: 180 };
 
 const DIGITS = '0123456789';
 
@@ -20,8 +20,8 @@ const DIGITS = '0123456789';
 type Pose = { x: number; y: number; z: number; rx: number; ry: number; rz: number; s: number };
 const ST: Pose[] = [
   { x: 0, y: 0, z: 0, rx: 0, ry: 0, rz: 0, s: 1 },
-  { x: 1020, y: -170, z: -430, rx: 0, ry: -38, rz: 0, s: 1 },
-  { x: 1920, y: 560, z: -560, rx: 0, ry: 0, rz: 90, s: 1 },
+  { x: 1180, y: -130, z: -500, rx: 0, ry: -34, rz: 0, s: 1 },
+  { x: 2260, y: 260, z: -520, rx: 4, ry: -8, rz: 0, s: 1 },
 ];
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
@@ -33,25 +33,25 @@ const mixPose = (a: Pose, b: Pose, t: number, hop: number): Pose => ({
 
 // which station the camera is on, as a float (for focus falloff)
 const stationAt = (f: number) => {
-  if (f <= 34) return 0;
-  if (f < 56) return ramp(f, 34, 22, EASE.smooth);
-  if (f <= 118) return 1;
-  if (f < 138) return 1 + ramp(f, 118, 20, EASE.smooth);
+  if (f <= 44) return 0;
+  if (f < 66) return ramp(f, 44, 22, EASE.smooth);
+  if (f <= 130) return 1;
+  if (f < 154) return 1 + ramp(f, 130, 24, EASE.smooth);
   return 2;
 };
 
 const poseAt = (f: number): Pose => {
-  if (f <= 34) return { ...ST[0], s: ST[0].s * (1 - 0.015 * ramp(f, 0, 34, EASE.smooth)) };
-  if (f < 56) {
-    const u = ramp(f, 34, 22, EASE.smooth);
-    return mixPose(ST[0], ST[1], u, 1 + 0.3 * Math.sin(u * Math.PI));
+  if (f <= 44) return { ...ST[0], s: ST[0].s * (1 - 0.015 * ramp(f, 0, 44, EASE.smooth)) };
+  if (f < 66) {
+    const u = ramp(f, 44, 22, EASE.smooth);
+    return mixPose(ST[0], ST[1], u, 1 + 0.22 * Math.sin(u * Math.PI));
   }
-  if (f <= 118) return { ...ST[1], s: ST[1].s * (1 - 0.02 * ramp(f, 56, 62, EASE.smooth)) };
-  if (f < 138) {
-    const u = ramp(f, 118, 20, EASE.smooth);
-    return mixPose(ST[1], ST[2], u, 1 + 0.3 * Math.sin(u * Math.PI));
+  if (f <= 130) return { ...ST[1], s: ST[1].s * (1 - 0.02 * ramp(f, 66, 64, EASE.smooth)) };
+  if (f < 154) {
+    const u = ramp(f, 130, 24, EASE.smooth);
+    return mixPose(ST[1], ST[2], u, 1 + 0.22 * Math.sin(u * Math.PI));
   }
-  return { ...ST[2], s: ST[2].s * (1 - 0.02 * ramp(f, 138, 20, EASE.smooth)) };
+  return { ...ST[2], s: ST[2].s * (1 - 0.02 * ramp(f, 154, 24, EASE.smooth)) };
 };
 
 const poseTransform = (p: Pose) =>
@@ -120,7 +120,7 @@ const CardShell: React.FC<{ children: React.ReactNode; tone?: 'paper' | 'forest'
 }) => (
   <div
     style={{
-      width: 880, height: 520, boxSizing: 'border-box', borderRadius: 20, padding: '44px 54px',
+      width: 944, height: 690, boxSizing: 'border-box', borderRadius: 22, padding: '52px 60px',
       display: 'flex', flexDirection: 'column', justifyContent: 'center',
       background: tone === 'forest' ? C.forest : C.white,
       border: tone === 'forest' ? 'none' : '1px solid rgba(137,153,130,.45)',
@@ -173,20 +173,54 @@ export const Estimator: React.FC = () => {
 
       <div
         style={{
-          position: 'absolute', left: 0, right: 0, top: 176, textAlign: 'center',
+          position: 'absolute', left: 56, right: 56, top: 150,
           opacity: ramp(frame, 0, 12, EASE.out) * (1 - outT),
         }}
       >
-        <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 24, letterSpacing: '0.24em', color: 'rgba(24,53,43,.55)' }}>
-          05 — THE ESTIMATOR
+        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+          <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 23, letterSpacing: '0.24em', color: 'rgba(24,53,43,.55)' }}>
+            05 — THE ESTIMATOR
+          </div>
+          <div style={{ fontFamily: FONT.hand, fontSize: 40, color: C.muted }}>one price, all in</div>
+        </div>
+        <div style={{ display: 'flex', gap: 12, marginTop: 22 }}>
+          {['THE BILL', 'THE TOGGLE', 'THE YEAR'].map((t, k) => {
+            const on = Math.abs(station - k) < 0.5;
+            return (
+              <div
+                key={t}
+                style={{
+                  borderRadius: 999, padding: '12px 22px',
+                  background: on ? C.forest : 'rgba(24,53,43,.07)',
+                  color: on ? C.off : 'rgba(24,53,43,.55)',
+                  fontFamily: FONT.sans, fontWeight: 800, fontSize: 21, letterSpacing: '0.16em',
+                  transform: `scale(${on ? 1 : 0.96})`,
+                }}
+              >
+                {t}
+              </div>
+            );
+          })}
         </div>
       </div>
+
+      {/* the floor of the room */}
+      <div
+        style={{
+          position: 'absolute', left: -240, right: -240, bottom: -140, height: 560,
+          transform: 'perspective(760px) rotateX(64deg)', transformOrigin: '50% 0%',
+          backgroundImage:
+            'repeating-linear-gradient(90deg, rgba(24,53,43,.12) 0 2px, transparent 2px 96px),' +
+            'repeating-linear-gradient(0deg, rgba(24,53,43,.12) 0 2px, transparent 2px 96px)',
+          opacity: 0.7 * (1 - outT),
+        }}
+      />
 
       {/* ── the room ────────────────────────────────────────────────────── */}
       <div
         style={{
-          position: 'absolute', left: 540, top: 940, width: 0, height: 0,
-          perspective: 1900,
+          position: 'absolute', left: 540, top: 946, width: 0, height: 0,
+          perspective: 1550,
           transform: `translateY(${-outT * 1800}px)`,
         }}
       >
@@ -206,7 +240,7 @@ export const Estimator: React.FC = () => {
           {/* ST1 — the bill */}
           <div
             style={{
-              position: 'absolute', left: -440, top: -260, width: 880, height: 520,
+              position: 'absolute', left: -472, top: -345, width: 944, height: 690,
               transformStyle: 'preserve-3d', transform: poseTransform(ST[0]),
               opacity: focus(0).opacity, filter: `blur(${focus(0).blur}px)`,
             }}
@@ -214,7 +248,7 @@ export const Estimator: React.FC = () => {
             <CardShell>
               <Kicker>the bill</Kicker>
               <div style={{ display: 'flex', alignItems: 'baseline', marginTop: 14 }}>
-                <DigitRoll value="₹1,199" delay={44} color={C.forest} size={168} />
+                <DigitRoll value="₹1,199" delay={BEATS.price + 2} color={C.forest} size={206} />
                 <span style={{ fontFamily: FONT.display, fontSize: 74, color: C.muted, marginLeft: 14 }}>/mo</span>
               </div>
               <div style={{ height: 2, background: 'rgba(24,53,43,.12)', margin: '22px 0 20px' }} />
@@ -228,7 +262,7 @@ export const Estimator: React.FC = () => {
           {/* ST2 — the toggle */}
           <div
             style={{
-              position: 'absolute', left: -440, top: -260, width: 880, height: 520,
+              position: 'absolute', left: -472, top: -345, width: 944, height: 690,
               transformStyle: 'preserve-3d', transform: poseTransform(ST[1]),
               opacity: focus(1).opacity, filter: `blur(${focus(1).blur}px)`,
             }}
@@ -282,9 +316,9 @@ export const Estimator: React.FC = () => {
                 <span key={yearly ? 'y' : 'm'} style={{ display: 'inline-flex', alignItems: 'baseline' }}>
                   <DigitRoll
                     value={yearly ? '₹12,948' : '₹1,199'}
-                    delay={yearly ? FLIP + 4 : 46}
+                    delay={yearly ? FLIP + 2 : BEATS.price + 2}
                     color={C.forest}
-                    size={132}
+                    size={158}
                   />
                   <span style={{ fontFamily: FONT.display, fontSize: 60, color: C.muted, marginLeft: 12 }}>
                     /{yearly ? 'yr' : 'mo'}
@@ -305,7 +339,7 @@ export const Estimator: React.FC = () => {
           {/* ST3 — the yearly receipt, lying on its side */}
           <div
             style={{
-              position: 'absolute', left: -440, top: -260, width: 880, height: 520,
+              position: 'absolute', left: -472, top: -345, width: 944, height: 690,
               transformStyle: 'preserve-3d', transform: poseTransform(ST[2]),
               opacity: focus(2).opacity, filter: `blur(${focus(2).blur}px)`,
             }}
@@ -313,7 +347,7 @@ export const Estimator: React.FC = () => {
             <CardShell tone="forest">
               <Kicker dark>the yearly bill</Kicker>
               <div style={{ display: 'flex', alignItems: 'baseline', marginTop: 10 }}>
-                <span style={{ fontFamily: FONT.display, fontSize: 150, lineHeight: 1, color: C.off }}>₹12,948</span>
+                <span style={{ fontFamily: FONT.display, fontSize: 176, lineHeight: 1, color: C.off }}>₹12,948</span>
                 <span style={{ fontFamily: FONT.display, fontSize: 64, color: C.sage, marginLeft: 12 }}>/yr</span>
               </div>
               <div style={{ height: 2, background: 'rgba(221,227,213,.28)', margin: '20px 0 18px' }} />
@@ -332,9 +366,9 @@ export const Estimator: React.FC = () => {
 
       <div
         style={{
-          position: 'absolute', left: 0, right: 0, top: 1600, textAlign: 'center',
+          position: 'absolute', left: 0, right: 0, top: 1566, textAlign: 'center',
           fontFamily: FONT.hand, fontSize: 62, color: C.forest,
-          opacity: ramp(frame, 142, 12, EASE.out) * (1 - outT),
+          opacity: ramp(frame, BEATS.save + 6, 12, EASE.out) * (1 - outT),
         }}
       >
         no surprises. that’s the whole bill.

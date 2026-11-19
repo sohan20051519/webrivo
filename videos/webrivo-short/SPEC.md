@@ -5,9 +5,10 @@
 - Product: WebRivo — a small studio that designs, builds, hosts and maintains
   websites for local businesses ("main street").
 - Audience: local business owners scrolling a vertical feed → **1080×1920,
-  30fps**, 38.5s.
-- Narration: **yes** — eight spoken lines (Kokoro-82M `af_heart`, local model,
-  `kokoro-js`). SFX + BGM support the voice; they never carry information alone.
+  30fps**, 50.2s.
+- Narration: **yes** — fifteen spoken lines across the eight scenes (Kokoro-82M
+  `af_heart`, local model, `kokoro-js`; full table in `AUDIO-TIMELINE.md`).
+  SFX + BGM support the voice; they never carry information alone.
 - Facts (site-derived, nothing invented): plans ₹599/mo Basic · ₹1,199/mo
   Business (Best value) · ₹2,199/mo Premium; every plan includes hosting,
   maintenance and a domain; estimator toggle Monthly/Yearly "SAVE 10%"
@@ -30,7 +31,7 @@ Tokens grown from `components/TapeLanding.jsx` — no new palette:
 - Motion personality (medium-high energy, playful print):
   - in/out `cubic-bezier(0.25,0.46,0.45,0.94)`, overshoot scale ~1.04
   - slam/impact power4.in, 4–6f impact frame
-  - every landing holds ≥10f; the sign-off holds 44f.
+  - every landing holds ≥10f; the sign-off holds 58f.
 - Everything on screen is a **DOM UI component**. No page screenshots, no
   bitmap captures.
 
@@ -42,33 +43,39 @@ are all used, each rebuilt in the site's palette:
 
 | # | Story beat | Shot card | Effect |
 |---|------------|-----------|--------|
-| ① | "Every great shop on this street has a story." | a printed town map: sage side streets converge on one forest trunk, shop names (BAKERY, TAILOR, FLORIST, SALON, CAFE) surface along it, camera flies low, hook lands in ink | `dataviz-landscape-open` |
-| ② | "Right now, someone nearby is searching for yours. We make sure they find it." | frosted sage-glass pill types "bakery near me", light drains as the words arrive; results land; a pen traces the YOUR SHOP row | `glass-pill-dictation-typing` → `draw-svg-trace` |
-| ④ | "A slow page. A pin three streets off. A form nobody answers. They leave." | physical problem cards dealt out of a stack onto the studio wall, light opening from the stack; the fourth card is the turn | `deck-deal-flyin` |
-| ⑤ | "So we keep it simple. Brief, build, ship." | vertical word roll (BRIEF → BUILD → SHIP) | typography |
-| ⑦ | "Three plans. 599 to 2,199. Everything handled." | the site's three real `.ht-prod` cards on a 3D ring; it whips 599 → 1,199 → 2,199, big price readout under it | `carousel-3d` |
-| ⑧ | "Hosting, maintenance, your domain — in every plan." | three inclusion cards lift off a tilted desk (contact shadow stays behind), the last one stays up | `element-body-moves` |
-| ⑨ | "See the exact price up front — and save ten percent yearly." | a 3D room of bill → toggle → yearly receipt; the camera is the inverse of the station it looks at, so the world turns between them | `basic-3d-scene` |
+| ① | "Every great shop on this street has a story." / "The bakery at five. The tailor who never misses a stitch." | a printed town map fills the frame — blocks of buildings, a white main street with a dashed centre line, trees on the verges, a north arrow and legend; shop tags surface along it; then the camera pushes 2.3× into the bakery, then the tailor, and a hand caption names each | `dataviz-landscape-open` |
+| ② | "Right now, someone nearby is looking for exactly what you sell." / "They open their phone, and they search." | a real search page: forest app header, white pill typing "bakery near me", a live suggestion list, then submit → tabs, a local-pack map with three pins, three organic results (stars, distance, snippet) — and the empty slot where your shop should be, circled in pen | `glass-pill-dictation-typing` → `draw-svg-trace` |
+| ④ | "A slow page. A pin three streets off. A form nobody answers." / "So they scroll on, and buy from someone else." | four near-full-width cards dealt from a deck onto the studio board (slow load bar, pin vs. your shop, unanswered enquiries), then the turn card slams over the board | `deck-deal-flyin` |
+| ⑤ | "So we keep it simple. Brief, build, ship." | vertical word roll (BRIEF → BUILD → SHIP) on forest | typography |
+| ⑦ | "Three plans. Five ninety nine to twenty one ninety nine a month." / "Everything handled." | a cover-flow of the site's three real `.ht-prod` cards on a sage band — the front card is 700×880 (~65% of the frame width), the others fall back at 30° and 470px spacing; it whips 599 → 1,199 → 2,199 on the spoken numbers, with a price readout under it | `carousel-3d` |
+| ⑧ | "Hosting, maintenance, your domain, in every plan." | three 930×300 inclusion cards with drawn icons lift off a tilted desk (contact shadow stays behind and drifts), the last one stays up | `element-body-moves` |
+| ⑨ | "No surprises. The exact price up front." / "Pay yearly, and you save ten percent." | a 3D room: bill → toggle → yearly receipt, 944×690 each, with a station bar at the top and a perspective floor grid; the camera is the inverse of the station it looks at, so the world turns between them | `basic-3d-scene` |
 | ⑩ | "Webrivo. For the businesses that make a town feel like home." | plan cards fly into a group photo, badge drops, WEBRIVO locks up, sign-off + real contact details | outro |
 
 Transitions: hard cuts with a soft paper whip, no whoosh SFX; every cut lands
-0.3–1.3s after the previous spoken word (no music-only scenes, no title cards).
+0.55–0.75s after the previous spoken word (no music-only scenes, no title
+cards).
 
-## Phase 3 — Frame timeline (30fps, 1156f)
+## Phase 3 — Frame timeline (30fps, 1506f)
 
 | Shot | id | frames | dur |
 |------|----|--------|-----|
-| ① the town map | Shot01BrandOpen | 0–95 | 96 |
-| ② hero / the search | Shot02Hero | 96–247 | 152 |
-| ④ collage / what loses them | Shot04Collage | 248–423 | 176 |
-| ⑤ BRIEF · BUILD · SHIP | Shot05Process | 424–523 | 100 |
-| ⑦ plan carousel | Shot07Plans | 524–691 | 168 |
-| ⑧ inclusions stack | Shot08Inclusions | 692–811 | 120 |
-| ⑨ estimator room | Shot09Estimator | 812–979 | 168 |
-| ⑩ outro | Shot10Outro | 980–1155 | 176 |
+| ① the town map | Shot01BrandOpen | 0–209 | 210 |
+| ② the search (Google-style) | Shot02Hero | 210–419 | 210 |
+| ④ the deals / why they leave | Shot04Collage | 420–657 | 238 |
+| ⑤ BRIEF · BUILD · SHIP | Shot05Process | 658–761 | 104 |
+| ⑦ plan carousel | Shot07Plans | 762–961 | 200 |
+| ⑧ inclusions stack | Shot08Inclusions | 962–1073 | 112 |
+| ⑨ estimator room | Shot09Estimator | 1074–1269 | 196 |
+| ⑩ outro | Shot10Outro | 1270–1505 | 236 |
 
-Total **1156f ≈ 38.5s**, 1080×1920. The table lives in `src/timeline.tsx` and is
+Total **1506f ≈ 50.2s**, 1080×1920. The table lives in `src/timeline.tsx` and is
 shared by picture and sound.
+
+Every shot is composed against the full 1080×1920 frame — cards run 930–968 px
+wide, the map fills the paper, the search page runs edge to edge under a forest
+app header, and each shot keeps a slow push or float through its hold so no
+frame is frozen.
 
 ## Phase 4 — Assets
 

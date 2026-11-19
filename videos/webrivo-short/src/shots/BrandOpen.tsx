@@ -1,94 +1,142 @@
-// Shot 01 — dataviz-landscape-open, paper edition: the main street drawn as a
-// printed town map. Sage side streets grow out of the paper and converge on one
-// forest trunk, shop names surface along them (bakery, tailor, florist…), the
-// camera flies low over the whole thing, and the hook lands in ink:
-// EVERY SHOP / HAS A STORY. No brand mark, no wordmark — the film opens on the
-// businesses, not on us.
+// Shot 01 — dataviz-landscape-open (town edition), 210f.
+// A printed town map: blocks of buildings, a white main street drawn over them,
+// shop tags surfacing along it, the hook landing. Then the camera does what a
+// map film should do — it pushes in and visits two of the shops while the voice
+// names them ("the bakery at five", "the tailor who never misses a stitch").
+// No brand mark, no wordmark: the film opens on the businesses, not on us.
 import React from 'react';
-import { AbsoluteFill, useCurrentFrame, interpolate } from 'remotion';
-import { C, FONT, EASE, Grain, Tape, Fonts, ramp } from '../theme';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+import { C, FONT, EASE, Grain, Tape, Fonts, ramp, bell } from '../theme';
 
-export const DURATION = 96;
+export const DURATION = 210;
 
-// shot-local frames other files (audio cues) pin to
-export const BEATS = { head: 60, out: 96 };
+// shot-local frames the audio pins to
+export const BEATS = { hook: 62, out: 96, hotA: 104, hotB: 146, end: 203 };
 
-const VP = { x: 552, y: 430 };
-
-// one trunk road running from the bottom of the sheet up into the distance
 const TRUNK = 'M 540 1980 C 508 1720 568 1360 552 1060 C 542 900 556 700 560 470';
-
 const TRUNK_Y = [1640, 1480, 1330, 1190, 1060, 945, 840, 748, 668, 600];
 
-// side streets: each grows from off-frame and joins the trunk at its own height,
-// alternating sides so the bundle reads as a town and not a river
 const TRIBS = TRUNK_Y.map((ty, i) => {
   const left = i % 2 === 0;
   const sx = left ? -160 : 1240;
   const sy = ty + 250 + ((i * 7) % 4) * 90;
-  const cx = VP.x + (left ? -200 : 200);
+  const cx = 552 + (left ? -220 : 220);
   const cy = ty + 190;
   return {
     d: `M ${sx} ${sy} Q ${cx} ${cy} 552 ${ty}`,
-    delay: 6 + i * 3.2,
-    op: 0.72 - i * 0.035,
+    delay: -2 + i * 1.4,
+    op: 0.9 - i * 0.03,
   };
 });
 
-// shop names floating on the streets — the businesses this film is about
+// deterministic town blocks — dense enough that every zoom level has texture
+const BLOCKS = (() => {
+  const out: { x: number; y: number; w: number; h: number; tone: number; rot: number }[] = [];
+  let seed = 7;
+  const rnd = () => {
+    seed = (seed * 1103515245 + 12345) % 2147483648;
+    return seed / 2147483648;
+  };
+  const cols = [-110, 110, 330, 660, 900, 1020, -40, 200];
+  for (let y = 250; y < 1820; y += 112) {
+    for (const cx of cols) {
+      const w = 110 + Math.floor(rnd() * 130);
+      const h = 62 + Math.floor(rnd() * 48);
+      const x = cx + Math.floor(rnd() * 46) - 20;
+      const yy = y + Math.floor(rnd() * 46);
+      // keep the main street and its verges clear
+      if (x + w > 476 && x < 636) continue;
+      out.push({ x, y: yy, w, h, tone: rnd(), rot: (rnd() - 0.5) * 1.6 });
+    }
+  }
+  return out;
+})();
+
+// the shops this film is about — the two named in the voice are `hot`
 const SHOPS = [
-  { t: 'BAKERY', n: '04', x: 96, y: 1170, rot: -4, at: 9, z: 1 },
-  { t: 'TAILOR', n: '11', x: 606, y: 1052, rot: 3, at: 12, z: 1 },
-  { t: 'FLORIST', n: '17', x: 74, y: 936, rot: -3, at: 15, z: 0 },
-  { t: 'SALON', n: '23', x: 626, y: 822, rot: 5, at: 18, z: 1 },
-  { t: 'CAFE', n: '08', x: 128, y: 712, rot: -2, at: 21, z: 0 },
+  { t: 'BAKERY', n: '04', x: 96, y: 1170, rot: -4, at: 8, near: true, hot: 0 },
+  { t: 'TAILOR', n: '11', x: 606, y: 1052, rot: 3, at: 11, near: true, hot: 1 },
+  { t: 'FLORIST', n: '17', x: 74, y: 936, rot: -3, at: 14, near: false, hot: -1 },
+  { t: 'SALON', n: '23', x: 626, y: 822, rot: 5, at: 17, near: true, hot: -1 },
+  { t: 'CAFE', n: '08', x: 128, y: 712, rot: -2, at: 20, near: false, hot: -1 },
 ];
 
-const ShopTag: React.FC<{ s: typeof SHOPS[number]; frame: number; camY: number; headT: number }> = ({
-  s, frame, camY, headT,
-}) => {
+const centre = (s: typeof SHOPS[number]) => ({ x: s.x + (s.near ? 120 : 105), y: s.y + 31 });
+const BAKERY = centre(SHOPS[0]);
+const TAILOR = centre(SHOPS[1]);
+
+// camera keyframes: (scale, translate). A point p maps to p*s + t, so we solve
+// t from the tag we want centred at (540, 900).
+const at = (s: number, p: { x: number; y: number }, cx = 540, cy = 900) => ({
+  s, x: cx - p.x * s, y: cy - p.y * s,
+});
+const CAM = [
+  { f: 0, ...at(1.06, { x: 540, y: 960 }, 540, 960), y: 70 },
+  { f: 96, s: 1.0, x: 8, y: -58 },
+  { f: 122, ...at(2.32, BAKERY) },
+  { f: 140, ...at(2.38, BAKERY) },
+  { f: 172, ...at(2.3, TAILOR) },
+  { f: 219, ...at(2.14, TAILOR) },
+];
+
+const camAt = (f: number) => {
+  for (let i = 0; i < CAM.length - 1; i++) {
+    const a = CAM[i];
+    const b = CAM[i + 1];
+    if (f <= b.f) {
+      const u = ramp(f, a.f, b.f - a.f, EASE.smooth);
+      return { s: a.s + (b.s - a.s) * u, x: a.x + (b.x - a.x) * u, y: a.y + (b.y - a.y) * u };
+    }
+  }
+  const z = CAM[CAM.length - 1];
+  return { s: z.s, x: z.x, y: z.y };
+};
+
+const ShopTag: React.FC<{ s: typeof SHOPS[number]; frame: number; hot: number }> = ({ s, frame, hot }) => {
   const t = ramp(frame, s.at, 9, EASE.outBack);
-  const near = s.z === 1;
-  const par = near ? 1.45 : 0.95;
+  const near = s.near;
+  const pulse = hot * (0.6 + 0.4 * Math.cos((frame - BEATS.hotA) * 0.16));
   return (
     <div
       style={{
-        position: 'absolute', left: s.x, top: s.y + camY * par,
-        opacity: t * (0.92 - 0.45 * headT),
-        transform: `translateY(${(1 - t) * 18}px) rotate(${s.rot}deg) scale(${(0.86 + 0.14 * t) * (near ? 1.06 : 1)})`,
-        display: 'flex', alignItems: 'center', gap: 9,
+        position: 'absolute', left: s.x, top: s.y,
+        opacity: t,
+        transform: `translateY(${(1 - t) * 18}px) rotate(${s.rot}deg) scale(${(0.88 + 0.12 * t) * (near ? 1 : 0.92) * (1 + 0.06 * hot)})`,
+        transformOrigin: 'left center',
+        display: 'flex', alignItems: 'center', gap: 12,
       }}
     >
+      {/* halo behind the two shops the voice visits */}
       <div
         style={{
-          width: near ? 13 : 10, height: near ? 13 : 10, borderRadius: 99,
-          background: C.forest, boxShadow: `0 0 0 4px rgba(221,227,213,${near ? 0.9 : 0.6})`,
+          position: 'absolute', left: -46, top: -34, width: 430, height: 132,
+          borderRadius: 66, opacity: hot,
+          background: `radial-gradient(ellipse at 40% 50%, rgba(221,227,213,${0.55 + 0.25 * pulse}) 0%, rgba(221,227,213,0) 70%)`,
         }}
       />
       <div
         style={{
-          display: 'flex', alignItems: 'baseline', gap: 8,
+          width: near ? 15 : 12, height: near ? 15 : 12, borderRadius: 99,
+          background: C.forest, boxShadow: `0 0 0 4px rgba(244,245,239,${near ? 0.95 : 0.7})`,
+          position: 'relative',
+        }}
+      />
+      <div
+        style={{
+          display: 'flex', alignItems: 'baseline', gap: 10,
           padding: near ? '12px 18px' : '10px 15px',
-          borderRadius: 6,
+          borderRadius: 6, position: 'relative',
           background: C.white,
-          border: '1px solid rgba(24,53,43,.14)',
-          boxShadow: '0 4px 12px rgba(24,53,43,.1)',
+          border: '1px solid rgba(24,53,43,.16)',
+          boxShadow: hot > 0.02
+            ? `0 ${8 + 18 * hot}px ${18 + 30 * hot}px rgba(24,53,43,${0.14 + 0.2 * hot})`
+            : '0 4px 12px rgba(24,53,43,.12)',
         }}
       >
-        <span
-          style={{
-            fontFamily: FONT.sans, fontWeight: 700, fontSize: near ? 34 : 28,
-            letterSpacing: '0.18em', color: C.forest,
-          }}
-        >
+        <span style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: near ? 34 : 28, letterSpacing: '0.18em', color: C.forest }}>
           {s.t}
         </span>
-        <span
-          style={{
-            fontFamily: FONT.sans, fontWeight: 600, fontSize: near ? 23 : 19,
-            letterSpacing: '0.08em', color: C.muted,
-          }}
-        >
+        <span style={{ fontFamily: FONT.sans, fontWeight: 600, fontSize: near ? 23 : 19, letterSpacing: '0.08em', color: C.muted }}>
           {s.n}
         </span>
       </div>
@@ -98,183 +146,190 @@ const ShopTag: React.FC<{ s: typeof SHOPS[number]; frame: number; camY: number; 
 
 export const BrandOpen: React.FC = () => {
   const frame = useCurrentFrame();
+  const cam = camAt(frame);
 
-  // camera: low, slow fly-over of the map (no speed — this is the settle-in beat)
-  const t = frame / DURATION;
-  const camY = interpolate(t, [0, 1], [64, -54]);
-  const camScale = interpolate(t, [0, 1], [1.07, 1.0]);
-  const camX = interpolate(t, [0, 1], [-16, 14]);
+  const trunkP = ramp(frame, -18, 56, EASE.smooth);
+  const gate = ramp(frame, 0, 18, EASE.out);
+  const hookT = ramp(frame, BEATS.hook, 12, EASE.out);
+  const outT = ramp(frame, BEATS.out, 12, EASE.power4In);
+  const ruleP = ramp(frame, BEATS.hook + 12, 12, EASE.smooth);
+  const chromeT = ramp(frame, 2, 16, EASE.out);
 
-  // trunk draws up from the bottom, then the side streets follow it in
-  const trunkP = ramp(frame, -18, 46, EASE.smooth);
-  const glow = ramp(frame, 6, 40, EASE.smooth);
+  const hotA = ramp(frame, BEATS.hotA - 10, 12, EASE.out) * (1 - ramp(frame, BEATS.hotB - 14, 10, EASE.smooth));
+  const hotB = ramp(frame, BEATS.hotB - 6, 12, EASE.out);
+  const hot = [hotA, hotB, 0, 0, 0];
 
-  const headT = ramp(frame, BEATS.head, 12, EASE.out);
-  const outT = ramp(frame, BEATS.out, 10, EASE.power4In);
-  const ruleP = ramp(frame, BEATS.head + 14, 12, EASE.smooth);
+  const focus = cam.s > 1.3 ? (hotB > 0.4 ? TAILOR : BAKERY) : null;
+  const fx = focus ? focus.x * cam.s + cam.x : 540;
+  const fy = focus ? focus.y * cam.s + cam.y : 900;
+  const dim = Math.max(hotA, hotB);
 
   return (
-    <AbsoluteFill style={{ backgroundColor: C.off, overflow: 'hidden' }}>
+    <AbsoluteFill style={{ backgroundColor: '#E8ECE1', overflow: 'hidden' }}>
       <Fonts />
 
-      {/* paper light + the haze the streets disappear into */}
-      <div
-        style={{
-          position: 'absolute', inset: 0,
-          background: `radial-gradient(circle 620px at ${VP.x}px ${VP.y}px, rgba(255,255,255,${0.95 * glow}), transparent 72%)`,
-        }}
-      />
+      {/* map paper */}
+      <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(130% 100% at 50% 34%, #EFF2E9 0%, #E7EBDF 62%, #DFE5D6 100%)` }} />
 
       {/* ── the map ─────────────────────────────────────────────────────── */}
       <div
         style={{
           position: 'absolute', inset: 0,
-          transform: `translate(${camX}px, ${camY}px) scale(${camScale})`,
-          transformOrigin: `${VP.x}px ${VP.y}px`,
+          transform: `translate(${cam.x}px, ${cam.y}px) scale(${cam.s})`,
+          transformOrigin: '0 0',
         }}
       >
         <svg width={1080} height={1920} viewBox="0 0 1080 1920" style={{ position: 'absolute', inset: 0 }}>
-          {/* far cross-streets — the grid the town sits on */}
-          {[560, 700, 860, 1040, 1240].map((y, i) => {
-            const p = ramp(frame, 4 + i * 2, 20, EASE.smooth);
+          {/* blocks of town */}
+          {BLOCKS.map((b, i) => {
+            const p = ramp(frame, -8 + (i % 22) * 0.5, 12, EASE.out);
+            const dark = b.tone > 0.72;
             return (
-              <line
-                key={y} x1={-80} y1={y + camY * 0.5} x2={1160} y2={y + camY * 0.5}
-                stroke={C.muted} strokeWidth={1.6} opacity={0.3 * p}
-                pathLength={1} strokeDasharray={1} strokeDashoffset={1 - p}
-              />
+              <g key={i} opacity={p} transform={`rotate(${b.rot} ${b.x + b.w / 2} ${b.y + b.h / 2})`}>
+                <rect
+                  x={b.x} y={b.y} width={b.w} height={b.h} rx={2}
+                  fill={dark ? '#B7C4A9' : '#D2DAC6'}
+                  stroke={C.forest} strokeWidth={1.3} strokeOpacity={0.34}
+                />
+                {dark ? (
+                  <path
+                    d={`M ${b.x} ${b.y + b.h} L ${b.x} ${b.y} L ${b.x + b.w} ${b.y}`}
+                    fill="none" stroke={C.muted} strokeWidth={2.4} strokeOpacity={0.45}
+                  />
+                ) : null}
+              </g>
             );
           })}
 
-          {/* the trunk: sage casing, forest centre line */}
-          <path
-            d={TRUNK} fill="none" stroke={C.sage} strokeWidth={24} strokeLinecap="round"
-            opacity={0.95} pathLength={1} strokeDasharray={1} strokeDashoffset={1 - trunkP}
-          />
-          <path
-            d={TRUNK} fill="none" stroke={C.forest} strokeWidth={4.6} strokeLinecap="round"
-            opacity={0.55} pathLength={1} strokeDasharray={1} strokeDashoffset={1 - trunkP}
-          />
-
-          {/* side streets */}
+          {/* the side streets, drawn as road shoulders + white tarmac */}
           {TRIBS.map((s, i) => {
-            const p = ramp(frame, s.delay, 20, EASE.smooth);
+            const p = ramp(frame, s.delay, 22, EASE.smooth);
             return (
-              <path
-                key={i} d={s.d} fill="none" stroke={C.muted} strokeWidth={3.6} strokeLinecap="round"
-                opacity={s.op * p} pathLength={1} strokeDasharray={1} strokeDashoffset={1 - p}
-              />
+              <g key={i} opacity={s.op}>
+                <path d={s.d} fill="none" stroke={C.muted} strokeWidth={17} strokeOpacity={0.28} strokeLinecap="round"
+                  pathLength={1} strokeDasharray={1} strokeDashoffset={1 - p} />
+                <path d={s.d} fill="none" stroke="#F7F8F2" strokeWidth={12} strokeLinecap="round"
+                  pathLength={1} strokeDasharray={1} strokeDashoffset={1 - p} />
+              </g>
             );
           })}
 
-          {/* little blocks of town, printed between the streets */}
-          {[
-            [150, 1060, 90, 62], [700, 1030, 74, 54], [430, 900, 66, 48],
-            [120, 820, 78, 56], [790, 880, 60, 44], [470, 700, 54, 40],
-            [40, 1180, 84, 58], [880, 1140, 70, 52], [250, 640, 62, 46],
-            [700, 620, 58, 42], [60, 560, 54, 40], [860, 760, 62, 46],
-            [400, 520, 48, 36], [620, 480, 44, 34],
-          ].map(([x, y, w, h], i) => {
-            const p = ramp(frame, 12 + i * 2.4, 16, EASE.out);
-            return (
-              <rect
-                key={i} x={x} y={y + camY * 0.8} width={w} height={h} rx={3}
-                fill="rgba(137,153,130,.14)" stroke={C.muted} strokeWidth={1.4} opacity={0.95 * p}
-              />
-            );
-          })}
+          {/* the main street */}
+          <path d={TRUNK} fill="none" stroke={C.muted} strokeWidth={40} strokeOpacity={0.22} strokeLinecap="round"
+            pathLength={1} strokeDasharray={1} strokeDashoffset={1 - trunkP} />
+          <path d={TRUNK} fill="none" stroke="#F9FAF4" strokeWidth={33} strokeLinecap="round"
+            pathLength={1} strokeDasharray={1} strokeDashoffset={1 - trunkP} />
+          <path d={TRUNK} fill="none" stroke={C.muted} strokeWidth={2.4} strokeOpacity={0.55} strokeLinecap="round"
+            strokeDasharray="16 16" pathLength={1} strokeDashoffset={1 - trunkP} />
 
-          {/* pulses running up the trunk toward the distance */}
-          {[0, 1, 2].map((k) => {
-            const ph = ((frame * 0.011 + k / 3) % 1);
-            const y = 1980 - ph * 1500;
-            return (
-              <circle
-                key={k} cx={552} cy={y} r={3.4} fill={C.forest}
-                opacity={0.4 * Math.sin(ph * Math.PI) * trunkP}
-              />
-            );
+          {/* storefront footprints beside every tag, so a 2.3× push has structure */}
+          {SHOPS.map((s) => (
+            <g key={`b-${s.t}`} opacity={ramp(frame, s.at - 2, 12, EASE.out)}>
+              <rect x={s.x - 26} y={s.y - 26} width={s.near ? 330 : 300} height={s.near ? 120 : 110} rx={4}
+                fill="#E7EBDD" stroke={C.forest} strokeWidth={1.5} strokeOpacity={0.32} />
+              <path d={`M ${s.x - 20} ${s.y - 2} h 76`} stroke={C.forest} strokeWidth={5} strokeOpacity={0.55} strokeLinecap="round" />
+              <path d={`M ${s.x - 20} ${s.y + 12} h 54`} stroke={C.muted} strokeWidth={3.4} strokeOpacity={0.6} strokeLinecap="round" />
+            </g>
+          ))}
+
+          {/* trees along the verges */}
+          {Array.from({ length: 26 }).map((_, i) => {
+            const side = i % 2 === 0 ? -1 : 1;
+            const y = 420 + i * 58;
+            const x = 540 + side * (78 + ((i * 37) % 42));
+            const p = ramp(frame, 12 + (i % 9), 12, EASE.out);
+            return <circle key={i} cx={x} cy={y} r={5.5} fill={C.sage} stroke={C.muted} strokeWidth={1.2} opacity={0.9 * p} />;
           })}
         </svg>
 
-        {/* shop names */}
-        {SHOPS.map((s) => (
-          <ShopTag key={s.t} s={s} frame={frame} camY={camY} headT={headT} />
-        ))}
-
-        {/* near-field streets: big, fast, out of focus — the depth cue */}
-        <svg
-          width={1080} height={1920} viewBox="0 0 1080 1920"
-          style={{ position: 'absolute', inset: 0, filter: 'blur(8px)', opacity: 0.5 }}
+        {/* street name, printed along the road */}
+        <div
+          style={{
+            position: 'absolute', left: 508, top: 1500, transform: 'rotate(-88deg)', transformOrigin: '0 0',
+            fontFamily: FONT.sans, fontWeight: 700, fontSize: 15, letterSpacing: '0.42em',
+            color: C.forest, opacity: 0.5 * gate, whiteSpace: 'nowrap',
+          }}
         >
-          {[
-            'M -120 2100 C 180 1840 420 1760 720 1900',
-            'M 1240 2060 C 900 1820 700 1700 380 1780',
-          ].map((d, i) => {
-            const p = ramp(frame, 10 + i * 6, 24, EASE.smooth);
-            return (
-              <path
-                key={i} d={d} fill="none" stroke={C.muted} strokeWidth={i ? 12 : 17}
-                strokeLinecap="round" transform={`translateY(${camY * 2.1}px)`}
-                pathLength={1} strokeDasharray={1} strokeDashoffset={1 - p}
-              />
-            );
-          })}
-        </svg>
+          MAIN STREET
+        </div>
+
+        {SHOPS.map((s, i) => (
+          <ShopTag key={s.t} s={s} frame={frame} hot={hot[i] * gate} />
+        ))}
       </div>
 
-      {/* bottom scrim: paper, so the ink hook sits clean over the map */}
+      {/* map chrome — north arrow + legend, printed in the corners */}
+      <div style={{ position: 'absolute', right: 54, top: 396, opacity: 0.62 * chromeT, textAlign: 'center' }}>
+        <svg width={30} height={46} viewBox="0 0 30 46">
+          <path d="M15 2 L26 44 L15 34 L4 44 Z" fill={C.forest} />
+        </svg>
+        <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 13, letterSpacing: '0.3em', color: C.forest, marginTop: 2 }}>N</div>
+      </div>
       <div
         style={{
-          position: 'absolute', left: 0, right: 0, bottom: 0, height: 880,
-          background: `linear-gradient(180deg, rgba(244,245,239,0) 0%, rgba(244,245,239,.88) 42%, ${C.off} 100%)`,
-          opacity: headT,
+          position: 'absolute', left: 54, bottom: 210, opacity: 0.7 * chromeT,
+          background: 'rgba(255,255,255,.72)', border: '1px solid rgba(24,53,43,.14)',
+          borderRadius: 6, padding: '12px 16px',
+        }}
+      >
+        <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 13, letterSpacing: '0.26em', color: C.forest }}>TOWN CENTRE</div>
+        <div style={{ fontFamily: FONT.hand, fontSize: 26, color: C.muted, marginTop: 2 }}>five shops, one street</div>
+      </div>
+
+      {/* the spotlight: everything but the visited shop goes soft */}
+      <div
+        style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none',
+          background: `radial-gradient(circle 560px at ${fx}px ${fy}px, rgba(244,245,239,0) 12%, rgba(244,245,239,.6) 54%, rgba(244,245,239,.88) 100%)`,
+          opacity: dim * gate,
         }}
       />
 
       {/* ── the hook ────────────────────────────────────────────────────── */}
       <div
         style={{
-          position: 'absolute', left: 0, right: 0, top: 1340, textAlign: 'center',
-          opacity: headT * (1 - outT),
-          transform: `translateY(${(1 - headT) * 46 - outT * 90}px)`,
+          position: 'absolute', left: 0, right: 0, top: 1216, textAlign: 'center',
+          opacity: hookT * (1 - outT),
+          transform: `translateY(${(1 - hookT) * 46 - outT * 120}px)`,
         }}
       >
-        <div style={{ fontFamily: FONT.display, fontSize: 132, lineHeight: 0.94, color: C.forest, letterSpacing: '0.005em' }}>
+        <div style={{ fontFamily: FONT.display, fontSize: 150, lineHeight: 0.94, color: C.forest }}>
           EVERY SHOP
         </div>
-        <div style={{ position: 'relative', display: 'inline-block', marginTop: 6 }}>
-          <span style={{ fontFamily: FONT.display, fontSize: 132, lineHeight: 0.94, color: C.forest }}>
+        <div style={{ position: 'relative', display: 'inline-block', marginTop: 4 }}>
+          <span style={{ fontFamily: FONT.display, fontSize: 150, lineHeight: 0.94, color: C.forest }}>
             HAS A STORY.
           </span>
-          <div
-            style={{
-              position: 'absolute', left: -6, bottom: 2, height: 14, borderRadius: 7,
-              width: `${ruleP * 100}%`, background: C.sage,
-            }}
-          />
-        </div>
-        <div
-          style={{
-            marginTop: 30, fontFamily: FONT.hand, fontSize: 54, color: C.muted,
-            opacity: ramp(frame, BEATS.head + 10, 12, EASE.out),
-          }}
-        >
-          and someone is looking for yours
+          <div style={{ position: 'absolute', left: -4, bottom: 4, height: 15, borderRadius: 8, width: `${ruleP * 100}%`, background: C.sage }} />
         </div>
       </div>
 
-      {/* printed-sheet dressing */}
+      {/* the two visited shops get a hand-written caption */}
+      <div
+        style={{
+          position: 'absolute', left: 0, right: 0, bottom: 236, textAlign: 'center',
+          fontFamily: FONT.hand, fontSize: 70, color: C.forest,
+          opacity: hotA, transform: `translateY(${(1 - hotA) * 20}px) rotate(-1.4deg)`,
+        }}
+      >
+        opens at five
+      </div>
+      <div
+        style={{
+          position: 'absolute', left: 0, right: 0, bottom: 236, textAlign: 'center',
+          fontFamily: FONT.hand, fontSize: 70, color: C.forest,
+          opacity: hotB, transform: `translateY(${(1 - hotB) * 20}px) rotate(1.2deg)`,
+        }}
+      >
+        never misses a stitch
+      </div>
+
       <Tape w={250} rot={-9} tone="sage" style={{ left: -40, top: 96, opacity: 0.55 * ramp(frame, 0, 12, EASE.out) }} />
       <Tape w={220} rot={7} tone="sage" style={{ right: -34, bottom: 420, opacity: 0.45 * ramp(frame, 6, 12, EASE.out) }} />
 
       <Grain opacity={0.1} />
-      <div
-        style={{
-          position: 'absolute', inset: 0, pointerEvents: 'none',
-          background: `radial-gradient(ellipse 96% 80% at 50% 42%, transparent 56%, rgba(137,153,130,.28) 100%)`,
-        }}
-      />
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none',
+        background: `radial-gradient(ellipse 96% 82% at 50% 42%, transparent 54%, rgba(137,153,130,.3) 100%)` }} />
     </AbsoluteFill>
   );
 };

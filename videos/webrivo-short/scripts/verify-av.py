@@ -13,10 +13,16 @@ HOP_MS = 10
 HOP = SR * HOP_MS // 1000
 HOP_F = HOP_MS / 1000 * FPS
 
-# expected VO starts (shot.from + VO_LEAD), from src/timeline.tsx
+# expected VO starts, from src/timeline.tsx (shot.from + vo.at)
 VO = {
-    "s1": 2, "s2": 98, "s4": 250, "s5": 426,
-    "s7": 526, "s8": 694, "s9": 814, "s10": 982,
+    "s1a": 2, "s1b": 88,
+    "s2a": 212, "s2b": 334,
+    "s4a": 422, "s4b": 560,
+    "s5a": 660,
+    "s7a": 764, "s7b": 902,
+    "s8a": 964,
+    "s9a": 1076, "s9b": 1178,
+    "s10a": 1272, "s10b": 1319, "s10c": 1420,
 }
 
 
@@ -45,49 +51,47 @@ def probe_duration(path):
     return float(json.loads(out)["format"]["duration"])
 
 
-def volumedetect(path):
-    err = subprocess.run(
-        ["ffmpeg", "-v", "info", "-i", path, "-af", "volumedetect",
-         "-f", "null", "-"], capture_output=True, text=True).stderr
-    keep = [l.split("] ")[-1] for l in err.splitlines()
-            if "mean_volume" in l or "max_volume" in l]
-    return " / ".join(keep)
+def load_env(path):
+    return envelope(decode(path))
 
 
-def norm(v):
-    return math.sqrt(sum(x * x for x in v))
-
-
-def lag_frames(mix_env, vo_env, expect_f):
-    exp = int(round(expect_f / HOP_F))
-    span = len(vo_env)
-    b = [v - sum(vo_env) / span for v in vo_env]
-    nb = norm(b)
-    best, best_lag = -2.0, exp
-    for lag in range(exp - 45, exp + 45):
-        seg = mix_env[lag: lag + span]
-        if len(seg) < span:
+def best_lag(mix_env, ref_env, expect_f, window=20):
+    """Find the offset (in frames) that best correlates ref against mix."""
+    best, best_k = -1e9, 0
+    n = len(ref_env)
+    for k in range(-window, window + 1):
+        start = int(round((expect_f + k) / HOP_F))
+        if start < 0 or start + n > len(mix_env):
             continue
-        m = sum(seg) / span
-        a = [v - m for v in seg]
-        na = norm(a)
-        if na == 0 or nb == 0:
-            continue
-        c = sum(p * q for p, q in zip(a, b)) / (na * nb)
-        if c > best:
-            best, best_lag = c, lag
-    return (best_lag - exp) * HOP_F, best
+        num = 0.0
+        a = 0.0
+        b = 0.0
+        for i in range(n):
+            x = mix_env[start + i]
+            y = ref_env[i]
+            num += x * y
+            a += x * x
+            b += y * y
+        score = num / (math.sqrt(a * b) + 1e-9)
+        if score > best:
+            best, best_k = score, k
+    return best_k, best
 
 
-mix_env = envelope(decode(MP4))
-print(f"{MP4}: {probe_duration(MP4):.3f}s")
-print("loudness:", volumedetect(MP4))
+def main():
+    dur = probe_duration(MP4)
+    print(f"{MP4}: {dur:.3f}s")
+    mix = load_env(MP4)
+    lags = []
+    print(f"{'line':4s} {'expect':>7s} {'lag(f)':>7s} {'corr':>6s}")
+    for vid, expect in VO.items():
+        ref = load_env(f"public/audio/vo/{vid}.wav")
+        k, corr = best_lag(mix, ref, expect)
+        lags.append(abs(k))
+        print(f"{vid:4s} {expect:7.1f} {k:7.2f} {corr:6.3f}")
+    if lags:
+        print(f"worst |lag| = {max(lags):.2f}f")
 
-print(f"{'line':5s} {'expect':>7s} {'lag(f)':>7s} {'corr':>6s}")
-worst = 0.0
-for vid, start in VO.items():
-    vo_env = envelope(decode(f"public/audio/vo/{vid}.wav"))
-    lag, corr = lag_frames(mix_env, vo_env, start)
-    worst = max(worst, abs(lag))
-    print(f"{vid:5s} {start:7.1f} {lag:7.2f} {corr:6.3f}")
-print(f"worst |lag| = {worst:.2f}f")
+
+if __name__ == "__main__":
+    main()

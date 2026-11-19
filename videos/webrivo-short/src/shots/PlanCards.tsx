@@ -1,232 +1,178 @@
-// Shot 07 — carousel-3d, plan edition.
-// The three real .ht-prod cards (src/ui/PlanCard.tsx) on a ring: each card only
-// orbits on Y and always faces outward, double-faced so it never mirrors. The
-// ring steps 599 → 1,199 → 2,199 as the voice reads the range, and the big
-// readout under it names the price that is being spoken.
+// Shot 07 — carousel-3d, 200f. Not a ring of thumbnails: a cover-flow of the
+// site's three real `.ht-prod` cards, so the middle card is nearly full width
+// and the ones behind it fall away in perspective. It whips 599 → 1,199 →
+// 2,199 exactly on the spoken numbers, and a readout under it names the plan.
 import React from 'react';
-import { AbsoluteFill, useCurrentFrame } from 'remotion';
-import { C, FONT, EASE, Grain, Fonts, Tape, ramp } from '../theme';
-import { PlanCard, PLANS, W as CARD_W, H as CARD_H } from '../ui/PlanCard';
+import { AbsoluteFill, useCurrentFrame, interpolate } from 'remotion';
+import { C, FONT, EASE, Grain, Tape, Daisy, Fonts, ramp, bell } from '../theme';
+import { PlanCard, PLANS, W, H } from '../ui/PlanCard';
 
-export const DURATION = 168;
+export const DURATION = 200;
 
-const SCALE = 0.62;
-const CW = CARD_W * SCALE;
-const CH = CARD_H * SCALE;
-const RADIUS = 700;
-const RING = { x: 540, y: 940 };
-const N = 3;
+// pops, then a whip per spoken price; s7b "everything handled" at 140
+export const BEATS = { pop: [18, 24, 30], move: [50, 72, 92], note: 150, out: 188 };
 
-// price spotlight windows, pinned to "Five ninety nine / to / twenty one ninety nine"
-export const BEATS = {
-  pop: [22, 28, 34],
-  price: [[46, 78], [78, 88], [88, 118]] as [number, number][],
-  note: 120,
-  out: 154,
-};
-
-// ring angle: a slow idle drift plus two deliberate 120° steps
-const angleAt = (frame: number) => {
-  const a1 = ramp(frame, 70, 10, EASE.smooth);
-  const a2 = ramp(frame, 82, 10, EASE.smooth);
-  return 120 * a1 + 120 * a2 + 0.03 * frame;
-};
-
-// how lit card k is at this frame (fast in, slower out)
-const litAt = (frame: number, k: number) => {
-  const [a, b] = BEATS.price[k];
-  return ramp(frame, a, 4, EASE.out) * (1 - ramp(frame, b - 3, 5, EASE.smooth));
-};
-
-const CardFace: React.FC<{ k: number }> = ({ k }) => (
-  <div
-    style={{
-      position: 'absolute', inset: 0, width: CW, height: CH,
-      borderRadius: 6, overflow: 'hidden', background: C.white,
-      backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden',
-    }}
-  >
-    <div style={{ transform: `scale(${SCALE})`, transformOrigin: 'top left' }}>
-      <PlanCard plan={PLANS[k]} />
-    </div>
-  </div>
-);
+const SCALE = 1.02;
+const GAP = 470;
+const TILT = 30;
 
 export const PlanCards: React.FC = () => {
   const frame = useCurrentFrame();
-  const headT = ramp(frame, 0, 12, EASE.out);
-  const noteT = ramp(frame, BEATS.note, 12, EASE.out);
-  const outT = ramp(frame, BEATS.out, 14, EASE.power4In);
-  const drift = 1 + 0.02 * ramp(frame, 0, DURATION, EASE.smooth);
 
-  const angle = angleAt(frame);
-  // travelling fast → a touch of blur so the 120° step reads as a whip
-  const whip = Math.max(
-    Math.abs(angle - angleAt(frame - 1)),
-    Math.abs(angleAt(frame + 1) - angle)
-  );
-  const blur = Math.min(7, Math.max(0, (whip - 2.2) * 0.7));
+  // 0 → 1 → 2, eased, so the row turns rather than jumps
+  const pos =
+    frame < BEATS.move[0] ? 0
+      : frame < BEATS.move[1] ? ramp(frame, BEATS.move[0], 16, EASE.smooth)
+        : frame < BEATS.move[2] ? 1 + ramp(frame, BEATS.move[1], 16, EASE.smooth)
+          : 2;
+
+  const outT = ramp(frame, BEATS.out, 14, EASE.power4In);
+  const headT = ramp(frame, 0, 14, EASE.out);
+  const noteT = ramp(frame, BEATS.note, 12, EASE.out);
+  const front = Math.round(pos);
+
+  // the readout: value + label swap as the row turns
+  const capAt = (k: number) => ramp(frame, BEATS.move[k] - 4, 10, EASE.out);
+  const caps = [
+    { price: '₹599', name: 'Basic', note: 'starter site' },
+    { price: '₹1,199', name: 'Business', note: 'best value' },
+    { price: '₹2,199', name: 'Premium', note: 'the full suite' },
+  ];
 
   return (
-    <AbsoluteFill style={{ backgroundColor: C.sage, overflow: 'hidden' }}>
+    <AbsoluteFill style={{ backgroundColor: C.off, overflow: 'hidden' }}>
       <Fonts />
       <div
         style={{
           position: 'absolute', inset: 0,
-          background: `radial-gradient(1200px 1000px at 50% 32%, rgba(244,245,239,.92), transparent 72%)`,
+          background:
+            `radial-gradient(120% 60% at 50% 34%, ${C.white}, transparent 68%),` +
+            `linear-gradient(180deg, transparent 58%, rgba(221,227,213,.75) 100%)`,
         }}
       />
 
-      {/* header */}
+      {/* a sage band so the light cards have something to sit on */}
       <div
         style={{
-          position: 'absolute', left: 0, right: 0, top: 208, textAlign: 'center',
-          opacity: headT, transform: `translateY(${(1 - headT) * 26 - outT * 60}px)`,
+          position: 'absolute', left: 20, right: 20, top: 300, height: 1180, borderRadius: 26,
+          background: `linear-gradient(180deg, ${C.sage}, #D3DCC9)`,
+          boxShadow: 'inset 0 1px 0 rgba(255,255,255,.6)',
+          opacity: ramp(frame, 0, 14, EASE.out),
         }}
-      >
-        <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 24, letterSpacing: '0.24em', color: 'rgba(24,53,43,.55)' }}>
-          04 — THE PLANS
+      />
+      <div style={{ position: 'absolute', inset: 0, transform: `translateY(${-outT * 190}px)`, opacity: 1 - outT }}>
+        {/* heading */}
+        <div style={{ position: 'absolute', left: 56, right: 56, top: 116, opacity: headT, transform: `translateY(${(1 - headT) * 20}px)` }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+            <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 23, letterSpacing: '0.24em', color: 'rgba(24,53,43,.6)' }}>
+              03 — THREE PLANS
+            </div>
+            <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 23, letterSpacing: '0.08em', color: 'rgba(24,53,43,.45)' }}>
+              PER MONTH
+            </div>
+          </div>
+          <div style={{ height: 2, background: 'rgba(24,53,43,.16)', marginTop: 18 }} />
         </div>
-        <div style={{ fontFamily: FONT.display, fontSize: 100, lineHeight: 1, color: C.forest, marginTop: 10 }}>
-          THREE WAYS IN
+
+        {/* the carousel */}
+        <div style={{ position: 'absolute', left: 540, top: 880, width: 0, height: 0, perspective: 2400 }}>
+          <div style={{
+            position: 'absolute', width: 0, height: 0, transformStyle: 'preserve-3d',
+            transform: `translateY(${14 * ramp(frame, 20, 170, EASE.smooth)}px) scale(${1 + 0.055 * ramp(frame, 20, 186, EASE.smooth)}) rotate(${-0.6 * ramp(frame, 20, 186, EASE.smooth)}deg)`,
+          }}>
+            {PLANS.map((p, i) => {
+              const d = i - pos;
+              const ad = Math.abs(d);
+              const pop = ramp(frame, BEATS.pop[i], 12, EASE.outBack);
+              const z = 70 - ad * 240;
+              const x = d * GAP;
+              const ry = -d * TILT;
+              const sc = SCALE * (1 - 0.1 * Math.min(1.6, ad)) * (0.9 + 0.1 * pop);
+              const dim = Math.min(0.5, ad * 0.32);
+              return (
+                <div
+                  key={p.name}
+                  style={{
+                    position: 'absolute',
+                    left: -W / 2, top: -H / 2, width: W, height: H,
+                    transformStyle: 'preserve-3d',
+                    transform: `translate3d(${x}px, ${-8 * ad}px, ${z}px) rotateY(${ry}deg) scale(${sc})`,
+                    opacity: pop * (1 - Math.max(0, ad - 1.4) * 0.5),
+                    filter: dim > 0.01 ? `brightness(${1 - dim}) saturate(${1 - dim * 0.7})` : undefined,
+                    zIndex: 10 - Math.round(ad * 2),
+                  }}
+                >
+                  <PlanCard plan={p} />
+                  {/* shadow on the wall behind the front card */}
+                  <div
+                    style={{
+                      position: 'absolute', left: 30, right: 30, top: H - 26, height: 60,
+                      borderRadius: '50%', background: 'rgba(24,53,43,.16)',
+                      filter: 'blur(22px)', opacity: 1 - Math.min(1, ad),
+                    }}
+                  />
+                </div>
+              );
+            })}
+          </div>
         </div>
-      </div>
 
-      {/* ground: the ring's reflective disc + a tick ring */}
-      <div
-        style={{
-          position: 'absolute', left: '50%', top: 1196, width: 980, height: 190,
-          marginLeft: -490, borderRadius: '50%',
-          background: `radial-gradient(ellipse at 50% 30%, rgba(24,53,43,.16), transparent 68%)`,
-          filter: 'blur(18px)',
-          opacity: headT * (1 - outT),
-        }}
-      />
-      <div
-        style={{
-          position: 'absolute', left: '50%', top: 1190, width: 900, height: 150,
-          marginLeft: -450, borderRadius: '50%',
-          border: '1px dashed rgba(24,53,43,.2)',
-          transform: `rotateX(72deg) rotateZ(${-angle}deg)`,
-          opacity: headT * (1 - outT),
-        }}
-      />
-
-      {/* the ring */}
-      <div
-        style={{
-          position: 'absolute', left: RING.x, top: RING.y, width: 0, height: 0,
-          perspective: 2400,
-          transform: `translateY(${-outT * 1900}px) scale(${drift})`,
-        }}
-      >
-        <div
-          style={{
-            position: 'absolute', width: 0, height: 0,
-            transformStyle: 'preserve-3d',
-            transform: `translateZ(${-RADIUS}px) rotateX(-9deg) rotateY(${-angle}deg)`,
-            filter: blur > 0.1 ? `blur(${blur}px)` : undefined,
-          }}
-        >
-          {PLANS.map((plan, k) => {
-            const pop = ramp(frame, BEATS.pop[k], 14, EASE.outBack);
-            const lit = litAt(frame, k);
-            const d = (((k * 120 - angle) % 360) + 540) % 360 - 180; // -180..180
-            const behind = (1 - Math.cos((d * Math.PI) / 180)) / 2;   // 0 front, 1 back
-            const hl = Math.max(0, 1 - Math.abs(d) / 26);
+        {/* readout — big price, plan name, and the /mo */}
+        <div style={{ position: 'absolute', left: 0, right: 0, top: 1400, textAlign: 'center' }}>
+          {caps.map((c, k) => {
+            const t = capAt(k) * (k === front ? 1 : 0.0);
+            const vis = k === 0 ? 1 - ramp(frame, BEATS.move[0] - 6, 8, EASE.smooth) : t;
+            if (vis <= 0.001) return null;
             return (
               <div
-                key={plan.name}
+                key={c.name}
                 style={{
-                  position: 'absolute', left: -CW / 2, top: -CH / 2, width: CW, height: CH,
-                  transformStyle: 'preserve-3d',
-                  transform: `rotateY(${k * 120}deg) translateZ(${RADIUS + 44 * hl}px) scale(${0.9 + 0.1 * pop})`,
-                  opacity: Math.min(1, pop * 1.4),
+                  position: 'absolute', left: 0, right: 0, top: 0,
+                  opacity: vis,
+                  transform: `translateY(${(1 - vis) * 18}px)`,
+                  display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 18,
                 }}
               >
-                <CardFace k={k} />
-                {/* the back is the same face, turned round, so it never mirrors */}
-                <div
-                  style={{
-                    position: 'absolute', inset: 0,
-                    transform: 'rotateY(180deg)',
-                    backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden',
-                  }}
-                >
-                  <CardFace k={k} />
-                </div>
-
-                {/* air perspective: the far side of the ring recedes into the paper */}
-                <div
-                  style={{
-                    position: 'absolute', inset: 0, borderRadius: 6,
-                    background: C.sage, opacity: 0.86 * behind, pointerEvents: 'none',
-                  }}
-                />
-                {/* the lit card gets a printed ring and a spotlight */}
-                <div
-                  style={{
-                    position: 'absolute', inset: -3, borderRadius: 10, pointerEvents: 'none',
-                    opacity: Math.max(hl, lit),
-                    boxShadow: `0 0 0 3px rgba(24,53,43,${0.4 * Math.max(hl, lit)}), 0 30px 70px rgba(24,53,43,${0.22 * lit})`,
-                  }}
-                />
-                <div
-                  style={{
-                    position: 'absolute', left: '50%', bottom: -34, transform: 'translateX(-50%)',
-                    fontFamily: FONT.hand, fontSize: 30, color: C.forest, whiteSpace: 'nowrap',
-                    opacity: plan.tier === 'business' ? 0.5 + 0.5 * lit : 0,
-                  }}
-                >
-                  most picked
-                </div>
+                <span style={{ fontFamily: FONT.display, fontSize: 96, lineHeight: 1, color: C.forest, letterSpacing: '0.01em' }}>
+                  {c.price}
+                </span>
+                <span style={{ fontFamily: FONT.sans, fontWeight: 800, fontSize: 30, letterSpacing: '0.18em', color: 'rgba(24,53,43,.55)' }}>
+                  /MO
+                </span>
+                <span style={{ width: 2, height: 44, background: 'rgba(24,53,43,.2)', margin: '0 8px' }} />
+                <span style={{ fontFamily: FONT.hand, fontSize: 52, color: C.muted }}>{c.note}</span>
               </div>
             );
           })}
         </div>
+
+        {/* the note — everything handled */}
+        <div
+          style={{
+            position: 'absolute', left: 0, right: 0, top: 1560, textAlign: 'center',
+            opacity: noteT, transform: `translateY(${(1 - noteT) * 20}px) rotate(-1deg)`,
+          }}
+        >
+          <span style={{ fontFamily: FONT.sans, fontWeight: 800, fontSize: 34, letterSpacing: '0.04em', color: C.forest }}>
+            HOSTING · MAINTENANCE · DOMAIN
+          </span>
+          <div style={{ fontFamily: FONT.hand, fontSize: 56, color: C.muted, marginTop: 2 }}>in every plan</div>
+        </div>
+
+        {/* progress dots */}
+        <div style={{ position: 'absolute', left: 0, right: 0, top: 1722, display: 'flex', justifyContent: 'center', gap: 14 }}>
+          {PLANS.map((p, i) => (
+            <div key={p.name} style={{
+              width: i === front ? 62 : 22, height: 8, borderRadius: 4,
+              background: i === front ? C.forest : 'rgba(24,53,43,.22)',
+            }} />
+          ))}
+        </div>
+
+        <Tape w={230} rot={-8} style={{ left: 78, top: 236, opacity: 0.85 * headT }} />
+        <Daisy size={58} rot={12} style={{ right: 92, top: 300, opacity: 0.9 * headT }} />
       </div>
 
-      {/* big readout: the price being spoken */}
-      <div style={{ position: 'absolute', left: 0, right: 0, top: 1352, height: 300, textAlign: 'center' }}>
-        {PLANS.map((plan, k) => {
-          const lit = litAt(frame, k);
-          return (
-            <div
-              key={`cap${plan.name}`}
-              style={{
-                position: 'absolute', left: 0, right: 0, top: 0, opacity: lit,
-                transform: `translateY(${(1 - lit) * 18}px) scale(${0.96 + 0.04 * lit})`,
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center' }}>
-                <span style={{ fontFamily: FONT.display, fontSize: 172, lineHeight: 1, color: C.forest, letterSpacing: '-0.01em' }}>
-                  {plan.amount}
-                </span>
-                <span style={{ fontFamily: FONT.display, fontSize: 68, color: C.muted, marginLeft: 12 }}>
-                  /mo
-                </span>
-              </div>
-              <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 28, letterSpacing: '0.24em', color: C.muted, textTransform: 'uppercase', marginTop: 10 }}>
-                {plan.name} plan
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* the promise under the price */}
-      <div
-        style={{
-          position: 'absolute', left: 0, right: 0, top: 1648, textAlign: 'center',
-          fontFamily: FONT.hand, fontSize: 58, color: C.forest, opacity: noteT,
-          transform: `translateY(${(1 - noteT) * 16}px) rotate(-0.8deg)`,
-        }}
-      >
-        everything handled. one bill.
-      </div>
-
-      <Tape w={300} rot={-8} tone="clear" style={{ left: 54, top: 190, opacity: 0.9 * headT }} />
-      <Tape w={280} rot={9} tone="clear" style={{ right: 58, top: 300, opacity: 0.9 * headT }} />
       <Grain opacity={0.09} />
     </AbsoluteFill>
   );

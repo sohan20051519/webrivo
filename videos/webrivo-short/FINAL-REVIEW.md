@@ -2,14 +2,16 @@
 
 Film: `out/webrivo-short.mp4` (VO+BGM+SFX) / `out/webrivo-short-sfxonly.mp4`
 (same picture, `--props='{"bgm":false}'`).
-1080×1920 · 30fps · **1156f (38.5s)**. Mode: autonomous free creation.
+1080×1920 · 30fps · **1506f (50.2s)**, fifteen spoken lines. Mode: autonomous
+free creation.
 
 ## P — product
 
 - P1 ✓ positioning clear: a small studio building websites for main-street
   businesses, told as "someone is searching for your shop right now".
 - P2 ✓ plan ladder (₹599 / ₹1,199 / ₹2,199) and the estimator are the two
-  longest informational beats (168f each).
+  longest informational beats (200f / 196f), and both sit in the second half so
+  the film sells after it has earned attention.
 - P3 ✓ no invented claims; every price/offer line traced to
   `components/TapeLanding.jsx` / `Calculator.jsx` (₹12,948/yr = 1199×12×0.9,
   SAVE 10%, webrivo.official@gmail.com, +91 9113253753, webrivo.site).
@@ -18,9 +20,10 @@ Film: `out/webrivo-short.mp4` (VO+BGM+SFX) / `out/webrivo-short-sfxonly.mp4`
 
 ## F — completeness
 
-- F1 ✓ plans → S7 (the site's three real `.ht-prod` cards), inclusions → S8
-  (hosting / maintenance / domain), estimator → S9 (toggle, ₹1,199/mo →
-  ₹12,948/yr, SAVE 10%), brand/story → S1–S4, process → S5 (BRIEF→BUILD→SHIP).
+- F1 ✓ plans → ⑦ (the site's three real `.ht-prod` cards in a cover-flow),
+  inclusions → ⑧ (hosting / maintenance / domain), estimator → ⑨ (toggle,
+  ₹1,199/mo → ₹12,948/yr, SAVE 10%), brand/story → ①–④, process → ⑤
+  (BRIEF→BUILD→SHIP).
 - F2 ✓ no repeated taglines; each shot carries new information.
 - F3 ✓ every frame is a DOM UI component (no page screenshots); states readable
   at rest.
@@ -34,30 +37,34 @@ Film: `out/webrivo-short.mp4` (VO+BGM+SFX) / `out/webrivo-short-sfxonly.mp4`
 - V4 ✓ no forbidden styles.
 - V5 ✓ all seven library effects are used and each was rebuilt in the site's
   palette rather than shipped as the demo's dark/lime look:
-  `dataviz-landscape-open` (S1), `glass-pill-dictation-typing` +
-  `draw-svg-trace` (S2), `deck-deal-flyin` (S4), `carousel-3d` (S7, real
-  `.ht-prod` cards), `element-body-moves` (S8), `basic-3d-scene` (S9).
+  `dataviz-landscape-open` (① the town map), `glass-pill-dictation-typing` +
+  `draw-svg-trace` (② the search page), `deck-deal-flyin` (④ the dealt cards),
+  `carousel-3d` (⑦ the cover-flow, real `.ht-prod` cards), `element-body-moves`
+  (⑧ the lifted inclusion cards), `basic-3d-scene` (⑨ the estimator room).
 
 ## B — storyboard
 
-- B1 ✓ order/durations match SPEC.md (8 shots, 1156f).
+- B1 ✓ order/durations match SPEC.md (8 shots, 1506f).
 - B2 ✓ actions/SFX align with AUDIO-TIMELINE.md.
-- B3 ✓ the film is de-branded until the last shot: S1 opens on the shops
-  (BAKERY / TAILOR / FLORIST / SALON / CAFE on a printed town map), no mark or
-  wordmark anywhere before S10. WEBRIVO locks up on the spoken "Webrivo."
-  (letters 5–17 on VO 9.6–32.7), then a slow 4.5% push keeps the 44f end hold
-  alive instead of freezing.
-- B5 ✓ story arc: hook (S1) → the search (S2) → what loses the customer (S4) →
-  the fix (S5) → offer (S7) → what's included (S8) → no surprises (S9) →
-  sign-off (S10). No music-only scenes, no title cards.
+- B3 ✓ the film is de-branded until the last shot: ① opens on the shops
+  (BAKERY / TAILOR / FLORIST / SALON / CAFE on a printed town map) and the
+  camera pushes into the bakery and then the tailor while the voice names them;
+  no mark or wordmark anywhere before ⑩. WEBRIVO locks up on the spoken
+  "Webrivo." (letters land 6–28f, VO 1272–1302), three mini plan prints drop
+  under it, then a slow 4.5% push keeps the 47f end hold alive instead of
+  freezing.
+- B5 ✓ story arc: hook (①) → the search (②) → what loses the customer (④) →
+  the fix (⑤) → offer (⑦) → what's included (⑧) → no surprises (⑨) →
+  sign-off (⑩). No music-only scenes, no title cards.
 - B4 ✓ no unapproved deletions (invented "SIGNATURE PLAN" stamp removed as
   non-site copy).
 
 ## D — data safety
 
 - D1–D5 ✓ public prices/contact only, no keys/personal/clients; the
-  illustrative search/map UI uses generic labels ("Another bakery",
-  "Your shop"), not real client data.
+  illustrative search/map UI is a generic page ("bakery near me", three
+  anonymised listings, an empty ad slot), not a real Google screenshot and not
+  real client data.
 
 ## A — audio
 
@@ -91,11 +98,12 @@ Film: `out/webrivo-short.mp4` (VO+BGM+SFX) / `out/webrivo-short-sfxonly.mp4`
   @3.1 kHz, 3:1 comp, loudnorm I=−19 TP=−3 → peak −3.0…−4.1 dBFS, mixed at 0.95.
 - 8 lines, 3.0–5.4 s, each starting `shot.from + 2` so the wav's 0.30s lead
   silence lands the first syllable ~11f after the cut.
-- Sync by measurement: sentence boundaries detected in each VO file, then the
-  card/word/price beats pinned to them (S4 cards 34/74/122/140 on
-  "slow page / pin / form / they leave"; S7 prices 46/78/88 on "five … to …
-  twenty one ninety nine"; S9 flip 104 on "save ten percent yearly").
-- Pacing: no line is followed by more than 1.27s of silence; ≈78% of the film
+- Sync by measurement: speech onsets and ends detected in each of the fifteen
+  VO files (10ms energy, −28 dB gate), then every action beat pinned to them
+  (④ cards 16/52/94 on "slow page / pin / form", turn card 190 on "someone
+  else"; ⑦ prices 50/72/92 on "five … to … twenty one ninety nine"; ⑨ flip 116
+  on "yearly", SAVE 10% 136, receipt 162).
+- Pacing: no line is followed by more than 0.77s of silence; ≈71% of the film
   carries voice.
 
 ## Q — technical
@@ -103,10 +111,13 @@ Film: `out/webrivo-short.mp4` (VO+BGM+SFX) / `out/webrivo-short-sfxonly.mp4`
 - Q1 ✓ text sharp at rest; deterministic renders (no Date.now / Math.random);
   grain deterministic (fixed SVG turbulence).
 - Q2 ✓ fonts loaded via module-scope FontFace + delayRender, 30 s race fallback.
-- Q3 ✓ no frame-edge clipping: measured ink bbox on every rebuilt shot (plan row
-  24–1056 with 24px side margins; estimator panel 88–996; outro contact 120–960).
-- Q4 ✓ layout is structured on a 1080-wide grid; the hero search card and the
-  plan cards are flex columns, so rows/notes reflow instead of overlapping.
+- Q3 ✓ no frame-edge clipping on any element that must stay whole: measured
+  ink bbox on every rebuilt shot (σ-bands per row/column on the rendered PNGs)
+  — estimator 55–1024, inclusions cards 75–1005 with 120px of lift headroom,
+  outro lockup 419–827 with the contact card 1552–1780. The ⑦ cover-flow is the
+  only element allowed past the edge, and it does so as a stack (deliberate).
+- Q4 ✓ layout is structured on a 1080-wide grid; the search page, plan cards and
+  inclusion cards are flex columns, so rows/notes reflow instead of overlapping.
 
 ## Render verification (measured, not assumed)
 
@@ -115,12 +126,14 @@ correlates every VO line against the mix:
 
 | file | frames | duration | mean vol | max vol | worst VO lag |
 |------|-------:|---------:|---------:|--------:|-------------:|
-| `out/webrivo-short.mp4` | 1156 | 38.592s | −22.2 dB | −3.3 dB | +1.5f |
-| `out/webrivo-short-sfxonly.mp4` | 1156 | 38.592s | −23.0 dB | −3.2 dB | +1.5f |
+| `out/webrivo-short.mp4` | 1506 | 50.261s | −22.3 dB | −4.1 dB | +1.0f |
+| `out/webrivo-short-sfxonly.mp4` | 1506 | 50.261s | −23.3 dB | −3.6 dB | +1.0f |
 
-Picture is frame-identical between the two variants; the only difference is
-`bgm:false`. Stills checked with PIL ink-bbox / edge-clipping probes (this pass
-had no image input, so every shot was verified numerically: per-band palette
-classification, ink bounding boxes, card/readout clearance). Frames sampled
-every 10 across the whole film for blank-frame and jump detection; the only
-near-empty frames are the 8f forest beat at 980 that opens the outro.
+The two variants carry the same picture: the only difference is `bgm:false`,
+and a frame-level comparison at 300 and 1000 shows mean |Δ| of 0.16–0.31/255
+(x264 thread noise, no editorial difference). Stills checked with PIL ink-bbox /
+edge-clipping probes (this pass had no image input, so every shot was verified
+numerically: per-band palette classification, ink bounding boxes, card/readout
+clearance, per-row/column ink bands). Frames sampled every 15 across the whole
+film for blank-frame and jump detection; the only quiet window left was ⑤
+16–42, which now carries a 2.8% dolly.
