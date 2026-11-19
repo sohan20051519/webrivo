@@ -11,7 +11,7 @@ import { C, FONT, EASE, Grain, Tape, Fonts, ramp, bell } from '../theme';
 export const DURATION = 210;
 
 // shot-local frames the audio pins to
-export const BEATS = { hook: 62, out: 96, hotA: 104, hotB: 146, end: 203 };
+export const BEATS = { hook: 12, out: 80, hotA: 104, hotB: 146, end: 203 };
 
 const TRUNK = 'M 540 1980 C 508 1720 568 1360 552 1060 C 542 900 556 700 560 470';
 const TRUNK_Y = [1640, 1480, 1330, 1190, 1060, 945, 840, 748, 668, 600];
@@ -95,7 +95,7 @@ const camAt = (f: number) => {
 const ShopTag: React.FC<{ s: typeof SHOPS[number]; frame: number; hot: number }> = ({ s, frame, hot }) => {
   const t = ramp(frame, s.at, 9, EASE.outBack);
   const near = s.near;
-  const pulse = hot * (0.6 + 0.4 * Math.cos((frame - BEATS.hotA) * 0.16));
+  const pulse = hot * (0.85 + 0.15 * Math.cos((frame - BEATS.hotA) * 0.12));
   return (
     <div
       style={{
@@ -175,8 +175,9 @@ export const BrandOpen: React.FC = () => {
       <div
         style={{
           position: 'absolute', inset: 0,
-          transform: `translate(${cam.x}px, ${cam.y}px) scale(${cam.s})`,
+          transform: `translate3d(${Math.round(cam.x)}px, ${Math.round(cam.y)}px, 0) scale(${cam.s})`,
           transformOrigin: '0 0',
+          willChange: 'transform',
         }}
       >
         <svg width={1080} height={1920} viewBox="0 0 1080 1920" style={{ position: 'absolute', inset: 0 }}>
@@ -304,24 +305,24 @@ export const BrandOpen: React.FC = () => {
         </div>
       </div>
 
-      {/* the two visited shops get a hand-written caption */}
+      {/* the two visited shops get a hand-written caption, synced to s1b */}
       <div
         style={{
           position: 'absolute', left: 0, right: 0, bottom: 236, textAlign: 'center',
-          fontFamily: FONT.hand, fontSize: 70, color: C.forest,
+          fontFamily: FONT.hand, fontSize: 64, color: C.forest,
           opacity: hotA, transform: `translateY(${(1 - hotA) * 20}px) rotate(-1.4deg)`,
         }}
       >
-        opens at five
+        the bakery on the corner
       </div>
       <div
         style={{
           position: 'absolute', left: 0, right: 0, bottom: 236, textAlign: 'center',
-          fontFamily: FONT.hand, fontSize: 70, color: C.forest,
+          fontFamily: FONT.hand, fontSize: 64, color: C.forest,
           opacity: hotB, transform: `translateY(${(1 - hotB) * 20}px) rotate(1.2deg)`,
         }}
       >
-        never misses a stitch
+        the tailor three doors down
       </div>
 
       <Tape w={250} rot={-9} tone="sage" style={{ left: -40, top: 96, opacity: 0.55 * ramp(frame, 0, 12, EASE.out) }} />
