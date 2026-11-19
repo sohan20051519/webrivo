@@ -156,11 +156,11 @@ export const Outro: React.FC = () => {
             boxShadow: '0 30px 70px rgba(0,0,0,.5)', textAlign: 'center', position: 'relative',
           }}
         >
-          <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 38, color: C.forest, letterSpacing: '0.04em' }}>
-            webrivo.official@gmail.com
+          <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 40, color: C.forest, letterSpacing: '0.04em' }}>
+            support@webrivo.in
           </div>
           <div style={{ fontFamily: FONT.sans, fontWeight: 600, fontSize: 34, color: C.muted, marginTop: 12 }}>
-            +91 9113253753 · webrivo.site
+            webrivo.in
           </div>
           <Tape w={150} h={38} rot={-44} tone="clear" style={{ left: -50, top: -20 }} />
           <Tape w={150} h={38} rot={44} tone="clear" style={{ right: -50, top: -20 }} />

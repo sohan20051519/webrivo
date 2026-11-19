@@ -643,7 +643,7 @@ function TapeLanding({
               Email address
             </label><input id={uid + "em"} type="email" required placeholder="you@example.com" className="ht-input" /><button type="submit" className="ht-btn">
               Send it over
-            </button><p className="ht-form-msg" aria-live="polite">{joined ? "You're on the list." : ""}</p></form></div><div className="ht-word" aria-label={brand}>{Array.from(brand).map((ch, i) => <span key={i} className="ht-word-l" aria-hidden="true">{ch}<Tape kind="duct" x="50%" y="46%" w="72%" r={i % 2 ? 34 : -36} /></span>)}</div><div className="ht-foot-bar"><div className="ht-foot-addr"><div><p className="ht-label">Slv complex</p><p>Muddinapalya, Bangalore</p></div><a href="tel:+919113253753">📞 +91 9113253753</a></div><div className="ht-foot-meta"><p>&copy; 2026 WebRivo &mdash; Websites for local businesses.</p><a href="mailto:webrivo.official@gmail.com">webrivo.official@gmail.com</a></div></div></footer></div>
+            </button><p className="ht-form-msg" aria-live="polite">{joined ? "You're on the list." : ""}</p></form></div><div className="ht-word" aria-label={brand}>{Array.from(brand).map((ch, i) => <span key={i} className="ht-word-l" aria-hidden="true">{ch}<Tape kind="duct" x="50%" y="46%" w="72%" r={i % 2 ? 34 : -36} /></span>)}</div><div className="ht-foot-bar"><div className="ht-foot-addr"><div><p className="ht-label">Slv complex</p><p>Muddinapalya, Bangalore</p></div></div><div className="ht-foot-meta"><p>&copy; 2026 WebRivo &mdash; Websites for local businesses.</p><a href="mailto:support@webrivo.in">support@webrivo.in</a> · <a href="https://webrivo.in">webrivo.in</a></div></div></footer></div>
 }
 const CSS = `
 .ht-root{

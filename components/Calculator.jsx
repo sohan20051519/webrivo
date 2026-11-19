@@ -49,7 +49,7 @@ const PLANS = [
       { feature: 'Hosting & updates' },
     ],
     freeFeatureIds: [],
-    domainNote: 'Free subdomain (e.g. yourshop.webrivo.site)',
+    domainNote: 'Free subdomain (e.g. yourshop.webrivo.in)',
     domainExtraMap: {},
   },
   {

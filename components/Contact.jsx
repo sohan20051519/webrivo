@@ -24,7 +24,7 @@ export default function Contact() {
             <div className="contact__rows">
               <div className="contact__row">
                 <span>Email</span>
-                <a href="mailto:webrivo.official@gmail.com">webrivo.official@gmail.com</a>
+                <a href="mailto:support@webrivo.in">support@webrivo.in</a>
               </div>
               <div className="contact__row">
                 <span>Call</span>

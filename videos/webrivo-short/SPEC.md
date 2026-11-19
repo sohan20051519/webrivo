@@ -13,7 +13,7 @@ Autonomous run, no check-ins. 2026-11-19.
   hosting, maintenance, domain; estimator SAVE 10% (Business ₹12,948/yr);
   Business = local SEO, GBP, WhatsApp & call; Premium = booking, payment gateway,
   admin + analytics dashboards; no setup fee, site built for you.
-  Contact: webrivo.official@gmail.com · +91 9113253753 · webrivo.site.
+  Contact: support@webrivo.in · webrivo.in.
 - Look: off `#F4F5EF`, sage `#DDE3D5`, muted `#899982`, forest `#18352B`,
   white, ink `#202522`; Anton / Bricolage Grotesque / Caveat; tape + grain.
 - No "live in 3 days" / delivery-time claim anywhere. No WebRivo branding

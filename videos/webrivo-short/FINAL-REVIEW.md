@@ -15,7 +15,7 @@ rebuild to fix story continuity and explain the business (English, problem-first
 
 - P1 ✓ positioning clear: websites for main-street businesses, found on a phone, with booking and payment built in.
 - P2 ✓ plan ladder (₹599 / ₹1,199 / ₹2,199) and the estimator carry the price; ⑤⑥ show the product those plans buy.
-- P3 ✓ facts only: ₹599/₹1,199/₹2,199 per month; yearly −10%; no setup fee, site built for you; hosting, maintenance, domain in every plan; Business = local SEO, GBP, WhatsApp & call; Premium = booking, payment gateway, admin + analytics dashboards. Contact: webrivo.official@gmail.com · +91 9113253753 · webrivo.site.
+- P3 ✓ facts only: ₹599/₹1,199/₹2,199 per month; yearly −10%; no setup fee, site built for you; hosting, maintenance, domain in every plan; Business = local SEO, GBP, WhatsApp & call; Premium = booking, payment gateway, admin + analytics dashboards. Contact: support@webrivo.in · webrivo.in.
 - P4 ✓ no delivery-time claim anywhere (the site's "live in 3 days" is not used).
 
 ## F — completeness & sync

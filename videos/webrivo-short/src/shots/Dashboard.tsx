@@ -62,7 +62,7 @@ export const Dashboard: React.FC = () => {
             ))}
             <div style={{ flex: 1 }} />
             <div style={{ fontFamily: FONT.sans, fontWeight: 600, fontSize: 18, color: 'rgba(221,227,213,.62)', background: 'rgba(244,245,239,.1)', borderRadius: 999, padding: '8px 22px' }}>
-              riyasboutique.webrivo.site / dashboard
+              riyasboutique.webrivo.in / dashboard
             </div>
             <div style={{ flex: 1 }} />
             <div style={{ width: 30, height: 30, borderRadius: 15, background: C.sage }} />

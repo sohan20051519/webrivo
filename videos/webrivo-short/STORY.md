@@ -41,4 +41,4 @@ explained what WebRivo actually sells.
   maintenance and a domain.
 - Business: local SEO, Google Business Profile, WhatsApp & call buttons.
 - Premium: booking system, payment gateway, admin + analytics dashboards.
-- webrivo.site · webrivo.official@gmail.com · +91 9113253753.
+- webrivo.in · support@webrivo.in · .

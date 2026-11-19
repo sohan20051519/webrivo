@@ -43,7 +43,7 @@ export default function Footer() {
           <div className="footer__col">
             <h4>Contact</h4>
             <ul>
-              <li><a href="mailto:webrivo.official@gmail.com">webrivo.official@gmail.com</a></li>
+              <li><a href="mailto:support@webrivo.in">support@webrivo.in</a></li>
               <li><a href="tel:+918050130969">+91 80501 30969</a></li>
               <li><a href="tel:+919113253754">+91 91132 53754</a></li>
               <li><a href="tel:+916366610809">+91 63666 10809</a></li>
