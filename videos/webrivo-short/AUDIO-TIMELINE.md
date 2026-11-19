@@ -15,10 +15,14 @@ Each wav keeps ~0.3s of lead silence, so `VO_LEAD = 2` puts the first syllable
 ~11f after the cut. Spoken length is the gated (−35 dB) speech span, not the
 file length.
 
+The Kannada version (`public/audio/vo-kn/`) uses one consistent neural voice
+(`kn-IN-SapnaNeural` via edge-tts) so mixed English keywords never switch
+accent; `scripts/gen-vo-kn.py` regenerates it from `scripts/vo-script-kn.json`.
+
 | line | scene | text | local | abs | spoken |
 |------|:-----:|------|------:|----:|-------:|
 | s1a | ① | Every great shop on this street has a story. | 2 | 2 | 2.17s (65f) |
-| s1b | ① | The bakery on the corner. The tailor three doors down. | 88 | 88 | 3.00s (90f) |
+| s1b | ① | The boutique on the corner. The tailor three doors down. | 88 | 88 | 3.00s (90f) |
 | s2a | ② | Right now, someone nearby is looking for exactly what you sell. | 2 | 212 | 3.20s (96f) |
 | s2b | ② | They open their phone, and you're not there. | 124 | 334 | 1.90s (57f) |
 | s4a | ③ | So the sale goes to someone else. | 2 | 422 | 1.53s (46f) |

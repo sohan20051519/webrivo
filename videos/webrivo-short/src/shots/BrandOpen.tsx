@@ -21,7 +21,7 @@ const VP = { x: 540, y: 620 };          // horizon / vanishing point
 const FOCAL = 700;                       // px per world unit at depth 1
 const CAM_H = 2.2;                       // camera height in world units
 const ROAD_HALF = 3.2;                   // half width of the road
-const SHOP_W = 5.0;                      // shopfront width in world units
+const SHOP_W = 4.4;                      // shopfront width in world units
 const SHOP_H = 6.4;                      // shopfront height in world units
 
 type Item = 'shelves' | 'chairs' | 'flowers' | 'dresses' | 'cups' | 'fabric' | 'bread';
@@ -38,16 +38,21 @@ type Shop = {
 
 const SHOPS: Shop[] = [
   { name: 'GROCERY',  sub: 'daily needs',    side: -1, z: 6,  awning: '#8FA07E', accent: '#2F5A45', item: 'shelves' },
-  { name: 'SALON',    sub: 'cuts & care',    side:  1, z: 12, awning: C.sage,    accent: C.muted,   item: 'chairs'  },
-  { name: 'FLORIST',  sub: 'fresh blooms',  side: -1, z: 19, awning: '#C7D4B8', accent: '#5E7A5A', item: 'flowers' },
+  { name: 'SALON',    sub: 'cuts & care',    side:  1, z: 18, awning: C.sage,    accent: C.muted,   item: 'chairs'  },
+  { name: 'FLORIST',  sub: 'fresh blooms',  side: -1, z: 30, awning: '#C7D4B8', accent: '#5E7A5A', item: 'flowers' },
   { name: 'BOUTIQUE', sub: 'styles for you', side:  1, z: 50, awning: C.sage,    accent: C.forest,  item: 'dresses', hot: 0 },
-  { name: 'CAFE',     sub: 'tea & snacks',   side: -1, z: 58, awning: '#B9C8A8', accent: '#4A6A52', item: 'cups'    },
-  { name: 'TAILOR',   sub: 'perfect fit',    side: -1, z: 68, awning: '#D6DEC9', accent: C.forest,  item: 'fabric',  hot: 1 },
-  { name: 'BAKERY',   sub: 'fresh daily',    side:  1, z: 76, awning: '#C4D0B6', accent: '#6B8260', item: 'bread'   },
+  { name: 'CAFE',     sub: 'tea & snacks',   side: -1, z: 62, awning: '#B9C8A8', accent: '#4A6A52', item: 'cups'    },
+  { name: 'TAILOR',   sub: 'perfect fit',    side:  1, z: 80, awning: '#D6DEC9', accent: C.forest,  item: 'fabric',  hot: 1 },
+  { name: 'BAKERY',   sub: 'fresh daily',    side: -1, z: 96, awning: '#C4D0B6', accent: '#6B8260', item: 'bread'   },
 ];
 
-// steady forward motion — predictable so the naming beats line up
-const camZ = (f: number) => 0.35 * f;
+// Forward motion with a gentle acceleration through the middle so the two
+// named shops each get their moment without the street feeling stop-start.
+const camZ = (f: number) => {
+  if (f <= 100) return 0.35 * f;
+  if (f <= 146) return 35 + 0.652 * (f - 100);
+  return 65 + 0.39 * (f - 146);
+};
 
 /* ------------------------------------------------------------------ *
  * Window displays — drawn in the shopfront's fixed base coordinate space.
@@ -248,10 +253,13 @@ export const BrandOpen: React.FC = () => {
           })}
         </svg>
 
-        {/* shopfronts on both sides of the road */}
-        {SHOPS.map((shop) => (
-          <ShopFront key={shop.name} shop={shop} cz={cz} hotA={hotA} hotB={hotB} />
-        ))}
+        {/* shopfronts on both sides of the road — far to near so nearer
+            shops correctly occlude the ones behind them */}
+        {[...SHOPS]
+          .sort((a, b) => (b.z - cz) - (a.z - cz))
+          .map((shop) => (
+            <ShopFront key={shop.name} shop={shop} cz={cz} hotA={hotA} hotB={hotB} />
+          ))}
       </div>
 
       {/* street context label */}
