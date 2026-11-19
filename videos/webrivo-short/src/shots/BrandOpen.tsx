@@ -1,134 +1,189 @@
 // Shot 01 — street-drive open, 210f.
-// A realistic-feeling street scene: we move along a road and pass shop fronts,
-// so the film opens on real businesses on a real street. The camera advances
-// down the road, boutique and tailor come into view as the voice names them.
-// Same DURATION/BEATS contract as before (audio cues pinned to B1).
+// We travel forward down a real street and pass shop fronts on both sides.
+// The boutique and tailor come into view (and get a soft focus) exactly when
+// the voice names them. Same DURATION/BEATS contract as before, so every
+// pinned SFX cue keeps its timing.
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
-import { C, FONT, EASE, Grain, Tape, Fonts, ramp, bell } from '../theme';
+import { C, FONT, EASE, Grain, Tape, Fonts, ramp } from '../theme';
 
 export const DURATION = 210;
 
 // shot-local frames the audio pins to (keep contract)
 export const BEATS = { hook: 12, out: 80, hotA: 104, hotB: 146, end: 203 };
 
-// world layout: camera moves forward along z; shops sit on left/right of road
-// z = distance ahead of camera start. We choose positions so boutique arrives
-// near hotA and tailor near hotB while earlier shops pass during the intro.
+/* ------------------------------------------------------------------ *
+ * Perspective setup — all sizes are WORLD UNITS, projected to screen.
+ * (The old version multiplied pixel-sized widths by the scale, which
+ *  made each shop a giant blank wall off-screen. This version is sane.)
+ * ------------------------------------------------------------------ */
+const VP = { x: 540, y: 620 };          // horizon / vanishing point
+const FOCAL = 700;                       // px per world unit at depth 1
+const CAM_H = 2.2;                       // camera height in world units
+const ROAD_HALF = 3.2;                   // half width of the road
+const SHOP_W = 5.0;                      // shopfront width in world units
+const SHOP_H = 6.4;                      // shopfront height in world units
+
+type Item = 'shelves' | 'chairs' | 'flowers' | 'dresses' | 'cups' | 'fabric' | 'bread';
 type Shop = {
   name: string;
   sub: string;
-  side: 'left' | 'right';
-  z: number; // world distance
-  w: number;
-  h: number;
+  side: -1 | 1;          // -1 left, +1 right of the road
+  z: number;             // world distance from camera at frame 0
   awning: string;
   accent: string;
-  hot?: 0 | 1; // index into hot captions
+  item: Item;
+  hot?: 0 | 1;           // which naming beat this shop belongs to
 };
 
 const SHOPS: Shop[] = [
-  { name: 'GROCERY', sub: 'daily needs', side: 'left', z: 18, w: 320, h: 360, awning: '#8FA07E', accent: '#2F5A45' },
-  { name: 'SALON', sub: 'cuts & care', side: 'right', z: 26, w: 300, h: 340, awning: C.sage, accent: C.muted },
-  { name: 'FLORIST', sub: 'fresh blooms', side: 'left', z: 34, w: 290, h: 330, awning: '#C7D4B8', accent: '#5E7A5A' },
-  { name: 'BOUTIQUE', sub: 'styles for you', side: 'right', z: 44, w: 360, h: 380, awning: C.sage, accent: C.forest, hot: 0 },
-  { name: 'CAFE', sub: 'tea & snacks', side: 'left', z: 52, w: 300, h: 340, awning: '#B9C8A8', accent: '#4A6A52' },
-  { name: 'TAILOR', sub: 'perfect fit', side: 'left', z: 60, w: 340, h: 360, awning: '#D6DEC9', accent: C.forest, hot: 1 },
-  { name: 'BAKERY', sub: 'fresh daily', side: 'right', z: 68, w: 300, h: 330, awning: '#C4D0B6', accent: '#6B8260' },
+  { name: 'GROCERY',  sub: 'daily needs',    side: -1, z: 6,  awning: '#8FA07E', accent: '#2F5A45', item: 'shelves' },
+  { name: 'SALON',    sub: 'cuts & care',    side:  1, z: 12, awning: C.sage,    accent: C.muted,   item: 'chairs'  },
+  { name: 'FLORIST',  sub: 'fresh blooms',  side: -1, z: 19, awning: '#C7D4B8', accent: '#5E7A5A', item: 'flowers' },
+  { name: 'BOUTIQUE', sub: 'styles for you', side:  1, z: 50, awning: C.sage,    accent: C.forest,  item: 'dresses', hot: 0 },
+  { name: 'CAFE',     sub: 'tea & snacks',   side: -1, z: 58, awning: '#B9C8A8', accent: '#4A6A52', item: 'cups'    },
+  { name: 'TAILOR',   sub: 'perfect fit',    side: -1, z: 68, awning: '#D6DEC9', accent: C.forest,  item: 'fabric',  hot: 1 },
+  { name: 'BAKERY',   sub: 'fresh daily',    side:  1, z: 76, awning: '#C4D0B6', accent: '#6B8260', item: 'bread'   },
 ];
 
-// camera travels forward over time (world units)
-const camZ = (f: number) => {
-  // ease in, cruise, then slow near end as we settle on tailor
-  if (f <= 10) return 2 + 2 * ramp(f, 0, 10, EASE.out);
-  if (f <= 90) return 4 + 22 * ramp(f, 10, 80, EASE.smooth);
-  if (f <= 130) return 26 + 16 * ramp(f, 90, 40, EASE.smooth);
-  if (f <= 160) return 42 + 12 * ramp(f, 130, 30, EASE.smooth);
-  return 54 + 4 * ramp(f, 160, 50, EASE.smooth);
+// steady forward motion — predictable so the naming beats line up
+const camZ = (f: number) => 0.35 * f;
+
+/* ------------------------------------------------------------------ *
+ * Window displays — drawn in the shopfront's fixed base coordinate space.
+ * ------------------------------------------------------------------ */
+const Display: React.FC<{ kind: Item; color: string }> = ({ kind, color }) => {
+  const bar = (left: number, top: number, w: number, h: number, r = 2) => (
+    <div key={`${left}-${top}`} style={{ position: 'absolute', left, top, width: w, height: h, borderRadius: r, background: color, opacity: 0.85 }} />
+  );
+  if (kind === 'shelves') {
+    return <>{[0, 1, 2].map((i) => (
+      <React.Fragment key={i}>
+        {bar(10, (18 + i * 46) * 1, 150, 4)}
+        {[0, 1, 2, 3].map((j) => bar(14 + j * 37, 6 + i * 46, 25, 19, 2))}
+      </React.Fragment>
+    ))}</>;
+  }
+  if (kind === 'chairs') {
+    return <>{[0, 1].map((i) => (
+      <React.Fragment key={i}>
+        {bar(22 + i * 82, 20, 58, 44, 8)}
+        {bar(22 + i * 82, 64, 8, 42)}
+        {bar(72 + i * 82, 64, 8, 42)}
+      </React.Fragment>
+    ))}</>;
+  }
+  if (kind === 'flowers') {
+    return <>{[0, 1, 2, 3].map((i) => (
+      <React.Fragment key={i}>
+        {bar(26 + i * 40, 34, 5, 62)}
+        <div key={`c${i}`} style={{ position: 'absolute', left: 16 + i * 40, top: 14, width: 30, height: 30, borderRadius: '50%', background: color, opacity: 0.9 }} />
+      </React.Fragment>
+    ))}</>;
+  }
+  if (kind === 'dresses') {
+    return <>{bar(12, 10, 154, 5)}{[0, 1, 2].map((i) => (
+      <div key={i} style={{ position: 'absolute', left: 20 + i * 50, top: 14, width: 34, height: 78, background: `linear-gradient(180deg, ${color} 0%, ${color} 38%, transparent 38%)`, clipPath: 'polygon(18% 0,82% 0,100% 100%,0 100%)', opacity: 0.85 }} />
+    ))}</>;
+  }
+  if (kind === 'fabric') {
+    return <>{[0, 1, 2, 3].map((i) => (
+      <div key={i} style={{ position: 'absolute', left: 14 + i * 42, top: 16, width: 32, height: 76, borderRadius: 14, background: `repeating-linear-gradient(90deg, ${color} 0 8px, rgba(255,255,255,.55) 8px 16px)`, opacity: 0.85 }} />
+    ))}</>;
+  }
+  if (kind === 'cups') {
+    return <>{[0, 1, 2].map((i) => (
+      <React.Fragment key={i}>
+        {bar(26 + i * 52, 28, 34, 42, 6)}
+        {bar(64 + i * 52, 36, 16, 20, 8)}
+      </React.Fragment>
+    ))}</>;
+  }
+  return <>{[0, 1, 2, 3].map((i) => (
+    <div key={i} style={{ position: 'absolute', left: 14 + i * 42, top: 52, width: 34, height: 34, borderRadius: '50% 50% 4px 4px', background: color, opacity: 0.85 }} />
+  ))}</>;
 };
 
-// project a world point (x lateral, y up, z depth from camera) to screen
-// simple perspective: scale = fov / (z - camZ)
-const VP = { x: 540, y: 520 }; // vanishing point
-const FOV = 900;
+/* ------------------------------------------------------------------ *
+ * One shopfront. The facade is authored at a fixed base size (300x384)
+ * and scaled as a whole, so borders/shadows/details never explode when
+ * the camera gets close.
+ * ------------------------------------------------------------------ */
+const BASE_W = 300;
+const BASE_H = 384;
 
-const project = (wx: number, wy: number, wz: number, cz: number) => {
-  const dz = Math.max(0.6, wz - cz);
-  const s = FOV / dz;
-  return { x: VP.x + wx * s, y: VP.y - wy * s, s, dz };
-};
+const ShopFront: React.FC<{ shop: Shop; cz: number; hotA: number; hotB: number }> = ({ shop, cz, hotA, hotB }) => {
+  const dz = shop.z - cz;
+  if (dz < 2.2 || dz > 58) return null;
 
-const ShopFront: React.FC<{ shop: Shop; cz: number; frame: number; focus: number }> = ({ shop, cz, frame, focus }) => {
-  const rel = shop.z - cz;
-  if (rel < 1.2 || rel > 40) return null;
-  const base = project(shop.side === 'left' ? -3.4 : 3.4, 0, shop.z, cz);
-  const scale = base.s;
-  const w = shop.w * scale;
-  const h = shop.h * scale;
-  const x = base.x + (shop.side === 'left' ? -w : 0);
-  const y = base.y - h;
-  const fadeIn = ramp(rel, 38, 8, EASE.out);
-  const fadeOut = 1 - ramp(rel, 1.2, 1.6, EASE.smooth);
-  const alpha = Math.max(0, Math.min(1, fadeIn * (0.25 + 0.75 * fadeOut)));
-  const dim = focus > 0.01 && shop.hot === undefined ? 1 - 0.45 * focus : 1;
-  const pop = shop.hot === 0 ? 1 + 0.04 * focus : shop.hot === 1 ? 1 + 0.04 * focus : 1;
+  const s = FOCAL / dz;
+  const centerX = VP.x + shop.side * (ROAD_HALF + SHOP_W / 2) * s;
+  const groundY = VP.y + CAM_H * s;
+  const w = SHOP_W * s;
+  const h = SHOP_H * s;
+  const left = centerX - w / 2;
+  const top = groundY - h;
 
-  // window grid
-  const cols = 2;
-  const rows = 2;
-  const pad = 18 * scale;
-  const winW = (w - pad * 3) / cols;
-  const winH = (h * 0.38 - pad * 2) / rows;
+  // fade in as it approaches from the distance, fade out as we pass it
+  const alpha = ramp(58 - dz, 0, 12, EASE.out) * ramp(dz, 2.2, 1.6, EASE.smooth);
+  const hot = shop.hot === 0 ? hotA : shop.hot === 1 ? hotB : 0;
+  const focus = Math.max(hotA, hotB);
+  const dim = focus > 0.01 && shop.hot === undefined ? 1 - 0.4 * focus : 1;
+  const pop = 1 + 0.03 * hot;
 
   return (
-    <div
-      style={{
-        position: 'absolute', left: x, top: y, width: w, height: h,
-        opacity: alpha * dim,
-        transform: `scale(${pop})`,
-        transformOrigin: shop.side === 'left' ? 'right bottom' : 'left bottom',
-      }}
-    >
-      {/* building body */}
-      <div style={{ position: 'absolute', inset: 0, background: C.white, borderRadius: 6 * scale, boxShadow: `0 ${8 * scale}px ${20 * scale}px rgba(24,53,43,${0.18 * alpha})`, overflow: 'hidden', border: `${Math.max(1, 1.5 * scale)}px solid rgba(24,53,43,.12)` }}>
-        {/* awning */}
-        <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: h * 0.22, background: shop.awning }}>
-          <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: Math.max(2, 6 * scale), background: 'rgba(24,53,43,.12)' }} />
-          {/* scallops */}
-          <div style={{ position: 'absolute', left: 0, right: 0, bottom: -Math.max(2, 8 * scale), height: Math.max(4, 14 * scale), display: 'flex' }}>
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} style={{ flex: 1, background: shop.awning, borderRadius: `0 0 ${8 * scale}px ${8 * scale}px` }} />
+    <div style={{ position: 'absolute', left, top, width: w, height: h, opacity: alpha * dim, transform: `scale(${pop})`, transformOrigin: 'center bottom' }}>
+      <div style={{ position: 'absolute', left: 0, top: 0, width: BASE_W, height: BASE_H, transform: `scale(${w / BASE_W})`, transformOrigin: 'top left' }}>
+        {/* building shell */}
+        <div style={{ position: 'absolute', inset: 0, background: C.white, borderRadius: 5, overflow: 'hidden', border: '2px solid rgba(24,53,43,.42)', boxShadow: `6px 14px 26px rgba(24,53,43,.30)${hot > 0.01 ? ', 0 0 32px 8px rgba(24,53,43,.32)' : ''}` }}>
+          {/* upper wall with two windows */}
+          <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 54, background: '#EDEFE7', borderBottom: '1px solid rgba(24,53,43,.16)' }}>
+            {[0, 1].map((i) => (
+              <div key={i} style={{ position: 'absolute', left: 66 + i * 102, top: 13, width: 66, height: 29, background: C.sage, borderRadius: 2, border: '1px solid rgba(24,53,43,.2)' }} />
             ))}
           </div>
-        </div>
-        {/* sign */}
-        <div style={{ position: 'absolute', left: pad, right: pad, top: h * 0.05, height: h * 0.12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ fontFamily: FONT.sans, fontWeight: 800, fontSize: Math.max(10, 34 * scale), letterSpacing: '0.12em', color: shop.accent, textAlign: 'center', lineHeight: 1 }}>
-            {shop.name}
+
+          {/* sign band — dark, high contrast, always readable */}
+          <div style={{ position: 'absolute', left: 0, right: 0, top: 54, height: 54, background: shop.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottom: `${hot > 0.01 ? 4 : 2}px solid ${hot > 0.01 ? C.forest : 'rgba(24,53,43,.35)'}` }}>
+            <span style={{ fontFamily: FONT.sans, fontWeight: 800, fontSize: 34, letterSpacing: '0.08em', color: C.off, whiteSpace: 'nowrap' }}>
+              {shop.name}
+            </span>
           </div>
-        </div>
-        {/* windows */}
-        <div style={{ position: 'absolute', left: pad, top: h * 0.28, width: w - pad * 2, height: h * 0.38, display: 'grid', gridTemplateColumns: `1fr 1fr`, gap: pad }}>
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} style={{ background: 'linear-gradient(180deg, rgba(221,227,213,.85), rgba(221,227,213,.45))', borderRadius: 3 * scale, border: `${Math.max(1, 1.2 * scale)}px solid rgba(24,53,43,.12)`, position: 'relative' }}>
-              <div style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: Math.max(1, 1.5 * scale), background: 'rgba(24,53,43,.1)' }} />
-              <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: Math.max(1, 1.5 * scale), background: 'rgba(24,53,43,.1)' }} />
+
+          {/* awning with scalloped edge */}
+          <div style={{ position: 'absolute', left: 0, right: 0, top: 108, height: 31, background: `repeating-linear-gradient(90deg, ${shop.awning} 0 75px, #FFFFFF 75px 150px)`, borderBottom: '2px solid rgba(24,53,43,.22)' }}>
+            <div style={{ position: 'absolute', left: 0, right: 0, bottom: -5, height: 9, display: 'flex' }}>
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} style={{ flex: 1, background: i % 2 ? '#FFFFFF' : shop.awning, borderRadius: '0 0 6px 6px' }} />
+              ))}
             </div>
-          ))}
-        </div>
-        {/* door */}
-        <div style={{ position: 'absolute', left: w * 0.38, bottom: 0, width: w * 0.24, height: h * 0.28, background: shop.accent, borderRadius: `${4 * scale}px ${4 * scale}px 0 0` }}>
-          <div style={{ position: 'absolute', right: '18%', top: '52%', width: Math.max(2, 5 * scale), height: Math.max(2, 5 * scale), borderRadius: 99, background: 'rgba(244,245,239,.8)' }} />
-        </div>
-        {/* sub label on glass */}
-        <div style={{ position: 'absolute', left: 0, right: 0, bottom: h * 0.30, textAlign: 'center', fontFamily: FONT.hand, fontSize: Math.max(8, 22 * scale), color: C.muted, opacity: 0.9 }}>
-          {shop.sub}
+          </div>
+
+          {/* glass display window + door */}
+          <div style={{ position: 'absolute', left: 15, right: 15, top: 154, height: 161, display: 'flex', gap: 9 }}>
+            <div style={{ flex: 1, position: 'relative', background: 'linear-gradient(180deg, rgba(221,227,213,.92), rgba(221,227,213,.55))', border: '2px solid rgba(24,53,43,.42)', overflow: 'hidden' }}>
+              <Display kind={shop.item} color={shop.accent} />
+              <div style={{ position: 'absolute', top: 0, left: '46%', width: 2, height: '100%', background: 'rgba(255,255,255,.5)' }} />
+            </div>
+            <div style={{ width: 78, position: 'relative', background: shop.accent, borderRadius: '4px 4px 0 0' }}>
+              <div style={{ position: 'absolute', left: '18%', right: '18%', top: '8%', height: '42%', background: 'rgba(244,245,239,.32)', border: '2px solid rgba(244,245,239,.45)' }} />
+              <div style={{ position: 'absolute', right: '18%', top: '58%', width: 8, height: 8, borderRadius: 99, background: C.off }} />
+            </div>
+          </div>
+
+          {/* pavement label */}
+          <div style={{ position: 'absolute', left: 0, right: 0, bottom: 15, textAlign: 'center', fontFamily: FONT.hand, fontSize: 24, color: C.muted, whiteSpace: 'nowrap' }}>
+            {shop.sub}
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
+/* ------------------------------------------------------------------ *
+ * Opening composition
+ * ------------------------------------------------------------------ */
 export const BrandOpen: React.FC = () => {
   const frame = useCurrentFrame();
   const cz = camZ(frame);
@@ -136,102 +191,100 @@ export const BrandOpen: React.FC = () => {
   const hookT = ramp(frame, BEATS.hook, 12, EASE.out);
   const outT = ramp(frame, BEATS.out, 12, EASE.power4In);
   const ruleP = ramp(frame, BEATS.hook + 12, 12, EASE.smooth);
-  const hotA = ramp(frame, BEATS.hotA - 10, 12, EASE.out) * (1 - ramp(frame, BEATS.hotB - 14, 10, EASE.smooth));
-  const hotB = ramp(frame, BEATS.hotB - 6, 12, EASE.out);
-  const focus = Math.max(hotA, hotB);
-  const roadScroll = cz * 60;
+  const hotA = ramp(frame, BEATS.hotA - 12, 12, EASE.out) * (1 - ramp(frame, BEATS.hotB - 14, 10, EASE.smooth));
+  const hotB = ramp(frame, BEATS.hotB - 8, 12, EASE.out);
 
-  // subtle camera sway
-  const sway = Math.sin(frame * 0.04) * 6;
+  const sway = Math.sin(frame * 0.04) * 7;
+
+  // road dashes, flowed by the camera position (world spacing = 5 units)
+  const dashOffset = cz % 5;
+  const dashes: { y: number; z: number }[] = [];
+  for (let k = 1; k <= 15; k++) {
+    const z = k * 5 - dashOffset;
+    if (z < 1.2) continue;
+    const y = VP.y + CAM_H * FOCAL / z;
+    if (y > 1910) continue;
+    dashes.push({ y, z });
+  }
 
   return (
     <AbsoluteFill style={{ backgroundColor: '#E8ECE1', overflow: 'hidden' }}>
       <Fonts />
 
       {/* sky */}
-      <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 780, background: `linear-gradient(180deg, #D9E3D0 0%, #E8ECE1 70%, ${C.sage} 100%)` }} />
-      {/* distant buildings silhouette */}
-      <div style={{ position: 'absolute', left: 0, right: 0, top: 430, height: 160, opacity: 0.35 }}>
-        <svg width={1080} height={160} viewBox="0 0 1080 160">
-          {[40, 120, 210, 320, 420, 520, 640, 760, 860, 960, 1040].map((x, i) => {
-            const h = 60 + ((i * 37) % 70);
-            return <rect key={x} x={x} y={160 - h} width={50 + ((i * 23) % 40)} height={h} rx={2} fill={C.muted} opacity={0.5 + ((i % 3) * 0.15)} />;
+      <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: VP.y + 30, background: 'linear-gradient(180deg, #D7E2CF 0%, #E8ECE1 62%, #DFE6D7 100%)' }} />
+      {/* soft clouds */}
+      {[{ x: 180, y: 150, w: 260 }, { x: 760, y: 96, w: 210 }, { x: 500, y: 260, w: 170 }].map((c, i) => (
+        <div key={i} style={{ position: 'absolute', left: c.x, top: c.y, width: c.w, height: c.w * 0.3, borderRadius: 99, background: 'rgba(255,255,255,.55)', filter: 'blur(2px)', transform: `translateX(${sway * 0.25}px)` }} />
+      ))}
+      {/* distant town along the horizon */}
+      <div style={{ position: 'absolute', left: 0, right: 0, top: VP.y - 86, height: 90, opacity: 0.32 }}>
+        <svg width={1080} height={90} viewBox="0 0 1080 90">
+          {[30, 110, 190, 280, 370, 460, 560, 660, 760, 850, 950, 1030].map((x, i) => {
+            const hh = 34 + ((i * 29) % 46);
+            return <rect key={x} x={x} y={90 - hh} width={44 + ((i * 19) % 34)} height={hh} rx={2} fill={C.muted} opacity={0.6 + (i % 3) * 0.12} />;
           })}
         </svg>
       </div>
 
       <div style={{ position: 'absolute', inset: 0, transform: `translateX(${sway}px)` }}>
-        {/* road (perspective trapezoid) */}
+        {/* ground + road + sidewalks */}
         <svg width={1080} height={1920} viewBox="0 0 1080 1920" style={{ position: 'absolute', inset: 0 }}>
-          {/* ground */}
-          <rect x={0} y={520} width={1080} height={1400} fill="#E3E8DC" />
-          {/* road surface */}
-          <polygon points={`${VP.x},${VP.y} -80,1980 ${VP.x + 40},${VP.y} 1160,1980`} fill="#C9D1C0" />
-          {/* road edges */}
-          <line x1={VP.x} y1={VP.y} x2={-40} y2={1980} stroke={C.muted} strokeWidth={10} opacity={0.5} />
-          <line x1={VP.x} y1={VP.y} x2={1120} y2={1980} stroke={C.muted} strokeWidth={10} opacity={0.5} />
-          {/* lane markings moving toward camera */}
-          {Array.from({ length: 10 }).map((_, i) => {
-            const t = ((roadScroll / 120) + i) % 10;
-            const p = t / 10; // 0 far, 1 near
-            const y = VP.y + (1920 - VP.y) * Math.pow(p, 1.6);
-            const h = 20 + 80 * Math.pow(p, 1.4);
-            const w = 4 + 18 * p;
-            if (y > 1940) return null;
-            return <rect key={i} x={VP.x - w / 2} y={y} width={w} height={h} rx={w / 2} fill={C.off} opacity={0.3 + 0.5 * p} />;
-          })}
+          <rect x={0} y={VP.y} width={1080} height={1920 - VP.y} fill="#E3E8DC" />
           {/* sidewalks */}
-          <polygon points={`${VP.x},${VP.y} -80,1980 -220,1980 420,${VP.y + 60}`} fill={C.sage} opacity={0.55} />
-          <polygon points={`${VP.x},${VP.y} 1160,1980 1300,1980 660,${VP.y + 60}`} fill={C.sage} opacity={0.55} />
+          <polygon points={`${VP.x},${VP.y} -260,1920 70,1920 ${VP.x - 12},${VP.y}`} fill={C.sage} opacity={0.75} />
+          <polygon points={`${VP.x},${VP.y} 1010,1920 1340,1920 ${VP.x + 12},${VP.y}`} fill={C.sage} opacity={0.75} />
+          {/* road */}
+          <polygon points={`${VP.x - 8},${VP.y} 70,1920 1010,1920 ${VP.x + 8},${VP.y}`} fill="#C9D1C0" />
+          {/* curbs */}
+          <line x1={VP.x - 8} y1={VP.y} x2={70} y2={1920} stroke={C.muted} strokeWidth={8} opacity={0.55} />
+          <line x1={VP.x + 8} y1={VP.y} x2={1010} y2={1920} stroke={C.muted} strokeWidth={8} opacity={0.55} />
+          {/* moving centre dashes */}
+          {dashes.map((d, i) => {
+            const s = FOCAL / d.z;
+            const dh = Math.min(150, Math.max(8, 2.2 * s));
+            const dw = Math.min(20, Math.max(3, 0.25 * s));
+            return <rect key={i} x={VP.x - dw / 2} y={d.y} width={dw} height={dh} rx={dw / 2} fill={C.off} opacity={0.32 + Math.min(0.55, s / 90)} />;
+          })}
         </svg>
 
-        {/* shop fronts */}
+        {/* shopfronts on both sides of the road */}
         {SHOPS.map((shop) => (
-          <ShopFront key={shop.name} shop={shop} cz={cz} frame={frame} focus={focus} />
+          <ShopFront key={shop.name} shop={shop} cz={cz} hotA={hotA} hotB={hotB} />
         ))}
       </div>
 
-      {/* street label / context */}
-      <div style={{ position: 'absolute', left: 54, top: 110, opacity: 0.7 * ramp(frame, 0, 14, EASE.out), background: 'rgba(255,255,255,.78)', border: '1px solid rgba(24,53,43,.14)', borderRadius: 8, padding: '12px 18px' }}>
-        <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 13, letterSpacing: '0.26em', color: C.forest }}>MAIN STREET</div>
-        <div style={{ fontFamily: FONT.hand, fontSize: 28, color: C.muted, marginTop: 2 }}>shops along the road</div>
+      {/* street context label */}
+      <div style={{ position: 'absolute', left: 48, top: 92, display: 'flex', alignItems: 'center', gap: 14, opacity: 0.82 * ramp(frame, 0, 14, EASE.out), background: 'rgba(255,255,255,.82)', border: '1px solid rgba(24,53,43,.14)', borderRadius: 10, padding: '10px 18px' }}>
+        <div style={{ width: 12, height: 12, borderRadius: 99, background: C.forest }} />
+        <div>
+          <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 14, letterSpacing: '0.24em', color: C.forest }}>MAIN STREET</div>
+          <div style={{ fontFamily: FONT.hand, fontSize: 26, color: C.muted, marginTop: 1 }}>shops along the road</div>
+        </div>
       </div>
 
-      {/* spotlight softening when focusing a shop */}
-      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: `radial-gradient(circle 520px at 540px 980px, rgba(244,245,239,0) 0%, rgba(244,245,239,.35) 55%, rgba(244,245,239,.6) 100%)`, opacity: focus }} />
-
-      {/* the hook */}
-      <div
-        style={{
-          position: 'absolute', left: 0, right: 0, top: 1216, textAlign: 'center',
-          opacity: hookT * (1 - outT),
-          transform: `translateY(${(1 - hookT) * 46 - outT * 120}px)`,
-        }}
-      >
-        <div style={{ fontFamily: FONT.display, fontSize: 140, lineHeight: 0.94, color: C.forest, textShadow: '0 2px 0 rgba(244,245,239,.6)' }}>
-          EVERY SHOP
-        </div>
+      {/* the hook — sits on the road, below the shopfronts */}
+      <div style={{ position: 'absolute', left: 0, right: 0, top: 1290, textAlign: 'center', opacity: hookT * (1 - outT), transform: `translateY(${(1 - hookT) * 46 - outT * 120}px)` }}>
+        <div style={{ fontFamily: FONT.display, fontSize: 132, lineHeight: 0.94, color: C.forest, textShadow: '0 3px 0 rgba(244,245,239,.75)' }}>EVERY SHOP</div>
         <div style={{ position: 'relative', display: 'inline-block', marginTop: 4 }}>
-          <span style={{ fontFamily: FONT.display, fontSize: 140, lineHeight: 0.94, color: C.forest, textShadow: '0 2px 0 rgba(244,245,239,.6)' }}>
-            HAS A STORY.
-          </span>
+          <span style={{ fontFamily: FONT.display, fontSize: 132, lineHeight: 0.94, color: C.forest, textShadow: '0 3px 0 rgba(244,245,239,.75)' }}>HAS A STORY.</span>
           <div style={{ position: 'absolute', left: -4, bottom: 4, height: 15, borderRadius: 8, width: `${ruleP * 100}%`, background: C.sage }} />
         </div>
       </div>
 
       {/* captions synced to s1b */}
-      <div style={{ position: 'absolute', left: 0, right: 0, bottom: 236, textAlign: 'center', fontFamily: FONT.hand, fontSize: 64, color: C.forest, opacity: hotA, transform: `translateY(${(1 - hotA) * 20}px) rotate(-1.4deg)`, textShadow: '0 2px 10px rgba(244,245,239,.8)' }}>
+      <div style={{ position: 'absolute', left: 0, right: 0, bottom: 250, textAlign: 'center', fontFamily: FONT.hand, fontSize: 66, color: C.forest, opacity: hotA, transform: `translateY(${(1 - hotA) * 20}px) rotate(-1.4deg)`, textShadow: '0 2px 12px rgba(244,245,239,.9)' }}>
         the boutique on the corner
       </div>
-      <div style={{ position: 'absolute', left: 0, right: 0, bottom: 236, textAlign: 'center', fontFamily: FONT.hand, fontSize: 64, color: C.forest, opacity: hotB, transform: `translateY(${(1 - hotB) * 20}px) rotate(1.2deg)`, textShadow: '0 2px 10px rgba(244,245,239,.8)' }}>
+      <div style={{ position: 'absolute', left: 0, right: 0, bottom: 250, textAlign: 'center', fontFamily: FONT.hand, fontSize: 66, color: C.forest, opacity: hotB, transform: `translateY(${(1 - hotB) * 20}px) rotate(1.2deg)`, textShadow: '0 2px 12px rgba(244,245,239,.9)' }}>
         the tailor three doors down
       </div>
 
-      <Tape w={250} rot={-9} tone="sage" style={{ left: -40, top: 96, opacity: 0.45 * ramp(frame, 0, 12, EASE.out) }} />
-      <Tape w={220} rot={7} tone="sage" style={{ right: -34, bottom: 420, opacity: 0.35 * ramp(frame, 6, 12, EASE.out) }} />
+      <Tape w={250} rot={-9} tone="sage" style={{ left: -40, top: 96, opacity: 0.4 * ramp(frame, 0, 12, EASE.out) }} />
+      <Tape w={220} rot={7} tone="sage" style={{ right: -34, bottom: 430, opacity: 0.3 * ramp(frame, 6, 12, EASE.out) }} />
 
       <Grain opacity={0.1} />
-      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: `radial-gradient(ellipse 96% 82% at 50% 52%, transparent 54%, rgba(137,153,130,.25) 100%)` }} />
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse 96% 82% at 50% 52%, transparent 54%, rgba(137,153,130,.25) 100%)' }} />
     </AbsoluteFill>
   );
 };
