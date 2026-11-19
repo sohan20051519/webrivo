@@ -53,8 +53,8 @@ free creation.
   "Webrivo." (letters land 6–28f, VO 1272–1302), three mini plan prints drop
   under it, then a slow 4.5% push keeps the 47f end hold alive instead of
   freezing.
-- B5 ✓ story arc: hook (①) → the search (②) → what loses the customer (④) →
-  the fix (⑤) → offer (⑦) → what's included (⑧) → no surprises (⑨) →
+- B5 ✓ story arc: hook (①) → the search and the empty slot (②) → what loses the
+  customer (④) → the fix (⑤) → offer (⑦) → what's included (⑧) → no surprises (⑨) →
   sign-off (⑩). No music-only scenes, no title cards.
 - B4 ✓ no unapproved deletions (invented "SIGNATURE PLAN" stamp removed as
   non-site copy).
@@ -68,16 +68,18 @@ free creation.
 
 ## A — audio
 
-- A1 ✓ house-vibez BGM at 0.32 gain, 25f fade-in, fade-out 1111→1147, ducked to
+- A1 ✓ house-vibez BGM at 0.32 gain, 25f fade-in, fade-out 1461→1497, ducked to
   0.14 under each VO line.
-- A2 ✓ 68 cues pinned to `BEATS` exported by the shot files (AUDIO-TIMELINE.md);
-  render-verified VO onsets at +1.2–1.5f (a uniform encoder delay — no drift).
-  No whoosh in the mix — cuts are carried by voice and paper/click transients.
-- A3 ✓ beat grid 122.4 BPM measured from source; cuts 96/248/424/524/692/980
-  within ±3f except 692 (+5) and 812 (−7.3), which follow the VO sentence
-  starts rather than the grid.
-- A4 ✓ riser→ring arc: riser starts 564 under "SHIP", peaks as the 3D plan
-  ring assembles and the first price lights (pops 546/552/558, ₹599 at 570).
+- A2 ✓ 76 cues pinned to `BEATS` exported by the shot files (AUDIO-TIMELINE.md);
+  render-verified VO onsets at +1.0f on all fifteen lines (a uniform encoder
+  delay — no drift). No whoosh in the mix — cuts are carried by voice and
+  paper/click transients.
+- A3 ✓ beat grid 122.4 BPM measured from source; cut-minus-nearest-beat is
+  −6.6 / −2.4 / +0.4 / +1.5 / −4.3 / +4.8 / −5.0f at 210/420/658/762/962/1074/
+  1270 — no cut is beat-synced on purpose, the voice carries the cut.
+- A4 ✓ riser→carousel arc: the riser starts 692 under "SHIP" (⑤ 34) and peaks
+  exactly on the first frame of ⑦ (762) as the cover-flow assembles; the three
+  cards whip 599 → 1,199 → 2,199 at 812/834/854 on the spoken numbers.
 - A5 ✓ no sample outlives its action by more than design (riser 68f pre-land is
   the planned build).
 - A6 ✓ page turn (−31.8 dBFS) given 1.4 / 0.9 gain, verified audible in render.
@@ -85,8 +87,8 @@ free creation.
   for highlight moments; no notification bleeps.
 - A8 ✓ both variants from one timeline, frame-identical picture.
 - A9 ✓ source peak lag compensated per file (measured 10ms-energy peaks in
-  manifest); output offset measured post-render (+1.2–1.5f on all 8 lines, i.e.
-  AAC encoder delay, not drift).
+  manifest); output offset measured post-render (+1.0f on all 15 lines, i.e. AAC
+  encoder delay, not drift).
 - A10 ✓ 8/8 SFX from Freesound, all CC0, manifest + credits shipped.
 
 ## Voice-over
@@ -96,15 +98,16 @@ free creation.
   voices by measured pitch variance.
 - Broadcast chain per line: high-pass 85 Hz, −1.5 dB @260 Hz, +1.8 dB presence
   @3.1 kHz, 3:1 comp, loudnorm I=−19 TP=−3 → peak −3.0…−4.1 dBFS, mixed at 0.95.
-- 8 lines, 3.0–5.4 s, each starting `shot.from + 2` so the wav's 0.30s lead
-  silence lands the first syllable ~11f after the cut.
+- fifteen lines, 0.6–3.9s of speech each, placed by the timeline's `vo` table;
+  the wavs keep ~0.30s of lead silence, so the first syllable lands ~11f after
+  the cut.
 - Sync by measurement: speech onsets and ends detected in each of the fifteen
-  VO files (10ms energy, −28 dB gate), then every action beat pinned to them
-  (④ cards 16/52/94 on "slow page / pin / form", turn card 190 on "someone
+  VO files (10ms energy, −35 dB gate), then every action beat pinned to them
+  (④ cards 16/52/94 on "slow page / pin / form", turn panel 190 on "someone
   else"; ⑦ prices 50/72/92 on "five … to … twenty one ninety nine"; ⑨ flip 116
   on "yearly", SAVE 10% 136, receipt 162).
-- Pacing: no line is followed by more than 0.77s of silence; ≈71% of the film
-  carries voice.
+- Pacing: no cut lands more than 0.77s after the last syllable; ≈70% of the
+  film carries voice.
 
 ## Q — technical
 
@@ -113,9 +116,11 @@ free creation.
 - Q2 ✓ fonts loaded via module-scope FontFace + delayRender, 30 s race fallback.
 - Q3 ✓ no frame-edge clipping on any element that must stay whole: measured
   ink bbox on every rebuilt shot (σ-bands per row/column on the rendered PNGs)
-  — estimator 55–1024, inclusions cards 75–1005 with 120px of lift headroom,
-  outro lockup 419–827 with the contact card 1552–1780. The ⑦ cover-flow is the
-  only element allowed past the edge, and it does so as a stack (deliberate).
+  — turn panel 56–1024 × 196–1556 with 27px of bottom clearance under the
+  rotated stamp, work-order sheet 70–1010 × 186–1738, estimator 55–1024,
+  inclusions cards 75–1005 with 120px of lift headroom, outro lockup 419–827
+  with the contact card 1552–1780. The ⑦ cover-flow is the only element allowed
+  past the edge, and it does so as a stack (deliberate).
 - Q4 ✓ layout is structured on a 1080-wide grid; the search page, plan cards and
   inclusion cards are flex columns, so rows/notes reflow instead of overlapping.
 
@@ -135,5 +140,7 @@ and a frame-level comparison at 300 and 1000 shows mean |Δ| of 0.16–0.31/255
 edge-clipping probes (this pass had no image input, so every shot was verified
 numerically: per-band palette classification, ink bounding boxes, card/readout
 clearance, per-row/column ink bands). Frames sampled every 15 across the whole
-film for blank-frame and jump detection; the only quiet window left was ⑤
-16–42, which now carries a 2.8% dolly.
+film for blank-frame and jump detection; the rebuilt ranges were sampled every
+5f (`scripts/qa-ranges.py`), which is how ⑤'s old fade-from-forest opening was
+caught — the docket is now printed on frame 0 and only settles, so no shot opens
+on a bare frame. ⑤ also carries a 2.8% dolly across its 104f.

@@ -43,17 +43,17 @@ are all used, each rebuilt in the site's palette:
 
 | # | Story beat | Shot card | Effect |
 |---|------------|-----------|--------|
-| ① | "Every great shop on this street has a story." / "The bakery at five. The tailor who never misses a stitch." | a printed town map fills the frame — blocks of buildings, a white main street with a dashed centre line, trees on the verges, a north arrow and legend; shop tags surface along it; then the camera pushes 2.3× into the bakery, then the tailor, and a hand caption names each | `dataviz-landscape-open` |
-| ② | "Right now, someone nearby is looking for exactly what you sell." / "They open their phone, and they search." | a real search page: forest app header, white pill typing "bakery near me", a live suggestion list, then submit → tabs, a local-pack map with three pins, three organic results (stars, distance, snippet) — and the empty slot where your shop should be, circled in pen | `glass-pill-dictation-typing` → `draw-svg-trace` |
-| ④ | "A slow page. A pin three streets off. A form nobody answers." / "So they scroll on, and buy from someone else." | four near-full-width cards dealt from a deck onto the studio board (slow load bar, pin vs. your shop, unanswered enquiries), then the turn card slams over the board | `deck-deal-flyin` |
-| ⑤ | "So we keep it simple. Brief, build, ship." | vertical word roll (BRIEF → BUILD → SHIP) on forest | typography |
+| ① | "Every great shop on this street has a story." / "The bakery on the corner. The tailor three doors down." | a printed town map fills the frame — blocks of buildings, a white main street with a dashed centre line, trees on the verges, a north arrow and legend; shop tags surface along it; then the camera pushes 2.3× into the bakery, then the tailor, and a hand caption names each | `dataviz-landscape-open` |
+| ② | "Right now, someone nearby is looking for exactly what you sell." / "They open their phone, and you're not there." | a real search page: forest app header, white pill typing "bakery near me", a live suggestion list, then submit → tabs, a local-pack map with three pins, three organic results (stars, distance, snippet) — and the empty slot where your shop should be: “NO WEBSITE — so this slot stays empty”, circled in pen and stamped NOT FOUND | `glass-pill-dictation-typing` → `draw-svg-trace` |
+| ④ | "A slow page. A pin three streets off. A form nobody answers." / "So they scroll on, and buy from someone else." | three near-full-width cards dealt from a deck onto the studio board (slow load bar, pin vs. your shop, unanswered enquiries), then one dark panel slams over the whole board — "BUY FROM / SOMEONE / ELSE." with the two shops they pick instead | `deck-deal-flyin` |
+| ⑤ | "So we keep it simple. Brief, build, ship." | one paper work-order docket pinned to the board: BRIEF / BUILD / SHIP printed on it from the cut, each row lighting up on its word — number, sage bar, a drawn sketch and a DONE stamp | typography |
 | ⑦ | "Three plans. Five ninety nine to twenty one ninety nine a month." / "Everything handled." | a cover-flow of the site's three real `.ht-prod` cards on a sage band — the front card is 700×880 (~65% of the frame width), the others fall back at 30° and 470px spacing; it whips 599 → 1,199 → 2,199 on the spoken numbers, with a price readout under it | `carousel-3d` |
 | ⑧ | "Hosting, maintenance, your domain, in every plan." | three 930×300 inclusion cards with drawn icons lift off a tilted desk (contact shadow stays behind and drifts), the last one stays up | `element-body-moves` |
 | ⑨ | "No surprises. The exact price up front." / "Pay yearly, and you save ten percent." | a 3D room: bill → toggle → yearly receipt, 944×690 each, with a station bar at the top and a perspective floor grid; the camera is the inverse of the station it looks at, so the world turns between them | `basic-3d-scene` |
 | ⑩ | "Webrivo. For the businesses that make a town feel like home." | plan cards fly into a group photo, badge drops, WEBRIVO locks up, sign-off + real contact details | outro |
 
 Transitions: hard cuts with a soft paper whip, no whoosh SFX; every cut lands
-0.55–0.75s after the previous spoken word (no music-only scenes, no title
+0.55–0.80s after the previous spoken word (no music-only scenes, no title
 cards).
 
 ## Phase 3 — Frame timeline (30fps, 1506f)
@@ -63,7 +63,7 @@ cards).
 | ① the town map | Shot01BrandOpen | 0–209 | 210 |
 | ② the search (Google-style) | Shot02Hero | 210–419 | 210 |
 | ④ the deals / why they leave | Shot04Collage | 420–657 | 238 |
-| ⑤ BRIEF · BUILD · SHIP | Shot05Process | 658–761 | 104 |
+| ⑤ the work order | Shot05Process | 658–761 | 104 |
 | ⑦ plan carousel | Shot07Plans | 762–961 | 200 |
 | ⑧ inclusions stack | Shot08Inclusions | 962–1073 | 112 |
 | ⑨ estimator room | Shot09Estimator | 1074–1269 | 196 |

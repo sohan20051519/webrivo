@@ -325,9 +325,9 @@ export const SearchShot: React.FC = () => {
         >
           <div style={{ width: 40, height: 40, borderRadius: 20, border: `2px dashed ${C.muted}`, opacity: 0.6 }} />
           <div>
-            <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 28, color: 'rgba(24,53,43,.45)' }}>No listing here</div>
-            <div style={{ fontFamily: FONT.sans, fontWeight: 500, fontSize: 22, color: 'rgba(24,53,43,.32)', marginTop: 2 }}>
-              this slot is empty
+            <div style={{ fontFamily: FONT.sans, fontWeight: 800, fontSize: 32, letterSpacing: '0.01em', color: 'rgba(24,53,43,.68)' }}>NO WEBSITE.</div>
+            <div style={{ fontFamily: FONT.sans, fontWeight: 500, fontSize: 23, color: 'rgba(24,53,43,.5)', marginTop: 5 }}>
+              so this slot stays empty
             </div>
           </div>
 

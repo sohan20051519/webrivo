@@ -18,9 +18,9 @@ file length.
 | line | scene | text | local | abs | spoken |
 |------|:-----:|------|------:|----:|-------:|
 | s1a | ① | Every great shop on this street has a story. | 2 | 2 | 2.17s (65f) |
-| s1b | ① | The bakery at five. The tailor who never misses a stitch. | 88 | 88 | 3.10s (93f) |
+| s1b | ① | The bakery on the corner. The tailor three doors down. | 88 | 88 | 2.99s (90f) |
 | s2a | ② | Right now, someone nearby is looking for exactly what you sell. | 2 | 212 | 3.22s (97f) |
-| s2b | ② | They open their phone, and they search. | 124 | 334 | 1.87s (56f) |
+| s2b | ② | They open their phone, and you're not there. | 124 | 334 | 1.89s (57f) |
 | s4a | ④ | A slow page. A pin three streets off. A form nobody answers. | 2 | 422 | 3.95s (119f) |
 | s4b | ④ | So they scroll on, and buy from someone else. | 140 | 560 | 2.33s (70f) |
 | s5a | ⑤ | So we keep it simple. Brief, build, ship. | 2 | 660 | 2.35s (71f) |
@@ -33,17 +33,17 @@ file length.
 | s10b | ⑩ | For the businesses that make a town feel like home. | 49 | 1319 | 2.51s (75f) |
 | s10c | ⑩ | Let's get you found. | 150 | 1420 | 1.00s (30f) |
 
-≈35.4s of the 50.2s carries speech (71% density).
+≈35.4s of the 50.2s carries speech (70% density).
 
 ## Pacing rule
 
-There are no music-only scenes. Every cut lands 0.55–0.75s after the last
+There are no music-only scenes. Every cut lands 0.55–0.80s after the last
 spoken syllable of the shot it leaves, so the film never sits in silence:
 
 | cut | speech ends (abs) | next shot | gap |
 |-----|------------------:|-----------|----:|
-| ① → ② | 190 | 210 | 20f (0.67s) |
-| ② → ④ | 400 | 420 | 20f (0.67s) |
+| ① → ② | 187 | 210 | 23f (0.77s) |
+| ② → ④ | 401 | 420 | 19f (0.63s) |
 | ④ → ⑤ | 639 | 658 | 19f (0.63s) |
 | ⑤ → ⑦ | 739 | 762 | 23f (0.77s) |
 | ⑦ → ⑧ | 943 | 962 | 19f (0.63s) |

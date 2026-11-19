@@ -2,8 +2,8 @@
 // Three things lose a local customer, dealt as physical cards onto a studio
 // wall. Each card is nearly the full width of the frame, so it reads on a
 // phone without squinting: number, headline, hand note, and a picture of the
-// failure. Then "so they scroll on" — the cards slide away and the turn card
-// slams over the board: they buy from someone else.
+// failure. Then "so they scroll on" — the cards slide away and one dark panel
+// slams over the whole board: they buy from someone else.
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame, interpolate } from 'remotion';
 import { C, FONT, EASE, Grain, Tape, Daisy, Fonts, ramp, bell } from '../theme';
@@ -15,16 +15,21 @@ export const BEATS = { land: [16, 52, 94, 190], scroll: 152, out: 226 };
 
 const CARD = { w: 968, h: 298, x: 56 };
 const SLOT_Y = [296, 622, 948];
-const TURN_Y = 1336;
+const TURN = { x: 56, y: 196, w: 968, h: 1360 };
 const PILE = { x: 800, y: 1268 };
 
-type Card = { num: string; title: string; kind: 'load' | 'pin' | 'reply' | 'turn'; note: string; turn?: boolean };
+type Card = { num: string; title: string; kind: 'load' | 'pin' | 'reply'; note: string };
 
 const CARDS: Card[] = [
   { num: '01', title: 'SLOW PAGE', kind: 'load', note: 'still loading…' },
   { num: '02', title: 'WRONG PIN', kind: 'pin', note: 'three streets off' },
   { num: '03', title: 'NO REPLY', kind: 'reply', note: 'three days ago' },
-  { num: '04', title: 'SO THEY BUY', kind: 'turn', note: 'from someone else.', turn: true },
+];
+
+// who they buy from instead — the panel's proof
+const ELSE = [
+  { name: 'Sunrise Bakery', meta: 'open now · 1.2 km · ★ 5.0' },
+  { name: 'The Bread House', meta: 'opens 7 am · 2.8 km · ★ 4.0' },
 ];
 
 // ── the picture inside each card ──────────────────────────────────────────
@@ -93,22 +98,7 @@ const Visual: React.FC<{ kind: Card['kind']; frame: number }> = ({ kind, frame }
       </div>
     );
   }
-  return (
-    <div style={{ width: 372, display: 'flex', flexDirection: 'column', gap: 11 }}>
-      {['Sunrise Bakery', 'The Bread House'].map((n, i) => (
-        <div key={n} style={{ display: 'flex', alignItems: 'center', gap: 13, background: i === 0 ? 'rgba(221,227,213,.22)' : 'rgba(221,227,213,.12)', border: '1px solid rgba(221,227,213,.24)', borderRadius: 10, padding: '14px 15px' }}>
-          <div style={{ fontFamily: FONT.display, fontSize: 27, color: C.sage, width: 24 }}>{i + 1}</div>
-          <div>
-            <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 24, color: C.off }}>{n}</div>
-            <div style={{ fontFamily: FONT.sans, fontWeight: 500, fontSize: 18, color: 'rgba(221,227,213,.62)' }}>open now · 1.2 km</div>
-          </div>
-        </div>
-      ))}
-      <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 17, letterSpacing: '0.16em', color: 'rgba(221,227,213,.5)', marginTop: 2 }}>
-        NOT YOU
-      </div>
-    </div>
-  );
+  return null;
 };
 
 // ── one dealt card ────────────────────────────────────────────────────────
@@ -118,34 +108,30 @@ const DealCard: React.FC<{ card: Card; k: number; frame: number }> = ({ card, k,
   const fly = interpolate(frame, [cue, cue + 10], [0, 1], {
     extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: EASE.smooth,
   });
-  const y = card.turn ? TURN_Y : SLOT_Y[k];
-  const h = card.turn ? 420 : CARD.h;
-  const from = card.turn ? { x: 56, y: 1590 } : PILE;
-  const dx = (from.x - CARD.x) * (1 - fly);
-  const dy = (from.y - y) * (1 - fly);
-  const rot = (card.turn ? 5 : -9) * (1 - fly);
-  const arc = Math.sin(fly * Math.PI) * (card.turn ? 40 : 70);
+  const y = SLOT_Y[k];
+  const dx = (PILE.x - CARD.x) * (1 - fly);
+  const dy = (PILE.y - y) * (1 - fly);
+  const rot = -9 * (1 - fly);
+  const arc = Math.sin(fly * Math.PI) * 70;
   const landed = frame >= land;
   const impact = bell(frame, land, 4);
   const squash = bell(frame, land + 1, 2);
   // "so they scroll on" — the three problem cards begin to slide away
-  const scroll = k < 3 ? ramp(frame, BEATS.scroll, 24, EASE.smooth) : 0;
+  const scroll = ramp(frame, BEATS.scroll, 24, EASE.smooth);
 
   return (
     <>
       <div
         style={{
-          position: 'absolute', left: CARD.x, top: y, width: CARD.w, height: h,
+          position: 'absolute', left: CARD.x, top: y, width: CARD.w, height: CARD.h,
           boxSizing: 'border-box', borderRadius: 16, overflow: 'hidden',
-          padding: card.turn ? '34px 42px' : '30px 40px',
+          padding: '30px 40px',
           display: 'flex', alignItems: 'center', gap: 30,
-          background: card.turn ? C.forest : C.white,
-          border: card.turn ? 'none' : '1px solid rgba(24,53,43,.1)',
-          boxShadow: card.turn
-            ? '0 34px 70px rgba(24,53,43,.34)'
-            : landed
-              ? `0 ${6 + 12 * impact}px ${18 + 30 * impact}px rgba(24,53,43,${0.14 + 0.1 * impact})`
-              : '0 30px 60px rgba(24,53,43,.3)',
+          background: C.white,
+          border: '1px solid rgba(24,53,43,.1)',
+          boxShadow: landed
+            ? `0 ${6 + 12 * impact}px ${18 + 30 * impact}px rgba(24,53,43,${0.14 + 0.1 * impact})`
+            : '0 30px 60px rgba(24,53,43,.3)',
           transform: landed
             ? `translateY(${scroll * -34}px) rotate(${scroll * -1.6}deg) scale(${1 - 0.007 * squash})`
             : `translate(${dx}px, ${dy + arc}px) rotate(${rot}deg) scale(${1 + Math.sin(fly * Math.PI) * 0.05})`,
@@ -155,31 +141,22 @@ const DealCard: React.FC<{ card: Card; k: number; frame: number }> = ({ card, k,
       >
         {/* index + rule */}
         <div style={{ width: 92, flexShrink: 0, alignSelf: 'stretch', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', paddingTop: 2 }}>
-          <span style={{ fontFamily: FONT.sans, fontWeight: 800, fontSize: 21, letterSpacing: '0.2em', color: card.turn ? C.sage : C.muted }}>
+          <span style={{ fontFamily: FONT.sans, fontWeight: 800, fontSize: 21, letterSpacing: '0.2em', color: C.muted }}>
             {card.num}
           </span>
-          <div style={{ width: 44, height: 3, background: card.turn ? C.sage : C.muted, opacity: 0.5 }} />
+          <div style={{ width: 44, height: 3, background: C.muted, opacity: 0.5 }} />
         </div>
 
         <div style={{ flex: 1, minWidth: 0 }}>
           <div
             style={{
-              fontFamily: FONT.display, fontSize: card.turn ? 92 : 96, lineHeight: 0.94,
-              color: card.turn ? C.off : C.forest, letterSpacing: '0.01em',
+              fontFamily: FONT.display, fontSize: 96, lineHeight: 0.94,
+              color: C.forest, letterSpacing: '0.01em',
             }}
           >
             {card.title}
           </div>
-          {card.turn ? (
-            <>
-              <div style={{ fontFamily: FONT.display, fontSize: 92, lineHeight: 1.02, color: C.sage }}>{card.note}</div>
-              <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 19, letterSpacing: '0.22em', color: 'rgba(221,227,213,.62)', marginTop: 14 }}>
-                EVERY. SINGLE. TIME.
-              </div>
-            </>
-          ) : (
-            <div style={{ fontFamily: FONT.hand, fontSize: 44, color: C.muted, marginTop: 8 }}>{card.note}</div>
-          )}
+          <div style={{ fontFamily: FONT.hand, fontSize: 44, color: C.muted, marginTop: 8 }}>{card.note}</div>
         </div>
 
         <Visual kind={card.kind} frame={frame} />
@@ -189,9 +166,110 @@ const DealCard: React.FC<{ card: Card; k: number; frame: number }> = ({ card, k,
       {landed && impact > 0.01 ? (
         <div
           style={{
-            position: 'absolute', left: CARD.x - 20, top: y - 20, width: CARD.w + 40, height: h + 40,
+            position: 'absolute', left: CARD.x - 20, top: y - 20, width: CARD.w + 40, height: CARD.h + 40,
             borderRadius: 22, pointerEvents: 'none',
             boxShadow: `0 0 0 4px rgba(24,53,43,${0.16 * impact})`,
+            opacity: impact,
+          }}
+        />
+      ) : null}
+    </>
+  );
+};
+
+
+// ── the turn: one dark panel over the whole board ────────────────────────
+const TurnPanel: React.FC<{ frame: number }> = ({ frame }) => {
+  const land = BEATS.land[3];
+  // the panel is pressed onto the wall: it arrives already in place, oversized
+  // and turned, and settles on the word. No travel, so nothing pops in at the
+  // frame edge while the last cards are still leaving.
+  const cue = land - 18;
+  const fly = interpolate(frame, [cue, land - 2], [0, 1], {
+    extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: EASE.smooth,
+  });
+  const landed = frame >= land;
+  const impact = bell(frame, land, 4);
+  const lift = (1 - fly) * 54;
+
+  return (
+    <>
+      <div
+        style={{
+          position: 'absolute', left: TURN.x, top: TURN.y, width: TURN.w, height: TURN.h,
+          boxSizing: 'border-box', borderRadius: 22, overflow: 'hidden',
+          padding: '52px 58px', display: 'flex', flexDirection: 'column',
+          background: C.forest,
+          boxShadow: landed
+            ? `0 ${34 + 20 * impact}px ${80 + 30 * impact}px rgba(24,53,43,.42)`
+            : '0 40px 90px rgba(24,53,43,.4)',
+          opacity: ramp(frame, cue, 5, EASE.out),
+          transform: landed
+            ? `scale(${1 - 0.007 * impact})`
+            : `translateY(${lift}px) rotate(${2.4 * (1 - fly)}deg) scale(${1 + 0.1 * (1 - fly)})`,
+          transformOrigin: '50% 50%',
+        }}
+      >
+        {/* a light in the top-left corner so the panel is printed, not flat */}
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(70% 46% at 18% 6%, rgba(221,227,213,.14), rgba(24,53,43,0) 68%)' }} />
+
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+          <span style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 21, letterSpacing: '0.22em', color: 'rgba(221,227,213,.62)' }}>
+            04 — THE TURN
+          </span>
+          <span style={{ fontFamily: FONT.hand, fontSize: 40, color: 'rgba(221,227,213,.8)' }}>every time</span>
+        </div>
+
+        <div style={{ position: 'relative', fontFamily: FONT.hand, fontSize: 76, color: C.sage, marginTop: 30 }}>
+          so they scroll on,
+        </div>
+        <div style={{ position: 'relative', fontFamily: FONT.display, fontSize: 196, lineHeight: 0.92, color: C.off, marginTop: 8 }}>
+          BUY FROM<br />SOMEONE<br />ELSE.
+        </div>
+
+        <div style={{ flex: 1 }} />
+
+        <div style={{ position: 'relative', height: 2, background: 'repeating-linear-gradient(90deg, rgba(221,227,213,.34) 0 12px, transparent 12px 24px)' }} />
+        <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: 14, marginTop: 26 }}>
+          {ELSE.map((r, i) => (
+            <div
+              key={r.name}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 18,
+                background: 'rgba(221,227,213,.1)', border: '1px solid rgba(221,227,213,.2)',
+                borderRadius: 12, padding: '0 22px', height: 116,
+                opacity: ramp(frame, land + 6 + i * 5, 10, EASE.out),
+                transform: `translateY(${(1 - ramp(frame, land + 6 + i * 5, 10, EASE.out)) * 16}px)`,
+              }}
+            >
+              <div style={{ width: 44, height: 44, borderRadius: 22, background: C.sage, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: FONT.sans, fontWeight: 800, fontSize: 22, color: C.forest }}>
+                {i + 1}
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 32, color: C.off, whiteSpace: 'nowrap' }}>{r.name}</div>
+                <div style={{ fontFamily: FONT.sans, fontWeight: 500, fontSize: 21, color: 'rgba(221,227,213,.66)', marginTop: 2 }}>{r.meta}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 26 }}>
+          <span style={{ fontFamily: FONT.sans, fontWeight: 800, fontSize: 19, letterSpacing: '0.22em', color: 'rgba(221,227,213,.55)' }}>
+            NOT YOU. NOT ONCE.
+          </span>
+          <div style={{ border: `3px solid ${C.sage}`, borderRadius: 9, padding: '8px 18px', transform: 'rotate(-6deg)' }}>
+            <span style={{ fontFamily: FONT.display, fontSize: 34, letterSpacing: '0.08em', color: C.sage }}>SOMEONE ELSE</span>
+          </div>
+        </div>
+      </div>
+
+      {/* the slam */}
+      {landed && impact > 0.01 ? (
+        <div
+          style={{
+            position: 'absolute', left: TURN.x - 22, top: TURN.y - 22, width: TURN.w + 44, height: TURN.h + 44,
+            borderRadius: 28, pointerEvents: 'none',
+            boxShadow: `0 0 0 5px rgba(24,53,43,${0.18 * impact})`,
             opacity: impact,
           }}
         />
@@ -255,20 +333,7 @@ export const CollageDeal: React.FC = () => {
         {CARDS.map((c, k) => (
           <DealCard key={c.num} card={c} k={k} frame={frame} />
         ))}
-
-        {/* "so they scroll on" — the cards leave toward the bottom edge */}
-        <div
-          style={{
-            position: 'absolute', left: 56, top: 1258,
-            opacity: ramp(frame, BEATS.scroll + 4, 14, EASE.out) * (1 - ramp(frame, 184, 10, EASE.smooth)),
-            display: 'flex', alignItems: 'center', gap: 16,
-          }}
-        >
-          <span style={{ fontFamily: FONT.hand, fontSize: 58, color: C.forest }}>so they scroll on</span>
-          <svg width={58} height={32} viewBox="0 0 54 30" fill="none">
-            <path d="M2 15h46m0 0l-10-9m10 9l-10 9" stroke={C.forest} strokeWidth={3.6} strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </div>
+        <TurnPanel frame={frame} />
 
         {/* a big printed 02 under the board, so the deal never reads as empty */}
         <div
@@ -282,8 +347,10 @@ export const CollageDeal: React.FC = () => {
           02
         </div>
 
-        <Tape w={250} rot={-8} style={{ left: 640, top: 236, opacity: 0.92 * ramp(frame, 30, 10, EASE.out) }} />
-        <Daisy size={64} rot={-12} style={{ left: 44, top: 244, opacity: 0.95 * ramp(frame, 44, 10, EASE.out) }} />
+        {/* wall dressing — it belongs to the wall, so it clears out before the
+            turn panel lands over it */}
+        <Tape w={250} rot={-8} style={{ left: 640, top: 236, opacity: 0.92 * ramp(frame, 30, 10, EASE.out) * (1 - ramp(frame, 171, 7, EASE.smooth)) }} />
+        <Daisy size={64} rot={-12} style={{ left: 44, top: 244, opacity: 0.95 * ramp(frame, 44, 10, EASE.out) * (1 - ramp(frame, 171, 7, EASE.smooth)) }} />
       </div>
 
       <Grain opacity={0.1} />

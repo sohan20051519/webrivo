@@ -1,8 +1,8 @@
 [
   { "id": "s1a", "text": "Every great shop on this street has a story.", "voice": "af_heart" },
-  { "id": "s1b", "text": "The bakery at five. The tailor who never misses a stitch.", "voice": "af_heart" },
+  { "id": "s1b", "text": "The bakery on the corner. The tailor three doors down.", "voice": "af_heart" },
   { "id": "s2a", "text": "Right now, someone nearby is looking for exactly what you sell.", "voice": "af_heart" },
-  { "id": "s2b", "text": "They open their phone, and they search.", "voice": "af_heart" },
+  { "id": "s2b", "text": "They open their phone, and you're not there.", "voice": "af_heart" },
   { "id": "s4a", "text": "A slow page. A pin three streets off. A form nobody answers.", "voice": "af_heart" },
   { "id": "s4b", "text": "So they scroll on, and buy from someone else.", "voice": "af_heart" },
   { "id": "s5a", "text": "So we keep it simple. Brief, build, ship.", "voice": "af_heart" },
