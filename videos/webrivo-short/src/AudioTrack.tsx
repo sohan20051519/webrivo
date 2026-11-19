@@ -150,7 +150,7 @@ const bgmGain = (f: number) => {
   return speaking ? 0.14 : 0.32;
 };
 
-export const AudioTrack: React.FC<{ bgm?: boolean }> = ({ bgm = true }) => (
+export const AudioTrack: React.FC<{ bgm?: boolean; voDir?: string }> = ({ bgm = true, voDir = 'audio/vo' }) => (
   <>
     {CUES.map((c, i) => {
       const action = abs(c.shot, c.at);
@@ -163,7 +163,7 @@ export const AudioTrack: React.FC<{ bgm?: boolean }> = ({ bgm = true }) => (
     })}
     {VO.map((v) => (
       <Sequence key={`vo-${v.id}`} from={v.start} name={`vo:${v.id}`}>
-        <Audio src={staticFile(`audio/vo/${v.id}.wav`)} volume={v.vol} />
+        <Audio src={staticFile(`${voDir}/${v.id}.wav`)} volume={v.vol} />
       </Sequence>
     ))}
     {bgm && (

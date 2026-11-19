@@ -10,9 +10,9 @@ import { SHOTS } from '../timeline';
 
 export { SHOTS, TOTAL_FRAMES, VO_LEAD } from '../timeline';
 
-export const WebRivoShort: React.FC<{ bgm?: boolean }> = ({ bgm = true }) => (
+export const WebRivoShort: React.FC<{ bgm?: boolean; voDir?: string }> = ({ bgm = true, voDir = 'audio/vo' }) => (
   <AbsoluteFill style={{ backgroundColor: '#F4F5EF', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
-    <AudioTrack bgm={bgm} />
+    <AudioTrack bgm={bgm} voDir={voDir} />
     {SHOTS.map((s) => (
       <Sequence key={s.id} from={s.from} durationInFrames={s.dur} name={s.id}>
         <s.comp />
