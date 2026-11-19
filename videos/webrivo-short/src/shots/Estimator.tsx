@@ -7,12 +7,12 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { C, FONT, EASE, Grain, Tape, Fonts, ramp, bell } from '../theme';
 
-export const DURATION = 196;
+export const DURATION = 104;
 
-// toggle flips on "pay yearly"; the monthly price is already on screen while
-// "the exact price up front" is spoken
-const FLIP = 116;
-export const BEATS = { price: 22, flip: FLIP, save: FLIP + 20, receipt: 162, out: 180 };
+// toggle flips on "pay yearly", the receipt lands on "ten percent" — the
+// whole move from bill to year fits inside the one spoken line
+const FLIP = 34;
+export const BEATS = { price: 4, flip: FLIP, save: 70, receipt: 64, out: 90 };
 
 const DIGITS = '0123456789';
 
@@ -33,25 +33,25 @@ const mixPose = (a: Pose, b: Pose, t: number, hop: number): Pose => ({
 
 // which station the camera is on, as a float (for focus falloff)
 const stationAt = (f: number) => {
-  if (f <= 44) return 0;
-  if (f < 66) return ramp(f, 44, 22, EASE.smooth);
-  if (f <= 130) return 1;
-  if (f < 154) return 1 + ramp(f, 130, 24, EASE.smooth);
+  if (f <= 14) return 0;
+  if (f < 30) return ramp(f, 14, 16, EASE.smooth);
+  if (f <= 48) return 1;
+  if (f < 64) return 1 + ramp(f, 48, 16, EASE.smooth);
   return 2;
 };
 
 const poseAt = (f: number): Pose => {
-  if (f <= 44) return { ...ST[0], s: ST[0].s * (1 - 0.015 * ramp(f, 0, 44, EASE.smooth)) };
-  if (f < 66) {
-    const u = ramp(f, 44, 22, EASE.smooth);
+  if (f <= 14) return { ...ST[0], s: ST[0].s * (1 - 0.015 * ramp(f, 0, 14, EASE.smooth)) };
+  if (f < 30) {
+    const u = ramp(f, 14, 16, EASE.smooth);
     return mixPose(ST[0], ST[1], u, 1 + 0.22 * Math.sin(u * Math.PI));
   }
-  if (f <= 130) return { ...ST[1], s: ST[1].s * (1 - 0.02 * ramp(f, 66, 64, EASE.smooth)) };
-  if (f < 154) {
-    const u = ramp(f, 130, 24, EASE.smooth);
+  if (f <= 48) return { ...ST[1], s: ST[1].s * (1 - 0.02 * ramp(f, 30, 18, EASE.smooth)) };
+  if (f < 64) {
+    const u = ramp(f, 48, 16, EASE.smooth);
     return mixPose(ST[1], ST[2], u, 1 + 0.22 * Math.sin(u * Math.PI));
   }
-  return { ...ST[2], s: ST[2].s * (1 - 0.02 * ramp(f, 154, 24, EASE.smooth)) };
+  return { ...ST[2], s: ST[2].s * (1 - 0.02 * ramp(f, 64, 20, EASE.smooth)) };
 };
 
 const poseTransform = (p: Pose) =>
@@ -179,7 +179,7 @@ export const Estimator: React.FC = () => {
       >
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
           <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 23, letterSpacing: '0.24em', color: 'rgba(24,53,43,.55)' }}>
-            05 — THE ESTIMATOR
+            09 — THE ESTIMATOR
           </div>
           <div style={{ fontFamily: FONT.hand, fontSize: 40, color: C.muted }}>one price, all in</div>
         </div>

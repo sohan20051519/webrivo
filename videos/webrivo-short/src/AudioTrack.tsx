@@ -11,8 +11,10 @@ import { Audio, Sequence, interpolate, staticFile } from 'remotion';
 import { SHOTS, TOTAL_FRAMES } from './timeline';
 import { BEATS as B1 } from './shots/BrandOpen';
 import { BEATS as B2 } from './shots/SearchShot';
-import { BEATS as B4 } from './shots/CollageDeal';
-import { BEATS as B5 } from './shots/BriefBuildShip';
+import { BEATS as B3 } from './shots/CollageDeal';
+import { BEATS as B4 } from './shots/BriefBuildShip';
+import { BEATS as B5 } from './shots/SiteTour';
+import { BEATS as B6 } from './shots/Dashboard';
 import { BEATS as B7 } from './shots/PlanCards';
 import { BEATS as B8 } from './shots/Inclusions';
 import { BEATS as B9 } from './shots/Estimator';
@@ -55,33 +57,54 @@ export const CUES: Cue[] = [
 
   // S2 the search — chrome in, the field types, submit, the map and rows land,
   // then the empty slot and the pen circle it
-  { shot: 'Shot02Hero', at: B2.chrome, file: 'fs-872341.mp3', vol: 0.14 },
-  ...[18, 22, 26, 30, 34, 38, 42, 46].map((at) => ({ shot: 'Shot02Hero', at, file: 'fs-872341.mp3', vol: 0.1 })),
-  { shot: 'Shot02Hero', at: B2.submit, file: 'fs-278205.mp3', vol: 0.24 },
-  { shot: 'Shot02Hero', at: B2.map, file: 'fs-879272.mp3', vol: 0.24 },
-  ...B2.rows.map((at, k) => ({ shot: 'Shot02Hero', at, file: 'fs-879272.mp3', vol: 0.18 + 0.05 * k })),
-  { shot: 'Shot02Hero', at: B2.slot, file: 'fs-131359.mp3', vol: 0.44 },
-  { shot: 'Shot02Hero', at: B2.trace, file: 'fs-630019.mp3', vol: 0.34 },
-  { shot: 'Shot02Hero', at: B2.close, file: 'fs-878247.mp3', vol: 0.34 },
-  { shot: 'Shot02Hero', at: B2.note, file: 'fs-872341.mp3', vol: 0.26 },
+  { shot: 'Shot02Search', at: B2.chrome, file: 'fs-872341.mp3', vol: 0.14 },
+  ...[18, 22, 26, 30, 34, 38, 42, 46].map((at) => ({ shot: 'Shot02Search', at, file: 'fs-872341.mp3', vol: 0.1 })),
+  { shot: 'Shot02Search', at: B2.submit, file: 'fs-278205.mp3', vol: 0.24 },
+  { shot: 'Shot02Search', at: B2.map, file: 'fs-879272.mp3', vol: 0.24 },
+  ...B2.rows.map((at, k) => ({ shot: 'Shot02Search', at, file: 'fs-879272.mp3', vol: 0.18 + 0.05 * k })),
+  { shot: 'Shot02Search', at: B2.slot, file: 'fs-131359.mp3', vol: 0.44 },
+  { shot: 'Shot02Search', at: B2.trace, file: 'fs-630019.mp3', vol: 0.34 },
+  { shot: 'Shot02Search', at: B2.close, file: 'fs-878247.mp3', vol: 0.34 },
+  { shot: 'Shot02Search', at: B2.note, file: 'fs-872341.mp3', vol: 0.26 },
 
-  // S4 the deals — the wall lights up, the stack presses, then each card lands
-  { shot: 'Shot04Collage', at: 0, file: 'fs-879272.mp3', vol: 0.35 },
-  { shot: 'Shot04Collage', at: 8, file: 'fs-879272.mp3', vol: 0.3 },
-  { shot: 'Shot04Collage', at: 10, file: 'fs-872341.mp3', vol: 0.18 },
-  ...B4.land.map((at, k) => ({ shot: 'Shot04Collage', at, file: 'fs-131359.mp3', vol: k === 3 ? 0.85 : 0.72 })),
-  { shot: 'Shot04Collage', at: B4.land[3] + 6, file: 'fs-878247.mp3', vol: 0.34 },
-  { shot: 'Shot04Collage', at: B4.scroll, file: 'fs-630019.mp3', vol: 0.4 },
+  // S3 the turn — three cards dealt, a riser under them, the panel slams
+  { shot: 'Shot03Turn', at: 0, file: 'fs-879272.mp3', vol: 0.34 },
+  { shot: 'Shot03Turn', at: 6, file: 'fs-872341.mp3', vol: 0.18 },
+  ...B3.land.slice(0, 3).map((at) => ({ shot: 'Shot03Turn', at, file: 'fs-131359.mp3', vol: 0.72 })),
+  // peaks 2.28s in — right on the panel
+  { shot: 'Shot03Turn', at: B3.land[3] - 68, file: 'fs-859482.mp3', vol: 0.3 },
+  { shot: 'Shot03Turn', at: B3.land[3], file: 'fs-131359.mp3', vol: 0.85 },
+  { shot: 'Shot03Turn', at: B3.land[3] + 6, file: 'fs-878247.mp3', vol: 0.34 },
+  { shot: 'Shot03Turn', at: B3.scroll, file: 'fs-630019.mp3', vol: 0.4 },
 
-  // S5 process — word impacts and rolls, then a riser hands off to the plans
-  { shot: 'Shot05Process', at: 2, file: 'fs-879272.mp3', vol: 0.4 },
-  { shot: 'Shot05Process', at: 9, file: 'fs-879272.mp3', vol: 0.34 },
-  ...B5.roll.map((at) => ({ shot: 'Shot05Process', at, file: 'fs-278205.mp3', vol: 0.45 })),
-  { shot: 'Shot05Process', at: B5.roll[2] + 6, file: 'fs-879272.mp3', vol: 0.3 },
-  // riser starts here and peaks 2.28s later, as the carousel assembles
-  { shot: 'Shot05Process', at: B5.out - 52, file: 'fs-859482.mp3', vol: 0.4 },
+  // S4 process — the docket prints, each row lights on brief / build / ship
+  { shot: 'Shot04Process', at: 2, file: 'fs-879272.mp3', vol: 0.4 },
+  { shot: 'Shot04Process', at: 9, file: 'fs-879272.mp3', vol: 0.34 },
+  ...B4.roll.map((at) => ({ shot: 'Shot04Process', at, file: 'fs-278205.mp3', vol: 0.45 })),
+  { shot: 'Shot04Process', at: B4.roll[2] + 6, file: 'fs-879272.mp3', vol: 0.3 },
 
-  // S7 plans — cards pop in, the row whips on each spoken price, note lands
+  // S5 product — one phone: the page loads, Call taps, booking confirms,
+  // payment clears
+  { shot: 'Shot05Product', at: 0, file: 'fs-879272.mp3', vol: 0.35 },
+  { shot: 'Shot05Product', at: 8, file: 'fs-872341.mp3', vol: 0.16 },
+  { shot: 'Shot05Product', at: B5.call + 12, file: 'fs-872341.mp3', vol: 0.22 },
+  { shot: 'Shot05Product', at: B5.booking, file: 'fs-630019.mp3', vol: 0.45 },
+  { shot: 'Shot05Product', at: B5.day, file: 'fs-872341.mp3', vol: 0.18 },
+  { shot: 'Shot05Product', at: B5.slot, file: 'fs-872341.mp3', vol: 0.22 },
+  { shot: 'Shot05Product', at: B5.confirm, file: 'fs-879272.mp3', vol: 0.34 },
+  { shot: 'Shot05Product', at: B5.booked, file: 'fs-878247.mp3', vol: 0.34 },
+  { shot: 'Shot05Product', at: B5.pay, file: 'fs-630019.mp3', vol: 0.45 },
+  { shot: 'Shot05Product', at: B5.press, file: 'fs-872341.mp3', vol: 0.24 },
+  { shot: 'Shot05Product', at: B5.paid, file: 'fs-878247.mp3', vol: 0.4 },
+
+  // S6 dashboard — the window, the four stats, the week, the bookings
+  { shot: 'Shot06Dashboard', at: B6.win, file: 'fs-879272.mp3', vol: 0.34 },
+  ...B6.stats.map((at) => ({ shot: 'Shot06Dashboard', at, file: 'fs-872341.mp3', vol: 0.14 })),
+  { shot: 'Shot06Dashboard', at: B6.chart, file: 'fs-872341.mp3', vol: 0.16 },
+  ...B6.rows.map((at) => ({ shot: 'Shot06Dashboard', at, file: 'fs-872341.mp3', vol: 0.14 })),
+  { shot: 'Shot06Dashboard', at: B6.chips + 2, file: 'fs-878247.mp3', vol: 0.2 },
+
+  // S7 plans — cards pop in, the row whips on each spoken price, Premium note
   ...B7.pop.map((at) => ({ shot: 'Shot07Plans', at, file: 'fs-131359.mp3', vol: 0.7 })),
   ...B7.move.map((at) => ({ shot: 'Shot07Plans', at, file: 'fs-278205.mp3', vol: 0.34 })),
   ...B7.move.map((at) => ({ shot: 'Shot07Plans', at: at + 2, file: 'fs-878247.mp3', vol: 0.4 })),
@@ -89,18 +112,17 @@ export const CUES: Cue[] = [
 
   // S8 inclusions — each card lifts off the desk, the previous one drops back
   ...B8.lifts.map((at) => ({ shot: 'Shot08Inclusions', at, file: 'fs-872341.mp3', vol: 0.22 })),
-  ...[44, 74].map((at) => ({ shot: 'Shot08Inclusions', at, file: 'fs-131359.mp3', vol: 0.28 })),
+  ...[38, 62].map((at) => ({ shot: 'Shot08Inclusions', at, file: 'fs-131359.mp3', vol: 0.28 })),
   { shot: 'Shot08Inclusions', at: B8.note, file: 'fs-878247.mp3', vol: 0.25 },
 
-  // S9 estimator — the bill, the camera move, the flip, SAVE 10%, the receipt
+  // S9 estimator — the bill, the toggle, SAVE 10%, the yearly receipt
   { shot: 'Shot09Estimator', at: 0, file: 'fs-879272.mp3', vol: 0.32 },
   { shot: 'Shot09Estimator', at: B9.price + 4, file: 'fs-872341.mp3', vol: 0.2 },
-  { shot: 'Shot09Estimator', at: 66, file: 'fs-872341.mp3', vol: 0.3 },
   { shot: 'Shot09Estimator', at: B9.flip, file: 'fs-278205.mp3', vol: 0.6 },
-  { shot: 'Shot09Estimator', at: B9.save, file: 'fs-131359.mp3', vol: 0.55 },
   { shot: 'Shot09Estimator', at: B9.flip + 4, file: 'fs-872341.mp3', vol: 0.2 },
   { shot: 'Shot09Estimator', at: B9.receipt, file: 'fs-879272.mp3', vol: 0.4 },
-  { shot: 'Shot09Estimator', at: B9.receipt + 4, file: 'fs-878247.mp3', vol: 0.22 },
+  { shot: 'Shot09Estimator', at: B9.save, file: 'fs-131359.mp3', vol: 0.55 },
+  { shot: 'Shot09Estimator', at: B9.save + 4, file: 'fs-878247.mp3', vol: 0.22 },
 
   // S10 outro — three plan prints, the badge, the wordmark, contact, hold
   { shot: 'Shot10Outro', at: B10.badge, file: 'fs-879272.mp3', vol: 0.4 },

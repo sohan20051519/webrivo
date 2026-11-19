@@ -9,6 +9,8 @@ import { BrandOpen } from './shots/BrandOpen';
 import { SearchShot } from './shots/SearchShot';
 import { CollageDeal } from './shots/CollageDeal';
 import { BriefBuildShip } from './shots/BriefBuildShip';
+import { SiteTour } from './shots/SiteTour';
+import { Dashboard } from './shots/Dashboard';
 import { PlanCards } from './shots/PlanCards';
 import { Inclusions } from './shots/Inclusions';
 import { Estimator } from './shots/Estimator';
@@ -18,7 +20,7 @@ import { Outro } from './shots/Outro';
 // silence lands the first syllable ~11f after the cut — see AUDIO-TIMELINE.md).
 export const VO_LEAD = 2;
 
-// 1506f = 50.2s. Shots are sized to the lines they carry: `vo` lists the wav
+// 1918f = 63.9s. Shots are sized to the lines they carry: `vo` lists the wav
 // ids and their shot-local start frames (mapped in AudioTrack from the same
 // numbers).
 export const SHOTS: {
@@ -30,23 +32,27 @@ export const SHOTS: {
 }[] = [
   { id: 'Shot01BrandOpen', from: 0, dur: 210, comp: BrandOpen,
     vo: [{ id: 's1a', at: 2 }, { id: 's1b', at: 88 }] },
-  { id: 'Shot02Hero', from: 210, dur: 210, comp: SearchShot,
+  { id: 'Shot02Search', from: 210, dur: 210, comp: SearchShot,
     vo: [{ id: 's2a', at: 2 }, { id: 's2b', at: 124 }] },
-  { id: 'Shot04Collage', from: 420, dur: 238, comp: CollageDeal,
-    vo: [{ id: 's4a', at: 2 }, { id: 's4b', at: 140 }] },
-  { id: 'Shot05Process', from: 658, dur: 104, comp: BriefBuildShip,
+  { id: 'Shot03Turn', from: 420, dur: 140, comp: CollageDeal,
+    vo: [{ id: 's4a', at: 2 }, { id: 's4b', at: 88 }] },
+  { id: 'Shot04Process', from: 560, dur: 104, comp: BriefBuildShip,
     vo: [{ id: 's5a', at: 2 }] },
-  { id: 'Shot07Plans', from: 762, dur: 200, comp: PlanCards,
-    vo: [{ id: 's7a', at: 2 }, { id: 's7b', at: 140 }] },
-  { id: 'Shot08Inclusions', from: 962, dur: 112, comp: Inclusions,
-    vo: [{ id: 's8a', at: 2 }] },
-  { id: 'Shot09Estimator', from: 1074, dur: 196, comp: Estimator,
-    vo: [{ id: 's9a', at: 2 }, { id: 's9b', at: 104 }] },
-  { id: 'Shot10Outro', from: 1270, dur: 236, comp: Outro,
-    vo: [{ id: 's10a', at: 2 }, { id: 's10b', at: 49 }, { id: 's10c', at: 150 }] },
+  { id: 'Shot05Product', from: 664, dur: 420, comp: SiteTour,
+    vo: [{ id: 's6a', at: 2 }, { id: 's6b', at: 72 }, { id: 's7a', at: 178 }, { id: 's8a', at: 290 }] },
+  { id: 'Shot06Dashboard', from: 1084, dur: 122, comp: Dashboard,
+    vo: [{ id: 's9a', at: 2 }] },
+  { id: 'Shot07Plans', from: 1206, dur: 250, comp: PlanCards,
+    vo: [{ id: 's10a', at: 2 }, { id: 's10b', at: 136 }] },
+  { id: 'Shot08Inclusions', from: 1456, dur: 122, comp: Inclusions,
+    vo: [{ id: 's11a', at: 2 }] },
+  { id: 'Shot09Estimator', from: 1578, dur: 104, comp: Estimator,
+    vo: [{ id: 's11b', at: 2 }] },
+  { id: 'Shot10Outro', from: 1682, dur: 236, comp: Outro,
+    vo: [{ id: 's12a', at: 2 }, { id: 's12b', at: 44 }, { id: 's12c', at: 142 }] },
 ];
 
-export const TOTAL_FRAMES = SHOTS[SHOTS.length - 1].from + SHOTS[SHOTS.length - 1].dur; // 1506
+export const TOTAL_FRAMES = SHOTS[SHOTS.length - 1].from + SHOTS[SHOTS.length - 1].dur; // 1918
 
 export const abs = (shotId: string, local: number) => {
   const s = SHOTS.find((x) => x.id === shotId);

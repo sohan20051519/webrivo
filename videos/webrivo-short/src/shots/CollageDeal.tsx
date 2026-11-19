@@ -1,29 +1,28 @@
-// Shot 04 — deck-deal-flyin, full-frame edition, 238f.
-// Three things lose a local customer, dealt as physical cards onto a studio
-// wall. Each card is nearly the full width of the frame, so it reads on a
-// phone without squinting: number, headline, hand note, and a picture of the
-// failure. Then "so they scroll on" — the cards slide away and one dark panel
-// slams over the whole board: they buy from someone else.
+// Shot 03 — deck-deal-flyin, full-frame edition, 140f.
+// What a shop without a page costs: three cards dealt onto a studio wall —
+// invisible, unproven, unreachable. Each is nearly the full width of the
+// frame, so it reads on a phone. They slide away as one dark panel slams over
+// the board: the sale goes to someone else. Every time.
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame, interpolate } from 'remotion';
 import { C, FONT, EASE, Grain, Tape, Daisy, Fonts, ramp, bell } from '../theme';
 
-export const DURATION = 238;
+export const DURATION = 140;
 
-// cards land on the words
-export const BEATS = { land: [16, 52, 94, 190], scroll: 152, out: 226 };
+// three cards land on the first line, the panel on "every time"
+export const BEATS = { land: [12, 30, 48, 96], scroll: 78, out: 126 };
 
 const CARD = { w: 968, h: 298, x: 56 };
 const SLOT_Y = [296, 622, 948];
 const TURN = { x: 56, y: 196, w: 968, h: 1360 };
 const PILE = { x: 800, y: 1268 };
 
-type Card = { num: string; title: string; kind: 'load' | 'pin' | 'reply'; note: string };
+type Card = { num: string; title: string; kind: 'find' | 'trust' | 'book'; note: string };
 
 const CARDS: Card[] = [
-  { num: '01', title: 'SLOW PAGE', kind: 'load', note: 'still loading…' },
-  { num: '02', title: 'WRONG PIN', kind: 'pin', note: 'three streets off' },
-  { num: '03', title: 'NO REPLY', kind: 'reply', note: 'three days ago' },
+  { num: '01', title: 'OFF MAP', kind: 'find', note: 'not on the map' },
+  { num: '02', title: 'NO PROOF', kind: 'trust', note: 'no photos yet' },
+  { num: '03', title: 'NO SLOTS', kind: 'book', note: 'nothing to tap' },
 ];
 
 // who they buy from instead — the panel's proof
@@ -33,66 +32,53 @@ const ELSE = [
 ];
 
 // ── the picture inside each card ──────────────────────────────────────────
-const Visual: React.FC<{ kind: Card['kind']; frame: number }> = ({ kind, frame }) => {
-  if (kind === 'load') {
-    const p = 17 + 7 * Math.sin(frame * 0.06);
-    return (
-      <div style={{ width: 372 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: FONT.sans, fontWeight: 600, fontSize: 21, color: C.muted, marginBottom: 9 }}>
-          <span>0%</span><span style={{ color: C.forest }}>3.4s</span>
-        </div>
-        <div style={{ height: 20, borderRadius: 10, background: C.sage, overflow: 'hidden' }}>
-          <div style={{ width: `${p}%`, height: '100%', borderRadius: 10, background: C.forest }} />
-        </div>
-        <div style={{ display: 'flex', gap: 9, marginTop: 14 }}>
-          {[0, 1, 2].map((i) => (
-            <div key={i} style={{ flex: 1, height: 56, borderRadius: 6, background: C.sage, opacity: 0.45 + 0.25 * Math.sin(frame * 0.1 + i) }} />
-          ))}
-        </div>
-        <div style={{ marginTop: 10, height: 12, width: '62%', borderRadius: 6, background: C.sage, opacity: 0.55 }} />
-      </div>
-    );
-  }
-  if (kind === 'pin') {
+const Visual: React.FC<{ kind: Card['kind']; frame: number }> = ({ kind }) => {
+  if (kind === 'find') {
     return (
       <div style={{ width: 372, height: 210, borderRadius: 10, background: C.sage, position: 'relative', overflow: 'hidden', boxShadow: 'inset 0 0 0 1px rgba(24,53,43,.12)' }}>
-        {[25, 55, 82].map((x) => (
+        {[30, 62].map((x) => (
           <div key={`v${x}`} style={{ position: 'absolute', left: `${x}%`, top: 0, bottom: 0, width: 2, background: 'rgba(24,53,43,.12)' }} />
         ))}
-        {[34, 68].map((y) => (
+        {[36, 70].map((y) => (
           <div key={`h${y}`} style={{ position: 'absolute', top: `${y}%`, left: 0, right: 0, height: 2, background: 'rgba(24,53,43,.12)' }} />
         ))}
-        {/* where the shop really is */}
-        <div style={{ position: 'absolute', left: '79%', top: '38%', width: 62, height: 62, marginLeft: -31, marginTop: -31, borderRadius: '50%', border: `2.5px dashed ${C.forest}`, opacity: 0.7 }} />
-        <div style={{ position: 'absolute', left: '79%', top: '38%', transform: 'translate(-50%,-58%)', fontFamily: FONT.hand, fontSize: 24, color: C.forest, whiteSpace: 'nowrap' }}>your shop</div>
-        {/* the pin customers get sent to */}
-        <div style={{ position: 'absolute', left: '21%', top: '62%', transform: 'translate(-50%,-100%)' }}>
-          <svg width={44} height={58} viewBox="0 0 72 96">
-            <path d="M36 0 C16 0 0 16 0 36 C0 62 36 96 36 96 C36 96 72 62 72 36 C72 16 56 0 36 0 Z" fill={C.forest} />
-            <circle cx={36} cy={36} r={12} fill={C.off} />
-          </svg>
-        </div>
-        <div style={{ position: 'absolute', left: 10, top: 8, fontFamily: FONT.hand, fontSize: 25, color: C.forest }}>they end up here</div>
+        {/* the map is there — the shop isn't on it */}
+        <div style={{ position: 'absolute', left: '50%', top: '46%', width: 78, height: 78, marginLeft: -39, marginTop: -39, borderRadius: '50%', border: `3px dashed ${C.forest}`, opacity: 0.5 }} />
+        <div style={{ position: 'absolute', left: '50%', top: '46%', transform: 'translate(-50%,-50%)', fontFamily: FONT.hand, fontSize: 27, color: C.forest, opacity: 0.8, whiteSpace: 'nowrap' }}>no pin</div>
+        <div style={{ position: 'absolute', left: 12, bottom: 10, fontFamily: FONT.sans, fontWeight: 800, fontSize: 15, letterSpacing: '0.14em', color: C.muted }}>0 RESULTS NEARBY</div>
       </div>
     );
   }
-  if (kind === 'reply') {
+  if (kind === 'trust') {
     return (
       <div style={{ width: 372 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, background: C.sage, borderRadius: 10, padding: '15px 16px', marginBottom: 11 }}>
-          <div style={{ width: 12, height: 12, borderRadius: 6, background: C.forest }} />
-          <span style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 23, color: C.forest }}>New enquiry</span>
-          <div style={{ flex: 1 }} />
-          <span style={{ fontFamily: FONT.hand, fontSize: 26, color: C.muted }}>3 days</span>
+        <div style={{ display: 'flex', gap: 9 }}>
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} style={{ flex: 1, height: 78, borderRadius: 7, background: C.sage, boxShadow: 'inset 0 0 0 1.5px rgba(24,53,43,.1)', position: 'relative' }}>
+              <div style={{ position: 'absolute', left: '50%', top: '50%', width: 24, height: 2, marginLeft: -12, marginTop: -1, background: 'rgba(24,53,43,.18)', transform: 'rotate(-45deg)' }} />
+            </div>
+          ))}
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, background: C.sage, borderRadius: 10, padding: '15px 16px', opacity: 0.5 }}>
-          <div style={{ width: 12, height: 12, borderRadius: 6, background: C.forest }} />
-          <span style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 23, color: C.forest }}>New enquiry</span>
-          <div style={{ flex: 1 }} />
-          <span style={{ fontFamily: FONT.hand, fontSize: 26, color: C.muted }}>6 days</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 14 }}>
+          {[0, 1, 2, 3, 4].map((i) => (
+            <svg key={i} width={26} height={26} viewBox="0 0 24 24"><path d="M12 2.6l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.5l-5.9 3.1 1.2-6.5L2.5 9.5l6.6-.9z" fill="none" stroke={C.muted} strokeWidth="1.8" /></svg>
+          ))}
+          <span style={{ fontFamily: FONT.hand, fontSize: 28, color: C.muted, marginLeft: 8 }}>no reviews yet</span>
+        </div>
+      </div>
+    );
+  }
+  if (kind === 'book') {
+    return (
+      <div style={{ width: 372 }}>
+        <div style={{ fontFamily: FONT.sans, fontWeight: 800, fontSize: 16, letterSpacing: '0.16em', color: C.muted, marginBottom: 9 }}>PICK A TIME</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} style={{ height: 44, borderRadius: 7, border: '1.5px dashed rgba(24,53,43,.2)' }} />
+          ))}
         </div>
         <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ fontFamily: FONT.hand, fontSize: 30, color: C.muted }}>unanswered</span>
+          <span style={{ fontFamily: FONT.hand, fontSize: 30, color: C.muted }}>nothing to tap</span>
           <div style={{ flex: 1, height: 2, background: 'rgba(24,53,43,.14)' }} />
         </div>
       </div>
@@ -215,7 +201,7 @@ const TurnPanel: React.FC<{ frame: number }> = ({ frame }) => {
 
         <div style={{ position: 'relative', display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
           <span style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 21, letterSpacing: '0.22em', color: 'rgba(221,227,213,.62)' }}>
-            04 — THE TURN
+            03 — THE TURN
           </span>
           <span style={{ fontFamily: FONT.hand, fontSize: 40, color: 'rgba(221,227,213,.8)' }}>every time</span>
         </div>
@@ -282,7 +268,7 @@ export const CollageDeal: React.FC = () => {
   const frame = useCurrentFrame();
   const headT = ramp(frame, 0, 14, EASE.out);
   const outT = ramp(frame, BEATS.out, 14, EASE.power4In);
-  const push = 1 + 0.024 * ramp(frame, 18, 230, EASE.smooth);
+  const push = 1 + 0.024 * ramp(frame, 12, 132, EASE.smooth);
 
   // the stack the cards come off — it thins out as they are dealt
   const dealt = BEATS.land.filter((l) => frame >= l - 12).length;
@@ -305,7 +291,7 @@ export const CollageDeal: React.FC = () => {
         <div style={{ position: 'absolute', left: 56, right: 56, top: 128, opacity: headT, transform: `translateY(${(1 - headT) * 20}px)` }}>
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
             <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 23, letterSpacing: '0.24em', color: 'rgba(24,53,43,.6)' }}>
-              02 — WHY THEY LEAVE
+              03 — WHAT'S MISSING
             </div>
             <div style={{ fontFamily: FONT.display, fontSize: 34, letterSpacing: '0.06em', color: C.forest }}>
               {String(Math.min(3, dealt)).padStart(2, '0')} <span style={{ color: 'rgba(24,53,43,.35)' }}>/ 03</span>
@@ -315,7 +301,7 @@ export const CollageDeal: React.FC = () => {
         </div>
 
         {/* the deck, top-right of the turn card area, behind everything dealt */}
-        <div style={{ position: 'absolute', left: PILE.x, top: PILE.y, width: 260, height: 172, opacity: ramp(frame, 0, 12, EASE.out) * (1 - ramp(frame, 176, 10, EASE.smooth)) }}>
+        <div style={{ position: 'absolute', left: PILE.x, top: PILE.y, width: 260, height: 172, opacity: ramp(frame, 0, 12, EASE.out) * (1 - ramp(frame, 70, 8, EASE.smooth)) }}>
           {Array.from({ length: Math.max(0, pileH) }).map((_, i) => (
             <div
               key={i}
@@ -335,7 +321,7 @@ export const CollageDeal: React.FC = () => {
         ))}
         <TurnPanel frame={frame} />
 
-        {/* a big printed 02 under the board, so the deal never reads as empty */}
+        {/* a big printed 03 under the board, so the deal never reads as empty */}
         <div
           style={{
             position: 'absolute', right: 44, bottom: 96,
@@ -344,13 +330,13 @@ export const CollageDeal: React.FC = () => {
             opacity: ramp(frame, 0, 16, EASE.out),
           }}
         >
-          02
+          03
         </div>
 
         {/* wall dressing — it belongs to the wall, so it clears out before the
             turn panel lands over it */}
-        <Tape w={250} rot={-8} style={{ left: 640, top: 236, opacity: 0.92 * ramp(frame, 30, 10, EASE.out) * (1 - ramp(frame, 171, 7, EASE.smooth)) }} />
-        <Daisy size={64} rot={-12} style={{ left: 44, top: 244, opacity: 0.95 * ramp(frame, 44, 10, EASE.out) * (1 - ramp(frame, 171, 7, EASE.smooth)) }} />
+        <Tape w={250} rot={-8} style={{ left: 640, top: 236, opacity: 0.92 * ramp(frame, 30, 10, EASE.out) * (1 - ramp(frame, 68, 7, EASE.smooth)) }} />
+        <Daisy size={64} rot={-12} style={{ left: 44, top: 244, opacity: 0.95 * ramp(frame, 44, 10, EASE.out) * (1 - ramp(frame, 68, 7, EASE.smooth)) }} />
       </div>
 
       <Grain opacity={0.1} />

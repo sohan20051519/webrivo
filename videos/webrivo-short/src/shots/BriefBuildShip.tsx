@@ -176,7 +176,7 @@ export const BriefBuildShip: React.FC = () => {
               WORK ORDER
             </span>
             <span style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 20, letterSpacing: '0.2em', color: 'rgba(24,53,43,.4)' }}>
-              № 03
+              № 04
             </span>
           </div>
 

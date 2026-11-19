@@ -65,8 +65,8 @@ const FONT_URLS: { family: string; url: string; weight: string }[] = [
 ];
 
 if (typeof document !== 'undefined') {
-  // Long budget + hard race fallback: one slow tab must never stall a render.
-  const handle = delayRender('webfonts', { timeoutInMilliseconds: 60000 });
+  // Local woff2 files: load best-effort but never stall a render.
+  const handle = delayRender('webfonts', { timeoutInMilliseconds: 120000 });
   let cleared = false;
   const clear = () => {
     if (!cleared) {
@@ -81,7 +81,8 @@ if (typeof document !== 'undefined') {
       document.fonts.add(loaded);
     })
   ).then(clear, clear);
-  setTimeout(clear, 30000);
+  // fonts are local — clear quickly so renders never hang; fallbacks apply if late
+  setTimeout(clear, 1500);
 }
 
 export const Fonts: React.FC = () => null;

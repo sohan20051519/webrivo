@@ -1,7 +1,7 @@
 // WebRivoShort — master composition (1080×1920, 30fps)
-// 1216f ≈ 40.5s. Each cut is snapped near the BGM grid (122.4 BPM → 9 + k·14.7f)
+// 1918f ≈ 63.9s. Each cut is snapped near the BGM grid (122.4 BPM → 9 + k·14.7f)
 // and every shot is sized to its own voice-over line: the next picture starts
-// ~0.5–0.8s after the last spoken word, so the film never sits in silence.
+// ~0.4–1.0s after the last spoken word, so the film never sits in silence.
 // The shot table itself lives in src/timeline.tsx (shared with the audio mix).
 import React from 'react';
 import { AbsoluteFill, Sequence } from 'remotion';

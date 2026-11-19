@@ -7,16 +7,16 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { C, FONT, EASE, Grain, Tape, Daisy, Fonts, ramp, bell } from '../theme';
 
-export const DURATION = 112;
+export const DURATION = 122;
 
 const ROWS = [
-  { text: 'HOSTING', sub: 'fast, maintained, ours to worry about', num: '01', lift: 14, drop: 44 },
-  { text: 'MAINTENANCE', sub: 'updates while you run the shop', num: '02', lift: 44, drop: 74 },
-  { text: 'DOMAIN', sub: 'your .in, on us', num: '03', lift: 74, drop: 999 },
+  { text: 'HOSTING', sub: 'fast, maintained, ours to worry about', num: '01', lift: 14, drop: 38 },
+  { text: 'MAINTENANCE', sub: 'updates while you run the shop', num: '02', lift: 38, drop: 62 },
+  { text: 'DOMAIN', sub: 'your .in, on us', num: '03', lift: 62, drop: 999 },
 ];
 
 // pinned to "Hosting, maintenance, your domain — in every plan."
-export const BEATS = { lifts: [14, 44, 74], note: 92, out: 100 };
+export const BEATS = { lifts: [14, 38, 62], note: 88, out: 108 };
 
 const CARD_W = 930;
 const CARD_H = 300;
@@ -71,7 +71,7 @@ export const Inclusions: React.FC = () => {
           }}
         >
           <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 23, letterSpacing: '0.24em', color: C.sage }}>
-            04 — IN EVERY PLAN
+            08 — IN EVERY PLAN
           </div>
           <div style={{ fontFamily: FONT.hand, fontSize: 40, color: 'rgba(221,227,213,.65)' }}>all three</div>
         </div>

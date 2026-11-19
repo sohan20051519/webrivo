@@ -7,10 +7,10 @@ import { AbsoluteFill, useCurrentFrame, interpolate } from 'remotion';
 import { C, FONT, EASE, Grain, Tape, Daisy, Fonts, ramp, bell } from '../theme';
 import { PlanCard, PLANS, W, H } from '../ui/PlanCard';
 
-export const DURATION = 200;
+export const DURATION = 250;
 
-// pops, then a whip per spoken price; s7b "everything handled" at 140
-export const BEATS = { pop: [18, 24, 30], move: [50, 72, 92], note: 150, out: 188 };
+// pops, then a whip per spoken price; the Premium note lands on s10b at 136
+export const BEATS = { pop: [12, 18, 24], move: [42, 64, 86], note: 150, out: 232 };
 
 const SCALE = 1.02;
 const GAP = 470;
@@ -65,7 +65,7 @@ export const PlanCards: React.FC = () => {
         <div style={{ position: 'absolute', left: 56, right: 56, top: 116, opacity: headT, transform: `translateY(${(1 - headT) * 20}px)` }}>
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
             <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 23, letterSpacing: '0.24em', color: 'rgba(24,53,43,.6)' }}>
-              03 — THREE PLANS
+              07 — THREE PLANS
             </div>
             <div style={{ fontFamily: FONT.sans, fontWeight: 700, fontSize: 23, letterSpacing: '0.08em', color: 'rgba(24,53,43,.45)' }}>
               PER MONTH
@@ -146,7 +146,7 @@ export const PlanCards: React.FC = () => {
           })}
         </div>
 
-        {/* the note — everything handled */}
+        {/* the note — what Premium adds */}
         <div
           style={{
             position: 'absolute', left: 0, right: 0, top: 1560, textAlign: 'center',
@@ -154,9 +154,9 @@ export const PlanCards: React.FC = () => {
           }}
         >
           <span style={{ fontFamily: FONT.sans, fontWeight: 800, fontSize: 34, letterSpacing: '0.04em', color: C.forest }}>
-            HOSTING · MAINTENANCE · DOMAIN
+            BOOKINGS · PAYMENTS · DASHBOARDS
           </span>
-          <div style={{ fontFamily: FONT.hand, fontSize: 56, color: C.muted, marginTop: 2 }}>in every plan</div>
+          <div style={{ fontFamily: FONT.hand, fontSize: 56, color: C.muted, marginTop: 2 }}>all of it, on premium</div>
         </div>
 
         {/* progress dots */}

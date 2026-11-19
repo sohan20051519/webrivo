@@ -15,7 +15,7 @@ const PLANS = [
 ];
 
 // pinned to "Webrivo." / "For the businesses…" / "Let's get you found."
-export const BEATS = { badge: 4, word: 6, sign: 158, contact: 178 };
+export const BEATS = { badge: 4, word: 6, sign: 150, contact: 166 };
 
 const MiniPlan: React.FC<{ tier: string; price: string; best?: boolean }> = ({ tier, price, best }) => (
   <div
