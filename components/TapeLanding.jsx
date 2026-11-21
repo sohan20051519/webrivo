@@ -2,17 +2,91 @@
 import * as React from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Calculator from "./Calculator";
+import ServicesBento from "./ServicesBento";
 if (typeof window !== "undefined") gsap.registerPlugin(ScrollTrigger);
 const FONT_HREF = "https://fonts.googleapis.com/css2?family=Anton&family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Caveat:wght@500..700&display=swap";
-const CASHFREE_CHECKOUT = "https://merchant.cashfree.com/checkout";
-const DEFAULT_PRODUCTS = [
-  { name: "Basic", line: "Starter site, hosting and domain included.", price: "\u20b9599/mo", kind: "clear" },
-  { name: "Business", line: "5-page site, SEO and domain included.", price: "\u20b91,199/mo", kind: "print" },
-  { name: "Premium", line: "Full suite with booking, admin and maps.", price: "\u20b92,199/mo", kind: "masking" }
-];
 const KIND_LABEL = { clear: "SITE", print: "SEO", masking: "BRAND", washi: "CARE", duct: "SHIP" };
-const TierBadge = { business: "Best value", premium: "Signature plan" };
+
+const SERVICES = [
+  {
+    num: "01",
+    title: "Website Development",
+    desc: "Fast, findable sites that turn visitors into customers.",
+    items: [
+      "Landing pages & multi-page websites",
+      "Responsive, mobile-first design",
+      "Hosting, maintenance & domain",
+      "Local SEO setup",
+      "Google Business Profile integration",
+      "Booking & appointment systems",
+      "Payment gateway integration",
+      "Admin & analytics dashboards",
+    ],
+  },
+  {
+    num: "02",
+    title: "App Development",
+    desc: "Simple, useful apps that work everywhere.",
+    items: [
+      "Responsive apps / PWAs",
+      "Core screens & user flows",
+      "Hosting & maintenance",
+      "Updates & support",
+    ],
+  },
+  {
+    num: "03",
+    title: "Digital Catalogue Designing",
+    desc: "Show your range beautifully, on any screen.",
+    items: [
+      "Product catalogue design",
+      "Mobile-friendly layouts",
+      "Hosted & shareable catalogues",
+      "Content updates",
+    ],
+  },
+  {
+    num: "04",
+    title: "Digital Marketing",
+    desc: "Get seen, get talked about, get chosen.",
+    groups: [
+      {
+        name: "Social Media Management",
+        items: [
+          "Client-provided videos and images",
+          "Instagram account management",
+          "Uploading posts and reels",
+          "Caption writing",
+          "Hashtag research",
+          "Post scheduling",
+        ],
+      },
+      {
+        name: "Content Creation & Management",
+        items: [
+          "AI video generation",
+          "Video editing",
+          "Post and image creation",
+          "Content planning",
+          "Caption writing",
+          "Hashtag research",
+          "Instagram account management",
+          "Posting and scheduling",
+        ],
+      },
+      {
+        name: "Meta Ads Management",
+        items: [
+          "Instagram Ads",
+          "Facebook Ads",
+          "Ad campaign setup",
+          "Target audience selection",
+          "Ad performance monitoring",
+        ],
+      },
+    ],
+  },
+];
 const useIso = typeof window !== "undefined" ? React.useLayoutEffect : React.useEffect;
 const REDUCE = "(prefers-reduced-motion: reduce)";
 const FACETS = Array.from({ length: 32 }, (_, i) => i);
@@ -73,7 +147,6 @@ function TapeLanding({
   todo = ["claim the map pin", "write the service pages", "shoot the team photos", "wire up the booking form", "chase the last invoice"],
   marquee = ["GET FOUND", "GET CHOSEN"],
   maskHeadline = ["BRIEF", "BUILD", "SHIP"],
-  products = DEFAULT_PRODUCTS,
   preloader = true,
   fontHref = FONT_HREF,
   className
@@ -82,7 +155,36 @@ function TapeLanding({
   const ctxRef = React.useRef(null);
   const uid = React.useId().replace(/[^a-zA-Z0-9]/g, "");
   const [added, setAdded] = React.useState(-1);
-  const [joined, setJoined] = React.useState(false);
+  const [email, setEmail] = React.useState("");
+  const [submitting, setSubmitting] = React.useState(false);
+  const [submitStatus, setSubmitStatus] = React.useState(null);
+
+  const handleNewsletterSubmit = async (e) => {
+    e.preventDefault();
+    if (!email.trim() || submitting) return;
+    setSubmitting(true);
+    setSubmitStatus(null);
+    try {
+      const res = await fetch("https://formspree.io/f/xlgrlddg", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({ email: email.trim() })
+      });
+      if (res.ok) {
+        setSubmitStatus("success");
+        setEmail("");
+      } else {
+        setSubmitStatus("error");
+      }
+    } catch (err) {
+      setSubmitStatus("error");
+    } finally {
+      setSubmitting(false);
+    }
+  };
   const [menuOpen, setMenuOpen] = React.useState(false);
   React.useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
@@ -105,13 +207,6 @@ function TapeLanding({
     const el = rootRef.current?.querySelector('[data-sec="' + sec + '"]');
     const smooth = !window.matchMedia(REDUCE).matches;
     el?.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "start" });
-  };
-  const sendPlanRequest = (planName) => () => {
-    window.dispatchEvent(new CustomEvent("openBooking", { detail: planName.toLowerCase() }));
-  };
-  const customizePlan = (planName) => () => {
-    window.dispatchEvent(new CustomEvent("switchPlan", { detail: planName.toLowerCase() }));
-    go("estimate")();
   };
   React.useEffect(() => {
     let ticking = false;
@@ -424,7 +519,7 @@ function TapeLanding({
         maskTimeline(gsap.timeline({ paused: true, onUpdate: drawMask })).progress(1);
         drawMask();
         gsap.from(qa(".ht-hero-copy, .ht-cue"), { opacity: 0, duration: 0.9, ease: "power1.out" });
-        for (const el of qa("[data-drop], .ht-prod, .ht-word, .ht-daisy"))
+        for (const el of qa("[data-drop], .ht-word, .ht-daisy"))
           gsap.from(el, { opacity: 0, duration: 0.8, ease: "power1.out", scrollTrigger: { trigger: el, start: "top 92%" } });
         const ro = new ResizeObserver(still);
         ro.observe(root);
@@ -561,14 +656,6 @@ function TapeLanding({
             { scaleX: 1, ease: "none", scrollTrigger: { trigger: j, start: "top 96%", end: "top 50%", scrub: 0.5 } }
           );
         }
-        const cards = qa(".ht-prod");
-        const shopTl = gsap.timeline({ scrollTrigger: { trigger: q(".ht-shop-grid"), start: "top 82%", toggleActions: "play none none reverse" } });
-        shopTl.fromTo(
-          cards,
-          { y: 220, x: (i) => (1.5 - i) * 90, rotation: (i) => [-16, 11, -8, 14][i % 4], opacity: 0 },
-          { y: 0, x: 0, rotation: 0, opacity: 1, duration: 1.05, ease: "back.out(1.4)", stagger: 0.1 }
-        );
-        shopTl.from(qa(".ht-prod .ht-tp-in"), { scale: 1.8, opacity: 0, duration: 0.26, ease: "power4.in", stagger: 0.05 }, 0.7);
         const word = q(".ht-word");
         const footTl = gsap.timeline({ scrollTrigger: { trigger: word, start: "top 85%", toggleActions: "play none none reverse" } });
         footTl.from(qa(".ht-word-l"), { yPercent: 70, scaleY: 0.3, opacity: 0, duration: 0.8, ease: "back.out(2)", stagger: 0.07 }).from(qa(".ht-word .ht-tp-in"), { scale: 2, opacity: 0, duration: 0.25, ease: "power4.in", stagger: 0.06 }, 0.55);
@@ -589,61 +676,47 @@ function TapeLanding({
               Work
             </button><button type="button" onClick={() => { setMenuOpen(false); go("tricks")(); }} data-num="02" >
               Process
-            </button><button type="button" onClick={() => { setMenuOpen(false); go("shop")(); }} data-num="03" >
-              Pricing
-            </button><button type="button" onClick={() => { setMenuOpen(false); go("estimate")(); }} data-num="04" >
-              Estimate
+            </button><button type="button" onClick={() => { setMenuOpen(false); go("services")(); }} data-num="03" >
+              Services
+            </button><button type="button" onClick={() => { setMenuOpen(false); go("hello")(); }} data-num="04" >
+              Say hello
             </button></nav></div></header><div className="ht-run"><section className="ht-hero" data-sec="top"><svg className="ht-hill" viewBox="0 0 1600 300" preserveAspectRatio="none" aria-hidden="true"><path d="M0 150 Q800 -10 1600 150 L1600 300 L0 300Z" fill="rgba(221,227,213,.55)" /><path d="M0 176 Q800 16 1600 176 L1600 300 L0 300Z" fill={C.muted} /></svg><div className="ht-doodles" aria-hidden="true" /><div className="ht-hero-copy"><span className="ht-hero-mark" aria-hidden="true" /><h1 className="ht-h1" aria-label={headline.join(" ")}>{headline.map((line, li) => <span key={li} className="ht-h1-line" aria-hidden="true">{Array.from(line).map(
     (ch, i) => ch === " " ? <span key={i} className="ht-sp" /> : <span key={i} className="ht-l">{ch}</span>
   )}</span>)}</h1></div><p className="ht-cue"><span className="ht-cue-drag">Drag to look &middot; </span>Scroll, keep going <span aria-hidden="true">&darr;</span></p></section><section className="ht-collage" data-sec="stories" aria-label="Work"><div className="ht-board"><div className="ht-item ht-i-head" style={v({ "--r": "-3deg" })}><div className="ht-in" data-drop><p className="ht-label">02 &mdash; The studio wall</p><p className="ht-hint">psst, peel the tape off &rarr;</p><h2 className="ht-collage-h">
                   Made for
                   <br />
                   main street
-                </h2></div></div><div className="ht-item ht-i-card" style={v({ "--r": "2.5deg" })}><div className="ht-in" data-drop><article className="ht-card ht-paper"><p className="ht-card-k">Our story &middot; small studio</p><p className="ht-card-t">{story}</p><p className="ht-card-sign">&mdash; the webrivo crew</p></article><Tape kind="masking" x="88%" y="2%" w="30%" r={38} peel /><Tape kind="masking" x="86%" y="98%" w="26%" r={-30} peel /></div></div><div className="ht-item ht-i-note" style={v({ "--r": "-7deg" })}><div className="ht-in" data-drop><div className="ht-note"><p className="ht-note-h">to-do list</p><ul>{todo.map((t, i) => <li key={i} className={i === 2 ? "ht-done" : void 0}>{t}</li>)}</ul></div><Tape kind="clear" x="50%" y="1%" w="56%" r={-4} peel /></div></div><div className="ht-item ht-i-seal" style={v({ "--r": "12deg" })}><div className="ht-in" data-drop><div className="ht-seal"><span>Live in</span><b>3 days</b><span>per site*</span></div></div></div></div></section><div className="ht-tape" aria-hidden="true"><div className="ht-strip"><div className="ht-strip-print">{(brand + " GET FOUND \u2726 ").repeat(24)}</div></div><Roll3D kind="clear" brand={brand} /></div></div><div className="ht-banner" aria-hidden="true"><svg className="ht-bn-svg" preserveAspectRatio="none"><defs><clipPath id={uid + "bc"}><rect className="ht-bn-cliprect" x="-240" y="-400" width="0" height="2000" /></clipPath></defs><path className="ht-bn-fill" fill={C.forest} /><g className="ht-bn-band" clipPath={"url(#" + uid + "bc)"}><path className="ht-bn-line" data-w="1.06" fill="none" stroke="rgba(244,245,239,.18)" transform="translate(0 7)" /><path className="ht-bn-line" data-w="1" fill="none" stroke={C.sage} /><path className="ht-bn-line" data-w="0.9" fill="none" stroke="rgba(221,227,213,.55)" /><g className="ht-bn-sheen"><path className="ht-bn-line" data-w="0.2" fill="none" stroke="rgba(255,255,255,.22)" /></g></g></svg><div className="ht-bn-glyphs">{items.map(
+                </h2></div></div><div className="ht-item ht-i-card" style={v({ "--r": "2.5deg" })}><div className="ht-in" data-drop><article className="ht-card ht-paper"><p className="ht-card-k">Our story &middot; small studio</p><p className="ht-card-t">{story}</p><p className="ht-card-sign">&mdash; the webrivo crew</p></article><Tape kind="masking" x="88%" y="2%" w="30%" r={38} peel /><Tape kind="masking" x="86%" y="98%" w="26%" r={-30} peel /></div></div><div className="ht-item ht-i-note" style={v({ "--r": "-7deg" })}><div className="ht-in" data-drop><div className="ht-note"><p className="ht-note-h">to-do list</p><ul>{todo.map((t, i) => <li key={i} className={i === 2 ? "ht-done" : void 0}>{t}</li>)}</ul></div><Tape kind="clear" x="50%" y="1%" w="56%" r={-4} peel /></div></div><div className="ht-item ht-i-seal" style={v({ "--r": "12deg" })}><div className="ht-in" data-drop><div className="ht-seal"><span>Made for</span><b>local</b><span>businesses</span></div></div></div></div></section><div className="ht-tape" aria-hidden="true"><div className="ht-strip"><div className="ht-strip-print">{(brand + " GET FOUND \u2726 ").repeat(24)}</div></div><Roll3D kind="clear" brand={brand} /></div></div><div className="ht-banner" aria-hidden="true"><svg className="ht-bn-svg" preserveAspectRatio="none"><defs><clipPath id={uid + "bc"}><rect className="ht-bn-cliprect" x="-240" y="-400" width="0" height="2000" /></clipPath></defs><path className="ht-bn-fill" fill={C.forest} /><g className="ht-bn-band" clipPath={"url(#" + uid + "bc)"}><path className="ht-bn-line" data-w="1.06" fill="none" stroke="rgba(244,245,239,.18)" transform="translate(0 7)" /><path className="ht-bn-line" data-w="1" fill="none" stroke={C.sage} /><path className="ht-bn-line" data-w="0.9" fill="none" stroke="rgba(221,227,213,.55)" /><g className="ht-bn-sheen"><path className="ht-bn-line" data-w="0.2" fill="none" stroke="rgba(255,255,255,.22)" /></g></g></svg><div className="ht-bn-glyphs">{items.map(
     (ch, i) => ch === "@" ? <span key={i} className="ht-mq-i ht-mq-logo"><BrandBadge brand={brand} /></span> : <span key={i} className="ht-mq-i">{ch}</span>
   )}</div><div className="ht-bn-roll"><RollFace kind="print" brand={brand} /></div></div><p className="ht-sr">{marquee.join(". ")}</p><section className="ht-mask" data-sec="tricks" aria-label="How we build"><div className="ht-mask-stage"><svg className="ht-mask-svg" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><mask id={uid + "mm"} maskUnits="userSpaceOnUse" x="-400" y="-400" width="2400" height="1800"><rect x="-400" y="-400" width="2400" height="1800" fill="#fff" />{MK_STRIPS.map((s, i) => <rect key={i} x={-MK_L / 2} y={-MK_W / 2} width={MK_L} height={MK_W} fill="#000" transform={"translate(" + s.cx + " " + s.cy + ") rotate(" + s.a + ")"} />)}</mask><clipPath id={uid + "mc"}><rect className="ht-mk-cliprect" x="-200" y="-400" width="0" height="1800" /></clipPath><pattern id={uid + "pt"} width="420" height="26" patternUnits="userSpaceOnUse"><rect width="420" height="26" fill={C.sage} /><rect y="3" width="420" height="2" fill="rgba(24,53,43,.07)" /><rect y="11" width="300" height="1.5" fill="rgba(24,53,43,.13)" /><rect x="120" y="18" width="300" height="3" fill="rgba(255,255,255,.45)" /></pattern><pattern id={uid + "mt"} width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(-62)"><rect width="10" height="10" fill={C.sage} /><rect width="10" height="1.2" fill="rgba(24,53,43,.16)" /><rect y="5" width="10" height="0.8" fill={C.off} /></pattern><linearGradient id={uid + "me"} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={C.forest} stopOpacity="0.3" /><stop offset="0.07" stopColor={C.white} stopOpacity="0.22" /><stop offset="0.5" stopColor={C.white} stopOpacity="0" /><stop offset="0.93" stopColor={C.forest} stopOpacity="0.05" /><stop offset="1" stopColor={C.forest} stopOpacity="0.32" /></linearGradient><linearGradient id={uid + "mcu"} x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor={C.muted} /><stop offset="0.35" stopColor={C.off} /><stop offset="0.7" stopColor={C.sage} /><stop offset="1" stopColor={C.forest} /></linearGradient><linearGradient id={uid + "rl"} x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor={C.ink} /><stop offset="0.3" stopColor={C.muted} /><stop offset="0.55" stopColor={C.sage} /><stop offset="1" stopColor={C.forest} /></linearGradient></defs><g mask={"url(#" + uid + "mm)"}><g clipPath={"url(#" + uid + "mc)"}><rect x="-400" y="-400" width="2400" height="1800" fill={"url(#" + uid + "pt)"} /></g></g><g className="ht-mk-roller" opacity="0"><rect x="-150" y="-400" width="150" height="1800" fill={C.forest} opacity="0.35" /><rect x="-38" y="-400" width="76" height="1800" rx="38" fill={"url(#" + uid + "rl)"} /><rect x="-38" y="-400" width="76" height="1800" fill="none" stroke={C.ink} strokeWidth="2" strokeDasharray="3 9" opacity="0.5" /></g>{MK_STRIPS.map((s, i) => <g key={i} transform={"translate(" + s.cx + " " + s.cy + ") rotate(" + s.a + ")"}><g className="ht-mk-body" filter="drop-shadow(0 3px 2px rgba(24,53,43,.28))"><rect y={-MK_W / 2} height={MK_W} width="0" fill={"url(#" + uid + "mt)"} /><rect y={-MK_W / 2} height={MK_W} width="0" fill={"url(#" + uid + "me)"} /></g><g className="ht-mk-curl" opacity="0"><rect x="4" y={-MK_W / 2 - 4} width="34" height={MK_W + 8} rx="10" fill="rgba(24,53,43,.22)" /><rect x="-18" y={-MK_W / 2 - 8} width="34" height={MK_W + 16} rx="17" fill={"url(#" + uid + "mcu)"} /></g><g className="ht-mk-lead" opacity="0"><circle r="80" cy="6" fill="rgba(24,53,43,.28)" /><circle r="78" fill={C.off} /><circle r="78" fill="none" stroke={C.muted} strokeWidth="14" strokeDasharray="1 3" opacity="0.45" /><circle r="50" fill={C.muted} /><circle r="42" fill={C.forest} /><text y="5" textAnchor="middle" className="ht-mk-lead-t" fill={C.off} fontSize="17">{brand}</text><ellipse cx="-34" cy="-46" rx="20" ry="8" fill={C.white} opacity="0.3" transform="rotate(-36 -34 -46)" /></g></g>)}</svg><h2 className="ht-mask-h" aria-label={maskHeadline.join(" ")}>{maskHeadline.map((l, i) => <span key={i} className="ht-ml-wrap" aria-hidden="true"><span className="ht-ml">{l}</span></span>)}</h2><div className="ht-mask-roll" aria-hidden="true"><RollFace kind="masking" brand={brand} /></div><div className="ht-mask-stamp" aria-hidden="true">
-            Live in
+            Built
             <br />
-            3 days
-          </div><Daisy petals={8} color={C.sage} center={C.forest} className="ht-d1" /><Daisy petals={6} color={C.off} center={C.muted} className="ht-d2" /><Daisy petals={10} color={C.white} center={C.forest} className="ht-d3" /><Daisy petals={6} color={C.muted} center={C.white} className="ht-d4" /><Daisy petals={8} color={C.sage} center={C.muted} className="ht-d5" /></div></section><section className="ht-shop ht-grainy" data-sec="shop" aria-label="Shop"><div className="ht-join ht-join-masking" aria-hidden="true"><i className="ht-join-in" /></div><div className="ht-shop-head"><p className="ht-label">04 &mdash; The plans</p><h2 className="ht-shop-h">
-            Pick your
-            <br />
-            plan
-          </h2><p className="ht-shop-sub">Three ways in. Every plan includes hosting, maintenance, and a domain — you only pay a monthly subscription.</p></div><div className="ht-shop-grid">{products.map((p, i) => {
-  const tier = p.name.toLowerCase() === "business" ? "business" : p.name.toLowerCase() === "premium" ? "premium" : "";
-  const tierClass = tier ? ` ht-prod--${tier}` : "";
-  return (
-    <article key={p.name} className={"ht-prod" + tierClass}>
-      {tier && <span className="ht-prod-badge">{TierBadge[tier]}</span>}
-      <>
-        <Tape kind="washi" x="18%" y="7%" w="36%" r={-28} />
-        <Tape kind="washi" x="84%" y="7%" w="30%" r={22} />
-      </>
-      <div className="ht-prod-roll"><Roll3D kind={p.kind} brand={brand} /></div>
-      <h3 className="ht-prod-name">{p.name}</h3>
-      <p className="ht-prod-line">{p.line}</p>
-      <div className="ht-prod-price">{p.price}</div>
-      <div className="ht-prod-actions">
-        <button type="button" className="ht-btn ht-btn-sm" onClick={sendPlanRequest(p.name)}>
-          Send request
-        </button>
-        <button type="button" className="ht-btn ht-btn-sm ht-btn-customize" onClick={customizePlan(p.name)}>
-          Customize
-        </button>
-      </div>
-    </article>
-  );
-})}</div></section><section className="ht-estimator ht-grainy" data-sec="estimate" aria-label="Build your plan"><div className="ht-join ht-join-duct" aria-hidden="true"><i className="ht-join-in" /></div><Calculator /></section><footer className="ht-foot ht-grainy"><div className="ht-join ht-join-duct" aria-hidden="true"><i className="ht-join-in" /></div><div className="ht-foot-top"><div><p className="ht-label">05 &mdash; Say hello</p><p className="ht-foot-h">New work, local SEO notes, zero spam.</p></div><form
+            to last
+          </div><Daisy petals={8} color={C.sage} center={C.forest} className="ht-d1" /><Daisy petals={6} color={C.off} center={C.muted} className="ht-d2" /><Daisy petals={10} color={C.white} center={C.forest} className="ht-d3" /><Daisy petals={6} color={C.muted} center={C.white} className="ht-d4" /><Daisy petals={8} color={C.sage} center={C.muted} className="ht-d5" /></div></section><ServicesBento onSelectContact={go("hello")} /><footer className="ht-foot ht-grainy" data-sec="hello"><div className="ht-join ht-join-duct" aria-hidden="true"><i className="ht-join-in" /></div><div className="ht-foot-top"><div><p className="ht-label">04 &mdash; Say hello</p><p className="ht-foot-h">New work, local SEO notes, zero spam.</p></div><form
     className="ht-form"
-    onSubmit={(e) => {
-      e.preventDefault();
-      setJoined(true);
-    }}
+    onSubmit={handleNewsletterSubmit}
   ><label className="ht-sr" htmlFor={uid + "em"}>
               Email address
-            </label><input id={uid + "em"} type="email" required placeholder="you@example.com" className="ht-input" /><button type="submit" className="ht-btn">
-              Send it over
-            </button><p className="ht-form-msg" aria-live="polite">{joined ? "You're on the list." : ""}</p></form></div><div className="ht-word" aria-label={brand}>{Array.from(brand).map((ch, i) => <span key={i} className="ht-word-l" aria-hidden="true">{ch}<Tape kind="duct" x="50%" y="46%" w="72%" r={i % 2 ? 34 : -36} /></span>)}</div><div className="ht-foot-bar"><div className="ht-foot-addr"><div><p className="ht-label">Slv complex</p><p>Muddinapalya, Bangalore</p></div></div><div className="ht-foot-meta"><p>&copy; 2026 WebRivo &mdash; Websites for local businesses.</p><a href="mailto:support@webrivo.in">support@webrivo.in</a> · <a href="https://webrivo.in">webrivo.in</a></div></div></footer></div>
+            </label><input
+              id={uid + "em"}
+              name="email"
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              className="ht-input"
+              disabled={submitting || submitStatus === "success"}
+            /><button
+              type="submit"
+              className="ht-btn"
+              disabled={submitting || submitStatus === "success"}
+            >
+              {submitting ? "Sending…" : submitStatus === "success" ? "Sent ✓" : "Send it over"}
+            </button><p className="ht-form-msg" aria-live="polite">
+              {submitStatus === "success" && <span style={{ color: "var(--wb-forest)" }}>✓ You're on the list. We'll be in touch!</span>}
+              {submitStatus === "error" && <span style={{ color: "#991b1b", fontSize: "16px" }}>Failed to send. Please email support@webrivo.in</span>}
+            </p></form></div><div className="ht-word" aria-label={brand}>{Array.from(brand).map((ch, i) => <span key={i} className="ht-word-l" aria-hidden="true">{ch}<Tape kind="duct" x="50%" y="46%" w="72%" r={i % 2 ? 34 : -36} /></span>)}</div><div className="ht-foot-bar"><div className="ht-foot-addr"><div><p className="ht-label">Slv complex</p><p>Muddinapalya, Bangalore</p></div></div><div className="ht-foot-meta"><p>&copy; 2026 WebRivo &mdash; Websites for local businesses.</p><a href="mailto:support@webrivo.in">support@webrivo.in</a> · <a href="https://webrivo.in">webrivo.in</a></div></div></footer></div>
 }
 const CSS = `
 .ht-root{
@@ -837,57 +910,24 @@ const CSS = `
 .ht-join-duct{transform:translateY(-50%) rotate(1.4deg)}
 .ht-join-duct .ht-join-in{background:repeating-linear-gradient(45deg,rgba(255,255,255,.14) 0 1px,transparent 1px 4px),repeating-linear-gradient(-45deg,rgba(24,53,43,.06) 0 1px,transparent 1px 4px),linear-gradient(180deg,var(--wb-muted),rgba(137,153,130,.85) 45%,rgba(24,53,43,.9));box-shadow:0 6px 12px rgba(24,53,43,.22)}
 
-.ht-shop{background:var(--wb-off);color:var(--wb-forest);padding:clamp(80px,9cqw,140px) clamp(16px,4cqw,64px) clamp(90px,10cqw,160px)}
-.ht-shop-head{position:relative;display:grid;grid-template-columns:auto 1fr;align-items:end;gap:12px 48px;max-width:1300px;margin:0 auto clamp(40px,5cqw,80px)}
-.ht-shop-head .ht-label{grid-column:1/-1}
-.ht-shop-h{font-weight:800;font-stretch:75%;font-variation-settings:"opsz" 96;text-transform:uppercase;font-size:clamp(60px,10.5cqw,170px);line-height:.82;color:var(--wb-forest)}
-.ht-shop-sub{max-width:360px;font-size:15px;line-height:1.5;font-weight:400;font-stretch:96%;color:var(--wb-forest-70);padding-bottom:.6em}
-.ht-shop-grid{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(18px,2.4cqw,36px);max-width:1200px;margin:0 auto}
-.ht-prod{position:relative;display:flex;flex-direction:column;padding:clamp(24px,2.2cqw,34px) clamp(20px,1.8cqw,28px) 22px;background:var(--wb-white);border:1px solid var(--wb-line);border-radius:var(--wb-card);box-shadow:var(--wb-shadow-md);transition:transform .4s var(--wb-ease),box-shadow .4s var(--wb-ease)}
-.ht-prod:hover{transform:translateY(-6px);box-shadow:var(--wb-shadow-lg)}
-.ht-prod .ht-tp{height:clamp(22px,2cqw,30px)}
-
-.ht-prod--business{border-color:color-mix(in srgb,var(--wb-muted) 55%,transparent);background:linear-gradient(172deg,var(--wb-white) 0%,color-mix(in srgb,var(--wb-sage) 18%,var(--wb-white)) 60%,var(--wb-sage) 100%);box-shadow:0 16px 40px -20px rgba(24,53,43,.22),inset 0 1px 0 rgba(255,255,255,.9)}
-.ht-prod--business:hover{box-shadow:0 26px 56px -24px rgba(24,53,43,.32),inset 0 1px 0 rgba(255,255,255,.9)}
-.ht-prod--business .ht-prod-name{background:linear-gradient(135deg,var(--wb-forest) 0%,var(--wb-muted) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.ht-prod--business .ht-prod-price{color:var(--wb-forest)}
-.ht-prod--business .ht-btn-sm{background:var(--wb-muted);border-color:var(--wb-muted);color:var(--wb-off)}
-.ht-prod--business .ht-btn-sm:hover{background:var(--wb-forest);border-color:var(--wb-forest);color:var(--wb-off)}
-.ht-prod--business .ht-prod-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--wb-muted);color:var(--wb-white);font-weight:700;font-stretch:85%;text-transform:uppercase;letter-spacing:.12em;font-size:10px;padding:4px 14px;border-radius:var(--wb-pill);box-shadow:0 4px 12px rgba(24,53,43,.2);z-index:4;white-space:nowrap}
-
-.ht-prod--premium{border:none;background:radial-gradient(ellipse at 50% 0%,rgba(221,227,213,.3) 0%,transparent 65%),var(--wb-forest);color:var(--wb-off);box-shadow:0 24px 64px -28px rgba(9,20,16,.55),0 0 0 1px rgba(221,227,213,.15),inset 0 1px 0 rgba(255,255,255,.07);overflow:hidden}
-.ht-prod--premium::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background-image:var(--ht-noise);opacity:.08;z-index:0}
-.ht-prod--premium::after{content:"";position:absolute;left:10%;right:10%;bottom:6%;height:45%;background:radial-gradient(ellipse,rgba(137,153,130,.22) 0%,transparent 72%);filter:blur(32px);z-index:0;pointer-events:none}
-.ht-prod--premium:hover{transform:translateY(-8px);box-shadow:0 36px 80px -32px rgba(9,20,16,.65),0 0 0 1px rgba(221,227,213,.24),inset 0 1px 0 rgba(255,255,255,.1)}
-.ht-prod--premium{overflow:visible}
-.ht-prod--premium > *{z-index:1}
-.ht-prod--premium .ht-prod-name{background:linear-gradient(135deg,var(--wb-off) 0%,var(--wb-sage) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-shadow:none}
-.ht-prod--premium .ht-prod-line{color:rgba(221,227,213,.72)}
-.ht-prod--premium .ht-prod-price{color:var(--wb-sage)}
-.ht-prod--premium .ht-btn-sm{background:var(--wb-off);border-color:var(--wb-off);color:var(--wb-forest);font-weight:700}
-.ht-prod--premium .ht-btn-sm:hover{background:var(--wb-sage);border-color:var(--wb-sage);transform:translateY(-1px)}
-.ht-prod--premium .ht-prod-badge{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--wb-off);color:var(--wb-forest);font-weight:800;font-stretch:80%;text-transform:uppercase;letter-spacing:.16em;font-size:10px;padding:4px 14px;border-radius:var(--wb-pill);box-shadow:0 4px 14px rgba(9,20,16,.35);z-index:5;white-space:nowrap}
-.ht-prod-roll{position:relative;height:clamp(150px,15cqw,220px);margin:6px 0 14px}
-.ht-prod-roll .ht-roll{--d:clamp(118px,12cqw,180px);top:50%}
-.ht-prod-roll .ht-roll-body{--tilt:-58deg;--spin:-24deg;transition:transform 1.1s cubic-bezier(.25,1.2,.4,1)}
-.ht-prod:hover .ht-roll-body{transform:rotateY(var(--tilt)) rotateX(calc(var(--spin) - 360deg))}
-.ht-prod-name{font-weight:800;font-stretch:75%;text-transform:uppercase;font-size:clamp(30px,2.8cqw,42px);line-height:.9}
-.ht-prod-line{margin:.6em 0 1.4em;font-size:14px;line-height:1.55;font-weight:400;font-stretch:96%;color:var(--wb-forest-70);flex:1}
-.ht-prod-foot{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.ht-prod-price{font-family:var(--ht-display);font-weight:800;font-stretch:80%;font-size:clamp(24px,2.2cqw,30px);letter-spacing:-.02em;line-height:1;margin-bottom:18px}
-.ht-prod-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:auto}
-.ht-prod-actions .ht-btn{justify-content:center;text-align:center;text-decoration:none;white-space:nowrap}
-.ht-prod-actions .ht-btn-customize{background:transparent;color:var(--wb-forest);border-color:var(--wb-line);font-weight:600}
-.ht-prod-actions .ht-btn-customize:hover{background:var(--wb-sage);border-color:var(--wb-sage);color:var(--wb-forest)}
-.ht-prod-actions .ht-btn-customize{grid-column:1/-1}
-.ht-prod--premium .ht-prod-actions .ht-btn-customize{background:transparent;color:var(--wb-off);border-color:rgba(221,227,213,.36);font-weight:600}
-.ht-prod--premium .ht-prod-actions .ht-btn-customize:hover{background:rgba(221,227,213,.12);border-color:var(--wb-sage);color:var(--wb-white)}
-
-.ht-estimator {
-  background: var(--wb-off);
-  color: var(--wb-forest);
-  padding: clamp(80px,9cqw,140px) clamp(16px,4cqw,64px);
-}
+.ht-svc{background:var(--wb-off);color:var(--wb-forest);padding:clamp(80px,9cqw,140px) clamp(16px,4cqw,64px) clamp(90px,10cqw,160px)}
+.ht-svc-head{position:relative;max-width:1300px;margin:0 auto clamp(48px,5cqw,80px)}
+.ht-svc-h{font-weight:800;font-stretch:75%;font-variation-settings:"opsz" 96;text-transform:uppercase;font-size:clamp(56px,9cqw,140px);line-height:.84;color:var(--wb-forest);margin-top:.25em}
+.ht-svc-sub{max-width:520px;margin-top:24px;font-size:16px;line-height:1.6;font-weight:400;font-stretch:96%;color:var(--wb-forest-70)}
+.ht-svc-grid{position:relative;display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(20px,2.4cqw,36px);max-width:1200px;margin:0 auto}
+.ht-svc-card{position:relative;display:flex;flex-direction:column;padding:clamp(28px,2.8cqw,44px);background:var(--wb-white);border:1px solid var(--wb-line);border-radius:var(--wb-card);box-shadow:var(--wb-shadow-md);transition:transform .4s var(--wb-ease),box-shadow .4s var(--wb-ease)}
+.ht-svc-card:hover{transform:translateY(-5px);box-shadow:var(--wb-shadow-lg)}
+.ht-svc-card--wide{grid-column:1/-1;background:linear-gradient(172deg,var(--wb-white) 0%,var(--wb-sage) 100%)}
+.ht-svc-top{display:flex;align-items:baseline;gap:16px}
+.ht-svc-num{font-family:var(--ht-hand);font-size:clamp(30px,3cqw,44px);color:var(--wb-muted);line-height:1}
+.ht-svc-title{font-weight:800;font-stretch:78%;text-transform:uppercase;font-size:clamp(26px,2.6cqw,40px);line-height:.95;color:var(--wb-forest)}
+.ht-svc-desc{margin:14px 0 22px;font-size:15px;line-height:1.5;font-weight:400;color:var(--wb-forest-70);max-width:52ch}
+.ht-svc-list{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+.ht-svc-list li{position:relative;padding-left:22px;font-size:14px;line-height:1.45;font-weight:500;color:var(--wb-forest)}
+.ht-svc-list li::before{content:"";position:absolute;left:2px;top:.55em;width:7px;height:7px;border-radius:99px;background:var(--wb-muted)}
+.ht-svc-groups{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,2cqw,32px)}
+.ht-svc-group{padding-top:18px;border-top:2px solid var(--wb-forest);opacity:.9}
+.ht-svc-group-h{font-weight:700;font-stretch:88%;text-transform:uppercase;letter-spacing:.08em;font-size:14px;margin-bottom:14px;color:var(--wb-forest)}
 
 .ht-foot{background:var(--wb-sage);color:var(--wb-forest);padding:clamp(80px,8cqw,130px) clamp(16px,4cqw,64px) 26px;overflow:hidden}
 
@@ -913,10 +953,7 @@ const CSS = `
 .ht-foot-meta a:hover{color:var(--wb-forest)}
 
 @container ht (max-width:900px){
-.ht-shop-grid{grid-template-columns:repeat(2,1fr)}
-.ht-prod:nth-child(even){margin-top:0}
-.ht-prod:last-child{grid-column:1/-1;justify-self:center;width:calc(50% - 12px)}
-.ht-shop-head{grid-template-columns:1fr}
+.ht-svc-card--wide .ht-svc-groups{grid-template-columns:repeat(2,1fr)}
 }
 @container ht (max-width:720px){
 .ht-nav-burger{display:flex}
@@ -955,10 +992,9 @@ const CSS = `
 .ht-mask-stamp{right:18px;bottom:calc(max(var(--h),600px) * .5)}
 .ht-d2,.ht-d5{display:none}
 .ht-d1{left:auto;right:6%;top:30%}
-.ht-shop-grid{grid-template-columns:1fr;gap:34px}
-.ht-prod,.ht-prod:last-child{width:88%;justify-self:center;grid-column:auto}
-.ht-prod-roll{height:52cqw}
-.ht-prod-roll .ht-roll{--d:40cqw}
+.ht-svc-grid{grid-template-columns:1fr;gap:28px}
+.ht-svc-card--wide{grid-column:auto}
+.ht-svc-groups{grid-template-columns:1fr}
 .ht-word{font-size:36cqw}
 }
 
@@ -968,9 +1004,8 @@ const CSS = `
 .ht-mask{height:auto}
 .ht-mask-stage{position:relative}
 .ht-l,.ht-mq-i,.ht-roll{will-change:auto}
-.ht-btn,.ht-prod,.ht-roll-body,.ht-tp,.ht-nav-brand{transition:none}
-.ht-prod:hover,.ht-prod:hover .ht-roll-body{transform:rotateY(var(--tilt)) rotateX(var(--spin))}
-.ht-prod:hover{transform:none}
+.ht-btn,.ht-svc-card,.ht-roll-body,.ht-tp,.ht-nav-brand{transition:none}
+.ht-svc-card:hover{transform:none}
 .ht-mask-stamp{opacity:1;rotate:-9deg}
 }
 `;
